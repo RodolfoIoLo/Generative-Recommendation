@@ -25,6 +25,7 @@ fonttools==4.65.0
 frozenlist==1.8.0
 fsspec==2026.7.0
 grpcio==1.84.0
+huggingface_hub==1.33.0
 idna==3.20
 Jinja2==3.1.6
 joblib==1.6.0
@@ -68,8 +69,10 @@ recbole==1.2.1
 referencing==0.37.0
 requests==2.34.2
 rpds-py==2026.6.3
+safetensors==0.8.0
 scikit-learn==1.9.1
 scipy==1.17.1
+sentence-transformers==6.1.0
 setuptools==81.0.0
 six==1.17.0
 spicy==0.16.0
@@ -80,9 +83,11 @@ tensorboard-data-server==0.7.2
 texttable==1.7.0
 thop==0.1.1.post2209072238
 threadpoolctl==3.7.0
+tokenizers==0.23.3
 torch==2.14.0+cu126
 tqdm==4.70.1
 triton==3.8.0
+transformers==5.19.0
 typing_extensions==4.16.0
 urllib3==2.8.0
 Werkzeug==3.1.8
