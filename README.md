@@ -24,7 +24,7 @@ Toy Story → [37, 128, 5, 0]
 
 ## 当前进度
 
-更新于 **2026-10-15**.
+更新于 **2026-10-21**.
 
 | 周次 | 工作 | 状态 |
 |---|---|---|
@@ -93,8 +93,11 @@ python scripts/verify_split.py --data-dir /data/zby/data/ml-1m/processed
 python scripts/run_baseline.py --model SASRec --config config/sasrec_ml1m.yaml --seed 42
 python scripts/run_baseline.py --model GRU4Rec --config config/sasrec_ml1m.yaml --seed 42
 
-# Week 3:物品文本编码(默认 CPU;模型从服务器本地目录读取)
+# Week 3–4:文本编码、语义 ID、前缀验证与接口冻结
 python scripts/encode_items.py --model /data/LLMs/all-MiniLM-L6-v2 --out item_emb.npy
+python scripts/build_semantic_id.py --config config/rqvae_ml1m.yaml --emb item_emb.npy --method rqvae --device cuda:0 --checkpoint saved/rqvae_ml1m.pt --out semantic_ids_rqvae.json
+python scripts/check_prefix_consistency.py --emb item_emb.npy --ids semantic_ids_rqvae.json --text /data/zby/data/ml-1m/processed/item_text.json --outdir results/week3-4-semantic-id
+python scripts/export_semantic.py --ids semantic_ids_rqvae.json --emb item_emb.npy --quantizer_checkpoint saved/rqvae_ml1m.pt --processed /data/zby/data/ml-1m/processed --outdir exported
 ```
 
 MovieLens 1M 可从 [GroupLens](https://grouplens.org/datasets/movielens/1m/) 获取.原始数据,embedding 和 checkpoint 不进入 Git;它们的路径,规格和校验信息记录在结果索引中.
@@ -120,7 +123,9 @@ repository/
 │   ├── export_item_freq.py
 │   ├── encode_items.py
 │   ├── build_semantic_id.py
-│   └── analyze_codebook.py
+│   ├── analyze_codebook.py
+│   ├── check_prefix_consistency.py
+│   └── export_semantic.py
 ├── results/
 │   ├── README.md
 │   ├── week1-data-stats/
@@ -142,12 +147,22 @@ repository/
 │   └── week3-4-semantic-id/
 │       ├── residual_quantization.md
 │       ├── grid_search.md
+│       ├── codebook_report.md
 │       ├── codebook_stats.json
 │       ├── semantic_ids_kmeans.json
 │       ├── semantic_ids_rqvae.json
 │       ├── rq_kmeans.log
 │       ├── rqvae_train.log
 │       ├── grid_search.log
+│       ├── prefix_consistency.md
+│       ├── prefix_samples.csv
+│       ├── frozen/
+│       │   ├── semantic_ids.json
+│       │   ├── train.semantic.jsonl
+│       │   ├── valid.semantic.jsonl
+│       │   ├── test.semantic.jsonl
+│       │   ├── token_vocab.json
+│       │   └── meta.json
 │       ├── figs/
 │       │   ├── util_kmeans_level0.png
 │       │   ├── util_kmeans_level1.png
@@ -207,7 +222,9 @@ repository/
 │   ├── export_item_freq.py
 │   ├── encode_items.py
 │   ├── build_semantic_id.py
-│   └── analyze_codebook.py
+│   ├── analyze_codebook.py
+│   ├── check_prefix_consistency.py
+│   └── export_semantic.py
 ├── log/
 │   ├── GRU4Rec/
 │   │   └── GRU4Rec-ml-1m-Oct-15-2026_09-39-08-c5973e.log
@@ -228,8 +245,11 @@ repository/
 │   └── week3-4-semantic-id/
 │       ├── residual_quantization.md
 │       ├── grid_search.md
+│       ├── codebook_report.md
 │       ├── grid_search.log
 │       ├── codebook_stats.json
+│       ├── prefix_consistency.md
+│       ├── prefix_samples.csv
 │       ├── figs/
 │       │   ├── util_kmeans_level0.png
 │       │   ├── util_kmeans_level1.png
@@ -248,6 +268,13 @@ repository/
 │           ├── semantic_ids_rqvae_L3_K256.json
 │           ├── semantic_ids_rqvae_L4_K256_no_dedup.json
 │           └── logs/（对应 9 组独立日志）
+├── exported/
+│   ├── semantic_ids.json
+│   ├── train.semantic.jsonl
+│   ├── valid.semantic.jsonl
+│   ├── test.semantic.jsonl
+│   ├── token_vocab.json
+│   └── meta.json
 ├── saved/
 │   ├── SASRec-Sep-28-2026_19-18-04.pth
 │   ├── SASRec-Oct-15-2026_13-00-52.pth
