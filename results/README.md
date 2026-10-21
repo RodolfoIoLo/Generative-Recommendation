@@ -6,7 +6,7 @@
 |---|---|---|
 | Week 1 | `week1-data-stats/`；预处理数据位于服务器 `/data/zby/data/ml-1m/processed/` | ✅ 完成 |
 | Week 2 | `week2-sasrec-baseline/`；checkpoint 位于服务器 `~/genrec/saved/` | ✅ 完成 |
-| Week 3–4 | 文本编码、残差量化、码本统计、前缀验证与接口冻结 | ✅ 实验与文档已完成，待 Git 提交 |
+| Week 3–4 | 文本编码、残差量化、码本统计、前缀验证与接口冻结 | ✅ 完成 |
 | Week 5–6 | 生成式模型训练日志与对比表 | ⏳ 未开始 |
 | Week 7 | 冷启动 / 长尾实验、消融与最终报告 | ⏳ 未开始 |
 
