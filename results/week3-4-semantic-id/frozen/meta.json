@@ -1,0 +1,24 @@
+{
+  "protocol_version": "v3.1",
+  "dataset": "ml-1m",
+  "n_items": 3416,
+  "encoder": "/data/LLMs/all-MiniLM-L6-v2",
+  "embedding_file": "item_emb.npy",
+  "embedding_dim": 384,
+  "embedding_normalization": "l2",
+  "embedding_sha256": "162d6d2a9fb89e6b9e096d97a79a46338d83507ad5cbc07581a730d43e2b77a4",
+  "quantizer_checkpoint": "saved/rqvae_ml1m.pt",
+  "quantizer_sha256": "95a7b03b474958949c466b14c2bbe4697d32263fbb6f393604c62bd8a92f562f",
+  "source_ids_sha256": "d3b92f8fc17accf3fcbabf30536b836f22b1da1b6f0aea40004abd758438718a",
+  "source_split_sha256": {
+    "train": "e9a4c118f9d80943139976590ee1caa67c258fd34e380f1d923fc4637ce60a5d",
+    "valid": "70a0c5a985af73909aff09bd6f8b4cd30f174f6b3b94682b46e1a8985783cc5f",
+    "test": "2b70ef38c7dfd21e3c8c3b7027452ec0a650b457b048878f6fc70f5188864224"
+  },
+  "rq_levels": 3,
+  "semantic_id_length": 4,
+  "has_dedup_token": true,
+  "codebook_size": 256,
+  "n_item_tokens": 1024,
+  "source_ids_file": "semantic_ids_rqvae.json"
+}
