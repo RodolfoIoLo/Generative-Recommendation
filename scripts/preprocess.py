@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-ml-1m 预处理:原始评分文件 -> train/valid/test + 映射表 + 物品文本
+ml-1m 预处理：原始评分文件 -> train/valid/test + 映射表 + 物品文本
 
-用法:
-    python scripts/preprocess.py --stage load   # 只验证读取,不写文件
+用法：
+    python scripts/preprocess.py --stage load   # 只验证读取，不写文件
     python scripts/preprocess.py                # 跑完整流程
 
-产出目录:/data/zby/data/ml-1m/processed/
+产出目录：/data/zby/data/ml-1m/processed/
 """
 
 import argparse
@@ -23,7 +23,7 @@ SEED = 42
 
 
 def set_seed(seed):
-    """固定所有随机性,保证结果可复现."""
+    """固定所有随机性，保证结果可复现。"""
     random.seed(seed)
     np.random.seed(seed)
 
@@ -32,11 +32,11 @@ def set_seed(seed):
 # 1. 读原始数据
 # ==========================================================================
 def load_ml1m(raw_dir):
-    """读 ml-1m 的 ratings.dat 和 movies.dat.
+    """读 ml-1m 的 ratings.dat 和 movies.dat。
 
-    两个坑:
-      1. 分隔符是 '::'(两个字符),多字符分隔符必须 engine='python'
-      2. movies.dat 是 latin-1 编码,用 utf-8 读会抛 UnicodeDecodeError
+    两个坑：
+      1. 分隔符是 '::'（两个字符），多字符分隔符必须 engine='python'
+      2. movies.dat 是 latin-1 编码，用 utf-8 读会抛 UnicodeDecodeError
     """
     ratings = pd.read_csv(
         os.path.join(raw_dir, 'ratings.dat'),
@@ -62,16 +62,16 @@ def load_ml1m(raw_dir):
 
 
 # ==========================================================================
-# 2. 转隐式反馈(丢掉评分列)
+# 2. 转隐式反馈（丢掉评分列）
 # ==========================================================================
 def to_implicit(ratings):
-    """只保留 (user, item, timestamp).
+    """只保留 (user, item, timestamp)。
 
-    决策:ml-1m 的 1~5 分全部算"有交互",不设阈值.
+    决策：ml-1m 的 1~5 分全部算「有交互」，不设阈值。
     """
     n0 = len(ratings)
     df = ratings[['user', 'item', 'timestamp']].drop_duplicates()
-    print(f'[implicit] {n0} → {len(df)} 条(丢评分列 + 去重)')
+    print(f'[implicit] {n0} → {len(df)} 条（丢评分列 + 去重）')
     return df
 
 
@@ -79,10 +79,10 @@ def to_implicit(ratings):
 # 3. k-core 迭代过滤  ★ 重点
 # ==========================================================================
 def kcore_filter(df, k):
-    """迭代过滤,直到所有用户和物品的交互数都 >= k.
+    """迭代过滤，直到所有用户和物品的交互数都 >= k。
 
-    为什么必须迭代:删掉冷门物品后,有些用户的交互数会掉到 k 以下;
-    再删这些用户,又会有物品掉下去.单次过滤的结果是错的.
+    为什么必须迭代：删掉冷门物品后，有些用户的交互数会掉到 k 以下；
+    再删这些用户，又会有物品掉下去。单次过滤的结果是错的。
     """
     n_round = 0
     while True:
@@ -96,7 +96,7 @@ def kcore_filter(df, k):
         print(f'[kcore] 第 {n_round} 轮: {n_before} → {n_after}')
         if n_after == n_before:          # 没有变化 → 收敛
             break
-    print(f'[kcore] 收敛,共 {n_round} 轮')
+    print(f'[kcore] 收敛，共 {n_round} 轮')
     return df.reset_index(drop=True)
 
 
@@ -104,9 +104,9 @@ def kcore_filter(df, k):
 # 4. ID 重映射
 # ==========================================================================
 def remap_ids(df):
-    """原始 ID → 0..N-1.
+    """原始 ID → 0..N-1。
 
-    用 sorted() 而不是 set:set 的迭代顺序每次可能不同,映射会不可复现.
+    用 sorted() 而不是 set：set 的迭代顺序每次可能不同，映射会不可复现。
     """
     users = sorted(df['user'].unique().tolist())
     items = sorted(df['item'].unique().tolist())
@@ -127,10 +127,10 @@ def remap_ids(df):
 # 5. 稳定排序 + leave-one-out 划分
 # ==========================================================================
 def split_loo(df):
-    """每个用户按时间排序:最后 1 个 → test,倒数第 2 个 → valid,其余 → train.
+    """每个用户按时间排序：最后 1 个 → test，倒数第 2 个 → valid，其余 → train。
 
-    排序必须稳定(kind='mergesort'),并用 item 做二级排序键,
-    否则时间戳相同的记录顺序会变,结果不可复现.
+    排序必须稳定（kind='mergesort'），并用 item 做二级排序键，
+    否则时间戳相同的记录顺序会变，结果不可复现。
     """
     df = df.sort_values(['user', 'timestamp', 'item'],
                         kind='mergesort').reset_index(drop=True)
@@ -153,7 +153,7 @@ def split_loo(df):
 # 6. 拼成 (history, target) 并落盘
 # ==========================================================================
 def build_sequences(train, valid, test):
-    """拼成模型要的"接龙题目"."""
+    """拼成模型要的「接龙题目」。"""
     train_hist = (train.sort_values(['user', 'timestamp'], kind='mergesort')
                        .groupby('user')['item'].agg(list).to_dict())
     valid_target = valid.set_index('user')['item'].to_dict()
@@ -167,7 +167,7 @@ def build_sequences(train, valid, test):
                       'target': int(valid_target[u])}
                      for u in sorted(valid_target)]
 
-    # test 的 history = train + valid,且不含 test 自己(防数据泄漏)
+    # test 的 history = train + valid，且不含 test 自己（防数据泄漏）
     test_records = [{'user': int(u),
                      'history': [int(x) for x in train_hist[u]] + [int(valid_target[u])],
                      'target': int(test_target[u])}
@@ -177,7 +177,7 @@ def build_sequences(train, valid, test):
 
 
 def write_jsonl(records, path):
-    """JSONL:每行一个 JSON."""
+    """JSONL：每行一个 JSON。"""
     with open(path, 'w', encoding='utf-8', newline='\n') as f:
         for r in records:
             f.write(json.dumps(r, ensure_ascii=False) + '\n')
@@ -191,13 +191,13 @@ def write_json(obj, path):
 
 
 def write_inter(df, path):
-    """RecBole 的 .inter 格式,后面跑 SASRec 基线直接读这个.
+    """RecBole 的 .inter 格式，后面跑 SASRec 基线直接读这个。
 
-    ★ 排序键必须和 split_loo 完全一致(user, timestamp, item).
-      如果这里只用 (user, timestamp),同一时间戳内的顺序会保留原始文件顺序,
-      而 split_loo 用的是 item 作二级键 ---- 两边算出来的 leave-one-out 切点会不同,
-      结果是 RecBole 跑出来的基线和 jsonl 训练出来的模型评测在不同的测试集上.
-      实测:不一致时 6040 个用户里有 1561 个(25.8%)的 test 目标物品会变.
+    ★ 排序键必须和 split_loo 完全一致（user, timestamp, item）。
+      如果这里只用 (user, timestamp)，同一时间戳内的顺序会保留原始文件顺序，
+      而 split_loo 用的是 item 作二级键 —— 两边算出来的 leave-one-out 切点会不同，
+      结果是 RecBole 跑出来的基线和 jsonl 训练出来的模型评测在不同的测试集上。
+      实测：不一致时 6040 个用户里有 1561 个（25.8%）的 test 目标物品会变。
     """
     out = df.sort_values(['user', 'timestamp', 'item'], kind='mergesort')
     with open(path, 'w', encoding='utf-8', newline='\n') as f:
@@ -208,7 +208,7 @@ def write_inter(df, path):
 
 
 def build_item_text(movies, item_map, path):
-    """item id → 文本描述,供第 3 周构建语义标识符用."""
+    """item id → 文本描述，供第 3 周构建语义标识符用。"""
     text = {}
     skipped = 0
     for raw_id, title, genres in zip(movies['item'], movies['title'], movies['genres']):
@@ -218,7 +218,7 @@ def build_item_text(movies, item_map, path):
             continue
         text[str(item_map[raw_id])] = f'{title} | {genres}'
     write_json(text, path)
-    print(f'[item_text] 写出 {len(text)} 条,跳过被过滤的 {skipped} 条')
+    print(f'[item_text] 写出 {len(text)} 条，跳过被过滤的 {skipped} 条')
     return text
 
 
@@ -251,7 +251,7 @@ def main():
 
     ratings, movies = load_ml1m(raw_dir)
     if args.stage == 'load':
-        print('\n[stage=load] 只验证读取,到此结束.')
+        print('\n[stage=load] 只验证读取，到此结束。')
         return
 
     n_raw_users = int(ratings['user'].nunique())
@@ -285,7 +285,7 @@ def main():
                   'test': int(len(test))},
     }
     write_json(log, os.path.join(out_dir, 'preprocess_log.json'))
-    print('\n处理完成.')
+    print('\n处理完成。')
 
 
 if __name__ == '__main__':

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-任务 3:数据统计.产出统计表,长尾图和抽样序列.
+任务 3:数据统计。产出统计表、长尾图和抽样序列。
 
-用法:
+用法：
     python scripts/stats.py
 
 产出:/data/zby/data/ml-1m/processed/stats/
@@ -18,14 +18,14 @@ import numpy as np
 import pandas as pd
 
 import matplotlib
-matplotlib.use('Agg')            # 服务器没有显示器,必须放在 import pyplot 之前
+matplotlib.use('Agg')            # 服务器没有显示器，必须放在 import pyplot 之前
 import matplotlib.pyplot as plt
 
 SEED = 42
 
 
 def load_inter(path):
-    """读 .inter 文件(全量交互,含 train/valid/test 三部分)."""
+    """读 .inter 文件（全量交互，含 train/valid/test 三部分）。"""
     inter = pd.read_csv(path, sep='\t')
     inter.columns = ['user', 'item', 'timestamp']
     inter['user'] = inter['user'].astype(int)
@@ -35,7 +35,7 @@ def load_inter(path):
 
 
 def gini(x):
-    """基尼系数:0 = 完全平均,1 = 完全集中.用来量化长尾严重程度."""
+    """基尼系数：0 = 完全平均，1 = 完全集中。用来量化长尾严重程度。"""
     x = np.sort(np.asarray(x, dtype=np.float64))
     n = len(x)
     idx = np.arange(1, n + 1)
@@ -50,7 +50,7 @@ def compute_stats(inter):
     seq_len = inter.groupby('user').size()       # 每个用户的交互数
     item_freq = inter.groupby('item').size()     # 每个物品的交互数
 
-    # 头部集中度:最热的 1% / 10% 物品,吃掉了多少比例的交互
+    # 头部集中度：最热的 1% / 10% 物品，吃掉了多少比例的交互
     freq_desc = np.sort(item_freq.values)[::-1]
     cum = np.cumsum(freq_desc) / freq_desc.sum()
     top1 = max(1, int(round(0.01 * n_items)))
@@ -82,7 +82,7 @@ def compute_stats(inter):
 
 
 def plot_longtail(item_freq, path):
-    """log-log 曲线:理想的长尾(幂律分布)在这张图上是一条直线."""
+    """log-log 曲线：理想的长尾（幂律分布）在这张图上是一条直线。"""
     freq = np.sort(item_freq.values)[::-1]
     plt.figure(figsize=(6, 4))
     plt.loglog(np.arange(1, len(freq) + 1), freq, '.', markersize=3)
@@ -122,9 +122,9 @@ def plot_seq_len(seq_len, path):
 
 
 def sample_sequences(inter, item_text, seq_len, n=3, max_show=15, seed=SEED):
-    """抽 n 个活跃用户,打印带真实片名的行为序列.
+    """抽 n 个活跃用户，打印带真实片名的行为序列。
 
-    优先挑序列长的用户,因为长序列更容易看出语义连贯性.
+    优先挑序列长的用户，因为长序列更容易看出语义连贯性。
     """
     rng = np.random.default_rng(seed)
     cand = seq_len[seq_len >= 20].index.tolist()
@@ -136,7 +136,7 @@ def sample_sequences(inter, item_text, seq_len, n=3, max_show=15, seed=SEED):
     lines = []
     for u in picked:
         sub = inter[inter['user'] == u].sort_values('timestamp', kind='mergesort')
-        lines.append(f'user {u}  共 {len(sub)} 次交互(只展示前 {max_show} 条)')
+        lines.append(f'user {u}  共 {len(sub)} 次交互（只展示前 {max_show} 条）')
         for it, ts in zip(sub['item'].head(max_show), sub['timestamp'].head(max_show)):
             title = item_text.get(str(int(it)), '<unknown>')
             date = pd.to_datetime(ts, unit='s').strftime('%Y-%m-%d')
@@ -146,10 +146,10 @@ def sample_sequences(inter, item_text, seq_len, n=3, max_show=15, seed=SEED):
 
 
 def write_markdown(s, seq_text, path):
-    """生成可读的统计表(可直接贴周报)."""
+    """生成可读的统计表（可直接贴周报）。"""
     lines = []
     lines.append(f"# 数据统计 · {s['dataset']}\n")
-    lines.append('> 由 `scripts/stats.py` 自动生成.\n')
+    lines.append('> 由 `scripts/stats.py` 自动生成。\n')
 
     lines.append('## 1. 规模\n')
     lines.append('| 指标 | 值 |')
@@ -167,7 +167,7 @@ def write_markdown(s, seq_text, path):
     lines.append(f"| P90 | {s['p90_seq_len']} |")
     lines.append(f"| 最大 / 最小 | {s['max_seq_len']} / {s['min_seq_len']} |\n")
 
-    lines.append('## 3. 物品热度分布(长尾)\n')
+    lines.append('## 3. 物品热度分布（长尾）\n')
     lines.append('| 指标 | 值 |')
     lines.append('|---|---|')
     lines.append(f"| 最热物品交互数 | {s['item_freq_max']:,} |")
@@ -226,7 +226,7 @@ def main():
     for k, v in s.items():
         print(f'{k:34s} {v}')
     print('=' * 64)
-    print('\n抽样序列:\n' + seq_text)
+    print('\n抽样序列：\n' + seq_text)
 
 
 if __name__ == '__main__':
