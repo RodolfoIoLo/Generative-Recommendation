@@ -24,14 +24,14 @@ Toy Story → [37, 128, 5, 0]
 
 ## 当前进度
 
-更新于 **2026-10-21**.
+更新于 **2026-10-22**.
 
 | 周次 | 工作 | 状态 |
 |---|---|---|
 | 第 1 周 | MovieLens 1M 下载,5-core 预处理,时间切分,统计分析 | ✅ 完成 |
 | 第 2 周 | SASRec 三随机种子,GRU4Rec 基线与 checkpoint 复评 | ✅ 完成 |
 | 第 3–4 周 | 文本编码,RQ-Kmeans / RQ-VAE,语义 ID 与码本分析 | ✅️已完成 |
-| 第 5–6 周 | T5 类生成式推荐训练,全量排序评测与基线对比 | ⏳ 计划中 |
+| 第 5–6 周 | T5 类生成式推荐:接口审计、训练链路验证与学习率预实验 | 🟡 进行中 |
 | 第 7 周 | 冷启动 / 长尾改进,消融实验与结项报告 | ⏳ 计划中 |
 
 ### 已得到的核心结果
@@ -45,8 +45,13 @@ Toy Story → [37, 128, 5, 0]
 | SASRec | 44 | 0.1526 | 0.2250 | 0.0958 | 0.1191 |
 | **SASRec** | **均值 ± std** | **0.1486 ± 0.0054** | **0.2264 ± 0.0056** | **0.0937 ± 0.0037** | **0.1187 ± 0.0036** |
 | **GRU4Rec** | **42** | **0.1861** | **0.2657** | **0.1261** | **0.1517** |
+| GRU4Rec | 43 | 0.1836 | 0.2624 | 0.1258 | 0.1512 |
+| GRU4Rec | 44 | 0.1796 | 0.2613 | 0.1235 | 0.1498 |
+| **GRU4Rec** | **均值 ± std** | **0.1831 ± 0.0027** | **0.2631 ± 0.0019** | **0.1251 ± 0.0012** | **0.1509 ± 0.0008** |
 
 完整产物,数据规格与文件来源见 [`results/README.md`](results/README.md).
+
+生成模型截至 Stage 3 只完成超参数预实验：固定 seed 42、前 1,000 个 valid 用户时，`3e-4` / `1e-3` 的 step-5000 NDCG@10 分别为 `0.056145` / `0.039042`，因此选择 `3e-4`；正式三种子与 test 尚未运行。
 
 ## 实验路线
 
@@ -55,7 +60,7 @@ Toy Story → [37, 128, 5, 0]
 | Week 1 | MovieLens 1M 原始评分与电影元数据 | 5-core,ID 重映射,按时间 leave-one-out,无泄漏校验 | `.inter`,三份 `jsonl`,统计表与分布图 |
 | Week 2 | 行为序列 | RecBole 复现 SASRec / GRU4Rec,多种子全量排序评测 | 训练日志,checkpoint,基线表 |
 | Week 3–4 | `title + year + genres` | MiniLM 文本编码,残差量化,冲突消解,码本质量分析 | `item_emb.npy`,4-token 语义 ID,码本报告 |
-| Week 5–6 | 语义 ID 序列 | 训练 encoder-decoder Transformer,自回归生成下一物品 | 生成式推荐结果与基线对比 |
+| Week 5–6 | 语义 ID 序列 | 审计冻结接口,验证训练/恢复/约束解码,选择学习率,再进行正式训练 | 生成式推荐日志、checkpoint 与对比表 |
 | Week 7 | 完整模型与物品频次 | 冷启动 / 长尾实验,消融与误差分析 | 最终报告与可复现实验表 |
 
 ## 冻结实验协议
@@ -69,6 +74,9 @@ Toy Story → [37, 128, 5, 0]
 | 文本 | `{title} ({year}) \| {genres}`;`all-MiniLM-L6-v2`;384 维 L2 单位向量 |
 | 量化 | RQ-Kmeans baseline;RQ-VAE 主方案;`L=3`,`K=256`,latent=32 |
 | 语义 ID | 3 层量化码 + 1 位碰撞消歧码,共 4 token;物品词表大小 1,024 |
+| 生成模型 | 随机初始化 T5 式 Encoder–Decoder;11.28M 参数;词表 1,027;历史 20 个物品 |
+| 生成训练 | 目标为 4 个位置 token + EOS;AdamW;BF16;有效 batch 256;pilot 选定 lr=`3e-4`;valid NDCG@10 选模 |
+| 解码 | beam=20,Top-10;动态 Trie 只允许生成目录内且用户未见的物品 |
 
 ## 环境与复现
 
@@ -98,6 +106,20 @@ python scripts/encode_items.py --model /data/LLMs/all-MiniLM-L6-v2 --out item_em
 python scripts/build_semantic_id.py --config config/rqvae_ml1m.yaml --emb item_emb.npy --method rqvae --device cuda:0 --checkpoint saved/rqvae_ml1m.pt --out semantic_ids_rqvae.json
 python scripts/check_prefix_consistency.py --emb item_emb.npy --ids semantic_ids_rqvae.json --text /data/zby/data/ml-1m/processed/item_text.json --outdir results/week3-4-semantic-id
 python scripts/export_semantic.py --ids semantic_ids_rqvae.json --emb item_emb.npy --quantizer_checkpoint saved/rqvae_ml1m.pt --processed /data/zby/data/ml-1m/processed --outdir exported
+
+# Week 5–6 Stage 0–1:冻结接口审计与代码静态检查
+python -m py_compile scripts/generative_common.py scripts/train_generative.py scripts/evaluate_generative.py scripts/eval_baseline_groups.py scripts/summarize_generative.py
+python scripts/train_generative.py --config config/generative_ml1m.yaml --audit_only
+
+# Stage 2:冒烟、断点恢复和小样本过拟合
+python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name smoke --max_steps 20 --eval_steps 10 --max_train_examples 2048 --max_eval_users 128
+python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name smoke --max_steps 30 --eval_steps 10 --max_train_examples 2048 --max_eval_users 128 --resume saved/generative/smoke/last
+python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name overfit256 --lr 1e-3 --max_steps 1000 --eval_steps 200 --max_train_examples 256 --max_eval_users 128
+
+# Stage 3:固定 seed 的两档学习率预实验
+python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name pilot_lr3e-4 --lr 3e-4 --max_steps 5000 --eval_steps 2500 --max_eval_users 1000
+python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name pilot_lr1e-3 --lr 1e-3 --max_steps 5000 --eval_steps 2500 --max_eval_users 1000
+python scripts/summarize_generative.py --results results/week5-6-generative --pilot_only
 ```
 
 MovieLens 1M 可从 [GroupLens](https://grouplens.org/datasets/movielens/1m/) 获取.原始数据,embedding 和 checkpoint 不进入 Git;它们的路径,规格和校验信息记录在结果索引中.
@@ -113,7 +135,8 @@ repository/
 ├── requirements.txt
 ├── config/
 │   ├── sasrec_ml1m.yaml
-│   └── rqvae_ml1m.yaml
+│   ├── rqvae_ml1m.yaml
+│   └── generative_ml1m.yaml
 ├── scripts/
 │   ├── preprocess.py
 │   ├── stats.py
@@ -125,7 +148,12 @@ repository/
 │   ├── build_semantic_id.py
 │   ├── analyze_codebook.py
 │   ├── check_prefix_consistency.py
-│   └── export_semantic.py
+│   ├── export_semantic.py
+│   ├── generative_common.py
+│   ├── train_generative.py
+│   ├── evaluate_generative.py
+│   ├── eval_baseline_groups.py
+│   └── summarize_generative.py
 ├── results/
 │   ├── README.md
 │   ├── week1-data-stats/
@@ -143,53 +171,72 @@ repository/
 │   │   ├── sasrec_s42_patch_test.log
 │   │   ├── sasrec_s43.log
 │   │   ├── sasrec_s44.log
-│   │   └── gru4rec_s42.log
-│   └── week3-4-semantic-id/
-│       ├── residual_quantization.md
-│       ├── grid_search.md
-│       ├── codebook_report.md
-│       ├── codebook_stats.json
-│       ├── semantic_ids_kmeans.json
-│       ├── semantic_ids_rqvae.json
-│       ├── rq_kmeans.log
-│       ├── rqvae_train.log
-│       ├── grid_search.log
-│       ├── prefix_consistency.md
-│       ├── prefix_samples.csv
-│       ├── frozen/
-│       │   ├── semantic_ids.json
-│       │   ├── train.semantic.jsonl
-│       │   ├── valid.semantic.jsonl
-│       │   ├── test.semantic.jsonl
-│       │   ├── token_vocab.json
-│       │   └── meta.json
-│       ├── figs/
-│       │   ├── util_kmeans_level0.png
-│       │   ├── util_kmeans_level1.png
-│       │   ├── util_kmeans_level2.png
-│       │   ├── util_rqvae_level0.png
-│       │   ├── util_rqvae_level1.png
-│       │   └── util_rqvae_level2.png
-│       └── grid/
-│           ├── semantic_ids_kmeans_L2_K64.json
-│           ├── semantic_ids_kmeans_L2_K256.json
-│           ├── semantic_ids_kmeans_L3_K64.json
-│           ├── semantic_ids_kmeans_L3_K256.json
-│           ├── semantic_ids_rqvae_L2_K64.json
-│           ├── semantic_ids_rqvae_L2_K256.json
-│           ├── semantic_ids_rqvae_L3_K64.json
-│           ├── semantic_ids_rqvae_L3_K256.json
-│           ├── semantic_ids_rqvae_L4_K256_no_dedup.json
-│           └── logs/
-│               ├── kmeans_L2_K64.log
-│               ├── kmeans_L2_K256.log
-│               ├── kmeans_L3_K64.log
-│               ├── kmeans_L3_K256.log
-│               ├── rqvae_L2_K64.log
-│               ├── rqvae_L2_K256.log
-│               ├── rqvae_L3_K64.log
-│               ├── rqvae_L3_K256.log
-│               └── rqvae_L4_K256_no_dedup.log
+│   │   ├── gru4rec_s42.log
+│   │   ├── gru4rec_s43.log
+│   │   └── gru4rec_s44.log
+│   ├── week3-4-semantic-id/
+│   │   ├── residual_quantization.md
+│   │   ├── grid_search.md
+│   │   ├── codebook_report.md
+│   │   ├── codebook_stats.json
+│   │   ├── semantic_ids_kmeans.json
+│   │   ├── semantic_ids_rqvae.json
+│   │   ├── rq_kmeans.log
+│   │   ├── rqvae_train.log
+│   │   ├── grid_search.log
+│   │   ├── prefix_consistency.md
+│   │   ├── prefix_samples.csv
+│   │   ├── frozen/
+│   │   │   ├── semantic_ids.json
+│   │   │   ├── train.semantic.jsonl
+│   │   │   ├── valid.semantic.jsonl
+│   │   │   ├── test.semantic.jsonl
+│   │   │   ├── token_vocab.json
+│   │   │   └── meta.json
+│   │   ├── figs/
+│   │   │   ├── util_kmeans_level0.png
+│   │   │   ├── util_kmeans_level1.png
+│   │   │   ├── util_kmeans_level2.png
+│   │   │   ├── util_rqvae_level0.png
+│   │   │   ├── util_rqvae_level1.png
+│   │   │   └── util_rqvae_level2.png
+│   │   └── grid/
+│   │       ├── semantic_ids_kmeans_L2_K64.json
+│   │       ├── semantic_ids_kmeans_L2_K256.json
+│   │       ├── semantic_ids_kmeans_L3_K64.json
+│   │       ├── semantic_ids_kmeans_L3_K256.json
+│   │       ├── semantic_ids_rqvae_L2_K64.json
+│   │       ├── semantic_ids_rqvae_L2_K256.json
+│   │       ├── semantic_ids_rqvae_L3_K64.json
+│   │       ├── semantic_ids_rqvae_L3_K256.json
+│   │       ├── semantic_ids_rqvae_L4_K256_no_dedup.json
+│   │       └── logs/
+│   │           ├── kmeans_L2_K64.log
+│   │           ├── kmeans_L2_K256.log
+│   │           ├── kmeans_L3_K64.log
+│   │           ├── kmeans_L3_K256.log
+│   │           ├── rqvae_L2_K64.log
+│   │           ├── rqvae_L2_K256.log
+│   │           ├── rqvae_L3_K64.log
+│   │           ├── rqvae_L3_K256.log
+│   │           └── rqvae_L4_K256_no_dedup.log
+│   └── week5-6-generative/
+│       ├── audit.log
+│       ├── stage1_static_checks.log
+│       ├── smoke.log
+│       ├── smoke_history.jsonl
+│       ├── smoke_best_valid_metrics.json
+│       ├── overfit256.log
+│       ├── overfit256_history.jsonl
+│       ├── overfit256_best_valid_metrics.json
+│       ├── pilot_lr3e-4.log
+│       ├── pilot_lr3e-4_history.jsonl
+│       ├── pilot_lr3e-4_best_valid_metrics.json
+│       ├── pilot_lr1e-3.log
+│       ├── pilot_lr1e-3_history.jsonl
+│       ├── pilot_lr1e-3_best_valid_metrics.json
+│       ├── pilot_summary.md
+│       └── stage0-3_report.md
 └── note/
     ├── week0-生成式推荐_三阶段全链路.md
     ├── week1-真实数据实例说明.md
@@ -212,7 +259,8 @@ repository/
 ├── semantic_ids_rqvae.json
 ├── config/
 │   ├── sasrec_ml1m.yaml
-│   └── rqvae_ml1m.yaml
+│   ├── rqvae_ml1m.yaml
+│   └── generative_ml1m.yaml
 ├── scripts/
 │   ├── preprocess.py
 │   ├── stats.py
@@ -224,10 +272,17 @@ repository/
 │   ├── build_semantic_id.py
 │   ├── analyze_codebook.py
 │   ├── check_prefix_consistency.py
-│   └── export_semantic.py
+│   ├── export_semantic.py
+│   ├── generative_common.py
+│   ├── train_generative.py
+│   ├── evaluate_generative.py
+│   ├── eval_baseline_groups.py
+│   └── summarize_generative.py
 ├── log/
 │   ├── GRU4Rec/
-│   │   └── GRU4Rec-ml-1m-Oct-15-2026_09-39-08-c5973e.log
+│   │   ├── GRU4Rec-ml-1m-Oct-15-2026_09-39-08-c5973e.log
+│   │   ├── GRU4Rec-ml-1m-Oct-22-2026_18-42-27-15b898.log
+│   │   └── GRU4Rec-ml-1m-Oct-22-2026_18-51-07-e50419.log
 │   └── SASRec/
 │       ├── SASRec-ml-1m-Sep-28-2026_19-17-25-dbfc42.log
 │       ├── SASRec-ml-1m-Oct-10-2026_15-55-25-dbfc42.log
@@ -239,35 +294,54 @@ repository/
 │   ├── sasrec_s43.log
 │   ├── sasrec_s44.log
 │   ├── gru4rec_s42.log
+│   ├── gru4rec_s43.log
+│   ├── gru4rec_s44.log
 │   ├── rq_kmeans.log
 │   ├── rqvae_train.log
 │   ├── debug/
-│   └── week3-4-semantic-id/
-│       ├── residual_quantization.md
-│       ├── grid_search.md
-│       ├── codebook_report.md
-│       ├── grid_search.log
-│       ├── codebook_stats.json
-│       ├── prefix_consistency.md
-│       ├── prefix_samples.csv
-│       ├── figs/
-│       │   ├── util_kmeans_level0.png
-│       │   ├── util_kmeans_level1.png
-│       │   ├── util_kmeans_level2.png
-│       │   ├── util_rqvae_level0.png
-│       │   ├── util_rqvae_level1.png
-│       │   └── util_rqvae_level2.png
-│       └── grid/
-│           ├── semantic_ids_kmeans_L2_K64.json
-│           ├── semantic_ids_kmeans_L2_K256.json
-│           ├── semantic_ids_kmeans_L3_K64.json
-│           ├── semantic_ids_kmeans_L3_K256.json
-│           ├── semantic_ids_rqvae_L2_K64.json
-│           ├── semantic_ids_rqvae_L2_K256.json
-│           ├── semantic_ids_rqvae_L3_K64.json
-│           ├── semantic_ids_rqvae_L3_K256.json
-│           ├── semantic_ids_rqvae_L4_K256_no_dedup.json
-│           └── logs/（对应 9 组独立日志）
+│   ├── week3-4-semantic-id/
+│   │   ├── residual_quantization.md
+│   │   ├── grid_search.md
+│   │   ├── codebook_report.md
+│   │   ├── grid_search.log
+│   │   ├── codebook_stats.json
+│   │   ├── prefix_consistency.md
+│   │   ├── prefix_samples.csv
+│   │   ├── figs/
+│   │   │   ├── util_kmeans_level0.png
+│   │   │   ├── util_kmeans_level1.png
+│   │   │   ├── util_kmeans_level2.png
+│   │   │   ├── util_rqvae_level0.png
+│   │   │   ├── util_rqvae_level1.png
+│   │   │   └── util_rqvae_level2.png
+│   │   └── grid/
+│   │       ├── semantic_ids_kmeans_L2_K64.json
+│   │       ├── semantic_ids_kmeans_L2_K256.json
+│   │       ├── semantic_ids_kmeans_L3_K64.json
+│   │       ├── semantic_ids_kmeans_L3_K256.json
+│   │       ├── semantic_ids_rqvae_L2_K64.json
+│   │       ├── semantic_ids_rqvae_L2_K256.json
+│   │       ├── semantic_ids_rqvae_L3_K64.json
+│   │       ├── semantic_ids_rqvae_L3_K256.json
+│   │       ├── semantic_ids_rqvae_L4_K256_no_dedup.json
+│   │       └── logs/（对应 9 组独立日志）
+│   └── week5-6-generative/
+│       ├── audit.log
+│       ├── stage1_static_checks.log
+│       ├── smoke.log
+│       ├── smoke_history.jsonl
+│       ├── smoke_best_valid_metrics.json
+│       ├── overfit256.log
+│       ├── overfit256_history.jsonl
+│       ├── overfit256_best_valid_metrics.json
+│       ├── pilot_lr3e-4.log
+│       ├── pilot_lr3e-4_history.jsonl
+│       ├── pilot_lr3e-4_best_valid_metrics.json
+│       ├── pilot_lr1e-3.log
+│       ├── pilot_lr1e-3_history.jsonl
+│       ├── pilot_lr1e-3_best_valid_metrics.json
+│       ├── pilot_summary.md
+│       └── stage0-3_report.md
 ├── exported/
 │   ├── semantic_ids.json
 │   ├── train.semantic.jsonl
@@ -280,8 +354,15 @@ repository/
 │   ├── SASRec-Oct-15-2026_13-00-52.pth
 │   ├── SASRec-Oct-15-2026_17-48-40.pth
 │   ├── GRU4Rec-Oct-15-2026_09-39-37.pth
+│   ├── GRU4Rec-Oct-22-2026_18-42-50.pth
+│   ├── GRU4Rec-Oct-22-2026_18-51-36.pth
 │   ├── rq_kmeans_ml1m.npz
-│   └── rqvae_ml1m.pt
+│   ├── rqvae_ml1m.pt
+│   └── generative/
+│       ├── smoke/{best,last}/
+│       ├── overfit256/{best,last}/
+│       ├── pilot_lr3e-4/{best,last}/
+│       └── pilot_lr1e-3/{best,last}/
 └── log_tensorboard/
     ├── SASRec-ml-1m-Sep-28-2026_19-17-25-dbfc42/
     │   ├── events.out.tfevents.1790594284.amax510.2957982.0
@@ -294,9 +375,15 @@ repository/
     ├── SASRec-ml-1m-Oct-15-2026_17-48-15-37672d/
     │   ├── events.out.tfevents.1792057720.amax510.2509236.0
     │   └── 1792069370.1500692/events.out.tfevents.1792069370.amax510.2509236.1
-    └── GRU4Rec-ml-1m-Oct-15-2026_09-39-08-c5973e/
-        ├── events.out.tfevents.1792028377.amax510.1040029.0
-        └── 1792031687.831251/events.out.tfevents.1792031687.amax510.1040029.1
+    ├── GRU4Rec-ml-1m-Oct-15-2026_09-39-08-c5973e/
+    │   ├── events.out.tfevents.1792028377.amax510.1040029.0
+    │   └── 1792031687.831251/events.out.tfevents.1792031687.amax510.1040029.1
+    ├── GRU4Rec-ml-1m-Oct-22-2026_18-42-27-15b898/
+    │   ├── events.out.tfevents.1792665770.amax510.962347.0
+    │   └── 1792666916.7895434/events.out.tfevents.1792666916.amax510.962347.1
+    └── GRU4Rec-ml-1m-Oct-22-2026_18-51-07-e50419/
+        ├── events.out.tfevents.1792666296.amax510.1007330.0
+        └── 1792667590.097698/events.out.tfevents.1792667590.amax510.1007330.1
 ```
 
 #### 训练产物为什么叫这些名字
@@ -353,4 +440,4 @@ repository/
 
 ## 说明
 
-这是一个仍在推进的科研仓库:已完成内容给出真实日志和可复现数字,尚未运行的实验明确标为待完成,不用计划值冒充结果.
+这是一个持续推进的科研仓库:已完成内容均提供真实日志和可复现数字,未运行实验明确标记为待完成,计划值不作为实验结果展示.

@@ -7,7 +7,7 @@
 | Week 1 | `week1-data-stats/`；预处理数据位于服务器 `/data/zby/data/ml-1m/processed/` | ✅ 完成 |
 | Week 2 | `week2-sasrec-baseline/`；checkpoint 位于服务器 `~/genrec/saved/` | ✅ 完成 |
 | Week 3–4 | 文本编码、残差量化、码本统计、前缀验证与接口冻结 | ✅ 完成 |
-| Week 5–6 | 生成式模型训练日志与对比表 | ⏳ 未开始 |
+| Week 5–6 | `week5-6-generative/`；Stage 0–3 审计、链路验证与学习率预实验 | 🟡 进行中 |
 | Week 7 | 冷启动 / 长尾实验、消融与最终报告 | ⏳ 未开始 |
 
 约定：
@@ -107,7 +107,7 @@ userID:token    itemID:token    timestamp:float
 
 ### 测试集结果
 
-评测为 3,416 物品全量排序。SASRec 的标准差使用 `numpy.std(ddof=0)`。
+评测为 3,416 物品全量排序。均值与标准差按三个 seed 计算，标准差使用 `numpy.std(ddof=0)`。
 
 | 模型 | Seed | 总 epoch | Best epoch | Recall@5 | Recall@10 | NDCG@5 | NDCG@10 |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -116,6 +116,9 @@ userID:token    itemID:token    timestamp:float
 | SASRec | 44 | 59 | 47 | 0.1526 | 0.2250 | 0.0958 | 0.1191 |
 | **SASRec** | **均值 ± std** | — | — | **0.1486 ± 0.0054** | **0.2264 ± 0.0056** | **0.0937 ± 0.0037** | **0.1187 ± 0.0036** |
 | **GRU4Rec** | **42** | **67** | **55** | **0.1861** | **0.2657** | **0.1261** | **0.1517** |
+| GRU4Rec | 43 | 71 | 59 | 0.1836 | 0.2624 | 0.1258 | 0.1512 |
+| GRU4Rec | 44 | 80 | 68 | 0.1796 | 0.2613 | 0.1235 | 0.1498 |
+| **GRU4Rec** | **均值 ± std** | — | — | **0.1831 ± 0.0027** | **0.2631 ± 0.0019** | **0.1251 ± 0.0012** | **0.1509 ± 0.0008** |
 
 独立汇总表见 [`baseline_table.md`](week2-sasrec-baseline/baseline_table.md)。
 
@@ -129,6 +132,8 @@ userID:token    itemID:token    timestamp:float
 | `sasrec_s43.log` | `log/SASRec/SASRec-ml-1m-Oct-15-2026_13-00-11-6e006f.log` | seed 43 完整训练与测试日志 |
 | `sasrec_s44.log` | `log/SASRec/SASRec-ml-1m-Oct-15-2026_17-48-15-37672d.log` | seed 44 完整训练与测试日志 |
 | `gru4rec_s42.log` | `log/GRU4Rec/GRU4Rec-ml-1m-Oct-15-2026_09-39-08-c5973e.log` | GRU4Rec seed 42 完整训练与测试日志 |
+| `gru4rec_s43.log` | `log/GRU4Rec/GRU4Rec-ml-1m-Oct-22-2026_18-42-27-15b898.log` | GRU4Rec seed 43 完整训练与测试日志 |
+| `gru4rec_s44.log` | `log/GRU4Rec/GRU4Rec-ml-1m-Oct-22-2026_18-51-07-e50419.log` | GRU4Rec seed 44 完整训练与测试日志 |
 
 seed 42 的 `eval_only.py` 结果与 best epoch 的 valid 指标逐位一致，验证了 checkpoint 读取与评测链路。
 
@@ -136,9 +141,9 @@ seed 42 的 `eval_only.py` 结果与 best epoch 的 valid 指标逐位一致，�
 
 | 位置 | 当前文件 | 原因 |
 |---|---|---|
-| `~/genrec/saved/` | 3 个 SASRec `.pth` + 1 个 GRU4Rec `.pth` | 二进制 checkpoint；用于复评与断点恢复 |
-| `~/genrec/results/` | `sasrec_s42.log`、`sasrec_s42_patch_test.log`、`sasrec_s43.log`、`sasrec_s44.log`、`gru4rec_s42.log` | `tee` 捕获的原始 stdout / stderr，含 tqdm 控制字符 |
-| `~/genrec/log_tensorboard/` | 4 个训练 run + 1 个 eval-only run(seed = 42时补跑的test) | TensorBoard 二进制事件 |
+| `~/genrec/saved/` | 3 个 SASRec `.pth` + 3 个 GRU4Rec `.pth` | 二进制 checkpoint；用于复评与断点恢复 |
+| `~/genrec/results/` | SASRec / GRU4Rec 三种子日志 | `tee` 捕获的原始 stdout / stderr，含 tqdm 控制字符 |
+| `~/genrec/log_tensorboard/` | SASRec / GRU4Rec 的训练与复评事件 | TensorBoard 二进制事件 |
 
 仓库只保留 RecBole 自写的干净文本日志；服务器路径和确切文件名见根目录 [`README.md`](../README.md) 的服务器目录树。
 
@@ -216,15 +221,50 @@ RQ-VAE 使用“AE 预训练 → 潜空间残差 K-Means 初始化 → 联合训
 
 二进制量化器、checkpoint 和可重建的 `item_emb.npy` 留在服务器 `~/genrec/`，不进入 Git。
 
-## Week 5–7
+## Week 5–6：生成式推荐
 
-尚无实验文件。后续结果将继续按周放入：
+Stage 0–3 依次完成冻结接口复核、训练代码审计、冒烟/恢复/过拟合测试和两档学习率预实验；三种子正式训练及最终 test 属于后续 Stage 4–7，不在本节提前报告。
 
-```text
-results/
-├── week5-6-generative-model/
-└── week7-ablation-and-final/
-```
+### 固定设置
+
+| 项 | 设置 |
+|---|---|
+| 输入 / 目标 | 最近 20 个历史物品的四位语义 ID / 下一物品四位 ID + EOS |
+| 模型 | 随机初始化 T5 式 Encoder–Decoder，11,281,664 参数 |
+| 词表 | 1,027：PAD、BOS、EOS + 4 × 256 个位置 token |
+| 样本 | 981,491 个在线前缀训练样本；valid/test 各 6,040 用户 |
+| 解码 | beam=20，Top-10；动态 Trie 屏蔽目录外路径和完整历史已见物品 |
+| 学习率预实验 | seed 42；`3e-4` / `1e-3`；各 5,000 step；前 1,000 个 valid 用户 |
+
+### Stage 0–2 验证结论
+
+- 冻结接口数量、哈希、四位 ID 唯一性与可逆映射均通过审计。
+- 20-step 冒烟能完成训练、约束生成、指标计算并写出 `best/last`；从 `last` 成功恢复 step 20 并继续至 step 30。
+- 256 样本过拟合试验的 loss 从 step 100 的 `3.957463` 降至 step 1000 的 `0.001613`，证明标签位移、padding、反向传播和优化链路可学习。
+- 所有已运行的约束评测均为 `catalog_invalid_rate=0`、`seen_repeat_rate=0`、`short_list_rate=0`。
+
+### Stage 3 学习率选择
+
+| LR | Step 2500 valid NDCG@10 | Step 5000 valid NDCG@10 | 结论 |
+|---:|---:|---:|---|
+| **3e-4** | **0.028399** | **0.056145** | **采用** |
+| 1e-3 | 0.023674 | 0.039042 | 不采用 |
+
+两组均使用 seed 42、完全相同的数据顺序和固定前 1,000 个 valid 用户，未读取 test。最终差值 `0.017103 > 0.002`，因此按预注册规则选择 `3e-4` 进入 Stage 4；这组 pilot 不是最终主实验结果。
+
+### 仓库内文件
+
+| 文件 | 内容 |
+|---|---|
+| `audit.log` | 冻结接口、样本数、词表、分组和模型参数审计 |
+| `stage1_static_checks.log` | 编译、命令行入口和依赖导入检查 |
+| `smoke.log` / `smoke_history.jsonl` | 20-step 冒烟及从 step 20 恢复到 step 30 的证据 |
+| `overfit256.log` / `overfit256_history.jsonl` | 256 样本过拟合测试 |
+| `pilot_lr3e-4.*` / `pilot_lr1e-3.*` | 两档学习率的训练日志、验证历史与 best-valid 指标 |
+| `pilot_summary.md` | 按预注册规则生成的学习率选择结论 |
+| `stage0-3_report.md` | 生成式训练管线验证与学习率预实验报告 |
+
+大模型 checkpoint 只保留在服务器 `~/genrec/saved/generative/`，不进入 Git。Week 7 结果将放入 `results/week7-ablation-and-final/`。
 
 ## 复现入口
 
@@ -241,3 +281,7 @@ results/
 | 分析码本 | `python scripts/analyze_codebook.py --kmeans semantic_ids_kmeans.json --rqvae semantic_ids_rqvae.json --outdir results/week3-4-semantic-id` |
 | 验证前缀语义 | `python scripts/check_prefix_consistency.py --emb item_emb.npy --ids semantic_ids_rqvae.json --text /data/zby/data/ml-1m/processed/item_text.json --outdir results/week3-4-semantic-id` |
 | 冻结生成模型接口 | `python scripts/export_semantic.py --ids semantic_ids_rqvae.json --emb item_emb.npy --quantizer_checkpoint saved/rqvae_ml1m.pt --processed /data/zby/data/ml-1m/processed --outdir exported` |
+| 审计生成模型接口 | `python scripts/train_generative.py --config config/generative_ml1m.yaml --audit_only` |
+| 训练链路冒烟 | `python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name smoke --max_steps 20 --eval_steps 10 --max_train_examples 2048 --max_eval_users 128` |
+| 学习率预实验 | `python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name pilot_lr3e-4 --lr 3e-4 --max_steps 5000 --eval_steps 2500 --max_eval_users 1000` |
+| 汇总学习率 | `python scripts/summarize_generative.py --results results/week5-6-generative --pilot_only` |
