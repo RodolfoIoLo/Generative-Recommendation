@@ -1,0 +1,27 @@
+{
+  "items": 3416,
+  "users": {
+    "train": 6040,
+    "valid": 6040,
+    "test": 6040
+  },
+  "train_interactions": 987531,
+  "train_examples": 981491,
+  "vocab_size": 1027,
+  "max_input_tokens": 81,
+  "parameters": 11281664,
+  "groups": {
+    "strict_cold": 0,
+    "few_shot_le20": 413,
+    "tail_bottom80": 2733,
+    "head_top20": 683
+  },
+  "strict_cold_targets": {
+    "valid": 0,
+    "test": 0
+  },
+  "train_frequency_min_max": [
+    4,
+    3377
+  ]
+}
