@@ -1,0 +1,84 @@
+{
+  "items": 3416,
+  "users": {
+    "train": 6040,
+    "valid": 6040,
+    "test": 6040
+  },
+  "train_interactions": 987531,
+  "train_examples": 981491,
+  "vocab_size": 1027,
+  "max_input_tokens": 81,
+  "parameters": 11281664,
+  "groups": {
+    "strict_cold": 0,
+    "few_shot_le20": 413,
+    "tail_bottom80": 2733,
+    "head_top20": 683
+  },
+  "strict_cold_targets": {
+    "valid": 0,
+    "test": 0
+  },
+  "train_frequency_min_max": [
+    4,
+    3377
+  ]
+}
+{"run_name": "pilot_lr1e-3", "seed": 42, "git": "uncommitted", "config": {"paths": {"frozen_dir": "exported", "checkpoint_root": "saved/generative", "result_root": "results/week5-6-generative"}, "model": {"vocab_size": 1027, "d_model": 256, "d_ff": 1024, "num_layers": 6, "num_decoder_layers": 6, "num_heads": 8, "d_kv": 32, "dropout_rate": 0.1, "pad_token_id": 0, "decoder_start_token_id": 1, "eos_token_id": 2}, "data": {"max_history_items": 20, "expected_items": 3416, "expected_users": 6040, "expected_train_examples": 981491}, "train": {"seed": 42, "batch_size": 64, "eval_batch_size": 16, "gradient_accumulation": 4, "max_steps": 5000, "eval_steps": 2500, "logging_steps": 100, "lr": 0.001, "warmup_steps": 1500, "weight_decay": 0.01, "max_grad_norm": 1.0, "patience": 3, "num_workers": 2, "bf16": true}, "decode": {"num_beams": 20, "topk": 10, "max_new_tokens": 5}}, "train_examples": 981491, "valid_users": 1000}
+{"type": "train", "step": 100, "loss": 5.137543914318084, "lr": 6.666666666666667e-05}
+{"type": "train", "step": 200, "loss": 3.9092989313602446, "lr": 0.00013333333333333334}
+{"type": "train", "step": 300, "loss": 3.414923081994057, "lr": 0.0002}
+{"type": "train", "step": 400, "loss": 2.98629146695137, "lr": 0.0002666666666666667}
+{"type": "train", "step": 500, "loss": 2.6307800608873366, "lr": 0.0003333333333333333}
+{"type": "train", "step": 600, "loss": 2.3590470027923582, "lr": 0.0004}
+{"type": "train", "step": 700, "loss": 2.1478432774543763, "lr": 0.00046666666666666666}
+{"type": "train", "step": 800, "loss": 2.009737229645252, "lr": 0.0005333333333333334}
+{"type": "train", "step": 900, "loss": 1.8972480607032776, "lr": 0.0006}
+{"type": "train", "step": 1000, "loss": 1.8267448750138282, "lr": 0.0006666666666666666}
+{"type": "train", "step": 1100, "loss": 1.7763760641217232, "lr": 0.0007333333333333333}
+{"type": "train", "step": 1200, "loss": 1.7362133643031121, "lr": 0.0008}
+{"type": "train", "step": 1300, "loss": 1.721958290040493, "lr": 0.0008666666666666667}
+{"type": "train", "step": 1400, "loss": 1.7071748247742653, "lr": 0.0009333333333333333}
+{"type": "train", "step": 1500, "loss": 1.6902533051371575, "lr": 0.001}
+{"type": "train", "step": 1600, "loss": 1.6781057381629945, "lr": 0.0009714285714285714}
+{"type": "train", "step": 1700, "loss": 1.6652352213859558, "lr": 0.0009428571428571429}
+{"type": "train", "step": 1800, "loss": 1.6455660057067871, "lr": 0.0009142857142857143}
+{"type": "train", "step": 1900, "loss": 1.634305344223976, "lr": 0.0008857142857142857}
+{"type": "train", "step": 2000, "loss": 1.6233059147000313, "lr": 0.0008571428571428571}
+{"type": "train", "step": 2100, "loss": 1.6051371330022812, "lr": 0.0008285714285714286}
+{"type": "train", "step": 2200, "loss": 1.6003345423936843, "lr": 0.0008}
+{"type": "train", "step": 2300, "loss": 1.591264407634735, "lr": 0.0007714285714285715}
+{"type": "train", "step": 2400, "loss": 1.5885405525565148, "lr": 0.0007428571428571429}
+{"type": "train", "step": 2500, "loss": 1.5966313475370406, "lr": 0.0007142857142857143}
+{"type": "valid", "step": 2500, "mode": "constrained", "n_users": 1000, "metrics": {"all": {"n": 1000, "recall@5": 0.026, "recall@10": 0.045, "ndcg@5": 0.017625019424587093, "ndcg@10": 0.02367419993792457}, "strict_cold": {"n": 0, "recall@5": null, "recall@10": null, "ndcg@5": null, "ndcg@10": null}, "few_shot_le20": {"n": 10, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "tail_bottom80": {"n": 403, "recall@5": 0.007444168734491315, "recall@10": 0.007444168734491315, "ndcg@5": 0.00620347394540943, "ndcg@10": 0.00620347394540943}, "head_top20": {"n": 597, "recall@5": 0.038525963149078725, "recall@10": 0.07035175879396985, "ndcg@5": 0.025335040912206182, "ndcg@10": 0.03546767158781335}}, "diagnostics": {"catalog_invalid_rate": 0.0, "seen_repeat_rate": 0.0, "short_list_rate": 0.0}}
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 16.79it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 28.33it/s]
+{"type": "train", "step": 2600, "loss": 1.5786717769503593, "lr": 0.0006857142857142857}
+{"type": "train", "step": 2700, "loss": 1.5721906059980393, "lr": 0.0006571428571428571}
+{"type": "train", "step": 2800, "loss": 1.5659712660312652, "lr": 0.0006285714285714285}
+{"type": "train", "step": 2900, "loss": 1.5613300079107284, "lr": 0.0006}
+{"type": "train", "step": 3000, "loss": 1.5596292653679849, "lr": 0.0005714285714285714}
+{"type": "train", "step": 3100, "loss": 1.5511874929070473, "lr": 0.0005428571428571428}
+{"type": "train", "step": 3200, "loss": 1.5399406811594962, "lr": 0.0005142857142857142}
+{"type": "train", "step": 3300, "loss": 1.5359815499186515, "lr": 0.0004857142857142857}
+{"type": "train", "step": 3400, "loss": 1.5283711606264114, "lr": 0.00045714285714285713}
+{"type": "train", "step": 3500, "loss": 1.5276269200444221, "lr": 0.00042857142857142855}
+{"type": "train", "step": 3600, "loss": 1.5216274458169936, "lr": 0.0004}
+{"type": "train", "step": 3700, "loss": 1.520065571963787, "lr": 0.00037142857142857143}
+{"type": "train", "step": 3800, "loss": 1.5121776443719863, "lr": 0.00034285714285714285}
+{"type": "train", "step": 3900, "loss": 1.5038850265741348, "lr": 0.00031428571428571427}
+{"type": "train", "step": 4000, "loss": 1.5028220283985139, "lr": 0.0002857142857142857}
+{"type": "train", "step": 4100, "loss": 1.5011644276976586, "lr": 0.0002571428571428571}
+{"type": "train", "step": 4200, "loss": 1.4939634013175964, "lr": 0.00022857142857142857}
+{"type": "train", "step": 4300, "loss": 1.4866095572710036, "lr": 0.0002}
+{"type": "train", "step": 4400, "loss": 1.4851763996481895, "lr": 0.00017142857142857143}
+{"type": "train", "step": 4500, "loss": 1.4785804092884063, "lr": 0.00014285714285714284}
+{"type": "train", "step": 4600, "loss": 1.479753505587578, "lr": 0.00011428571428571428}
+{"type": "train", "step": 4700, "loss": 1.4749706608057023, "lr": 8.571428571428571e-05}
+{"type": "train", "step": 4800, "loss": 1.4712010487914085, "lr": 5.714285714285714e-05}
+{"type": "train", "step": 4900, "loss": 1.466666134595871, "lr": 2.857142857142857e-05}
+{"type": "train", "step": 5000, "loss": 1.4640201106667519, "lr": 0.0}
+{"type": "valid", "step": 5000, "mode": "constrained", "n_users": 1000, "metrics": {"all": {"n": 1000, "recall@5": 0.047, "recall@10": 0.074, "ndcg@5": 0.03027553854026194, "ndcg@10": 0.039041505055741464}, "strict_cold": {"n": 0, "recall@5": null, "recall@10": null, "ndcg@5": null, "ndcg@10": null}, "few_shot_le20": {"n": 10, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "tail_bottom80": {"n": 403, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "head_top20": {"n": 597, "recall@5": 0.07872696817420435, "recall@10": 0.12395309882747069, "ndcg@5": 0.05071279487481062, "ndcg@10": 0.06539615587226376}}, "diagnostics": {"catalog_invalid_rate": 0.0, "seen_repeat_rate": 0.0, "short_list_rate": 0.0}}
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 14.15it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 25.01it/s]

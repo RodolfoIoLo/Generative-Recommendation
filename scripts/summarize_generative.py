@@ -62,18 +62,18 @@ def run_pilot(result_dir):
     scores = {lr: score for lr, _, score in records}
     if abs(scores["3e-4"] - scores["1e-3"]) < 0.002:
         selected = "3e-4"
-        reason = "difference < 0.002; selected the more conservative learning rate"
+        reason = "差值小于 0.002，采用更保守的学习率"
     else:
         selected = max(scores, key=scores.get)
-        reason = "selected the higher final-step validation NDCG@10"
+        reason = "采用最终验证集 NDCG@10 更高的学习率"
     lines = [
-        "# Learning-rate pilot",
+        "# 学习率预实验",
         "",
-        "| lr | final step | valid NDCG@10 |",
+        "| 学习率 | 最终 step | 验证集 NDCG@10 |",
         "|---:|---:|---:|",
     ]
     lines.extend(f"| {lr} | {step} | {score:.6f} |" for lr, step, score in records)
-    lines.extend(["", f"Selected: `{selected}` — {reason}.", ""])
+    lines.extend(["", f"结论：选择 `{selected}` — {reason}。", ""])
     (result_dir / "pilot_summary.md").write_text("\n".join(lines), encoding="utf-8")
     print("\n".join(lines))
 

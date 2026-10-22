@@ -1,0 +1,47 @@
+{
+  "step": 5000,
+  "mode": "constrained",
+  "n_users": 1000,
+  "metrics": {
+    "all": {
+      "n": 1000,
+      "recall@5": 0.047,
+      "recall@10": 0.074,
+      "ndcg@5": 0.03027553854026194,
+      "ndcg@10": 0.039041505055741464
+    },
+    "strict_cold": {
+      "n": 0,
+      "recall@5": null,
+      "recall@10": null,
+      "ndcg@5": null,
+      "ndcg@10": null
+    },
+    "few_shot_le20": {
+      "n": 10,
+      "recall@5": 0.0,
+      "recall@10": 0.0,
+      "ndcg@5": 0.0,
+      "ndcg@10": 0.0
+    },
+    "tail_bottom80": {
+      "n": 403,
+      "recall@5": 0.0,
+      "recall@10": 0.0,
+      "ndcg@5": 0.0,
+      "ndcg@10": 0.0
+    },
+    "head_top20": {
+      "n": 597,
+      "recall@5": 0.07872696817420435,
+      "recall@10": 0.12395309882747069,
+      "ndcg@5": 0.05071279487481062,
+      "ndcg@10": 0.06539615587226376
+    }
+  },
+  "diagnostics": {
+    "catalog_invalid_rate": 0.0,
+    "seen_repeat_rate": 0.0,
+    "short_list_rate": 0.0
+  }
+}

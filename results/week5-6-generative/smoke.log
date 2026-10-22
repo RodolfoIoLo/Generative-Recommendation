@@ -1,0 +1,66 @@
+{
+  "items": 3416,
+  "users": {
+    "train": 6040,
+    "valid": 6040,
+    "test": 6040
+  },
+  "train_interactions": 987531,
+  "train_examples": 981491,
+  "vocab_size": 1027,
+  "max_input_tokens": 81,
+  "parameters": 11281664,
+  "groups": {
+    "strict_cold": 0,
+    "few_shot_le20": 413,
+    "tail_bottom80": 2733,
+    "head_top20": 683
+  },
+  "strict_cold_targets": {
+    "valid": 0,
+    "test": 0
+  },
+  "train_frequency_min_max": [
+    4,
+    3377
+  ]
+}
+{"run_name": "smoke", "seed": 42, "git": "uncommitted", "config": {"paths": {"frozen_dir": "exported", "checkpoint_root": "saved/generative", "result_root": "results/week5-6-generative"}, "model": {"vocab_size": 1027, "d_model": 256, "d_ff": 1024, "num_layers": 6, "num_decoder_layers": 6, "num_heads": 8, "d_kv": 32, "dropout_rate": 0.1, "pad_token_id": 0, "decoder_start_token_id": 1, "eos_token_id": 2}, "data": {"max_history_items": 20, "expected_items": 3416, "expected_users": 6040, "expected_train_examples": 981491}, "train": {"seed": 42, "batch_size": 64, "eval_batch_size": 16, "gradient_accumulation": 4, "max_steps": 20, "eval_steps": 10, "logging_steps": 100, "lr": 0.0003, "warmup_steps": 1500, "weight_decay": 0.01, "max_grad_norm": 1.0, "patience": 3, "num_workers": 2, "bf16": true}, "decode": {"num_beams": 20, "topk": 10, "max_new_tokens": 5}}, "train_examples": 2048, "valid_users": 128}
+{"type": "valid", "step": 10, "mode": "constrained", "n_users": 128, "metrics": {"all": {"n": 128, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "strict_cold": {"n": 0, "recall@5": null, "recall@10": null, "ndcg@5": null, "ndcg@10": null}, "few_shot_le20": {"n": 2, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "tail_bottom80": {"n": 54, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "head_top20": {"n": 74, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}}, "diagnostics": {"catalog_invalid_rate": 0.0, "seen_repeat_rate": 0.0, "short_list_rate": 0.0}}
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 16.73it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 17.08it/s]
+{"type": "valid", "step": 20, "mode": "constrained", "n_users": 128, "metrics": {"all": {"n": 128, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "strict_cold": {"n": 0, "recall@5": null, "recall@10": null, "ndcg@5": null, "ndcg@10": null}, "few_shot_le20": {"n": 2, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "tail_bottom80": {"n": 54, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "head_top20": {"n": 74, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}}, "diagnostics": {"catalog_invalid_rate": 0.0, "seen_repeat_rate": 0.0, "short_list_rate": 0.0}}
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 12.08it/s]
+Loading weights:   0%|          | 0/131 [00:00<?, ?it/s]Loading weights: 100%|██████████| 131/131 [00:00<00:00, 5811.01it/s]
+{
+  "items": 3416,
+  "users": {
+    "train": 6040,
+    "valid": 6040,
+    "test": 6040
+  },
+  "train_interactions": 987531,
+  "train_examples": 981491,
+  "vocab_size": 1027,
+  "max_input_tokens": 81,
+  "parameters": 11281664,
+  "groups": {
+    "strict_cold": 0,
+    "few_shot_le20": 413,
+    "tail_bottom80": 2733,
+    "head_top20": 683
+  },
+  "strict_cold_targets": {
+    "valid": 0,
+    "test": 0
+  },
+  "train_frequency_min_max": [
+    4,
+    3377
+  ]
+}
+resumed from optimizer step 20
+{"run_name": "smoke", "seed": 42, "git": "uncommitted", "config": {"paths": {"frozen_dir": "exported", "checkpoint_root": "saved/generative", "result_root": "results/week5-6-generative"}, "model": {"vocab_size": 1027, "d_model": 256, "d_ff": 1024, "num_layers": 6, "num_decoder_layers": 6, "num_heads": 8, "d_kv": 32, "dropout_rate": 0.1, "pad_token_id": 0, "decoder_start_token_id": 1, "eos_token_id": 2}, "data": {"max_history_items": 20, "expected_items": 3416, "expected_users": 6040, "expected_train_examples": 981491}, "train": {"seed": 42, "batch_size": 64, "eval_batch_size": 16, "gradient_accumulation": 4, "max_steps": 30, "eval_steps": 10, "logging_steps": 100, "lr": 0.0003, "warmup_steps": 1500, "weight_decay": 0.01, "max_grad_norm": 1.0, "patience": 3, "num_workers": 2, "bf16": true}, "decode": {"num_beams": 20, "topk": 10, "max_new_tokens": 5}}, "train_examples": 2048, "valid_users": 128}
+{"type": "valid", "step": 30, "mode": "constrained", "n_users": 128, "metrics": {"all": {"n": 128, "recall@5": 0.0078125, "recall@10": 0.015625, "ndcg@5": 0.0078125, "ndcg@10": 0.010164296841124854}, "strict_cold": {"n": 0, "recall@5": null, "recall@10": null, "ndcg@5": null, "ndcg@10": null}, "few_shot_le20": {"n": 2, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "tail_bottom80": {"n": 54, "recall@5": 0.0, "recall@10": 0.0, "ndcg@5": 0.0, "ndcg@10": 0.0}, "head_top20": {"n": 74, "recall@5": 0.013513513513513514, "recall@10": 0.02702702702702703, "ndcg@5": 0.013513513513513514, "ndcg@10": 0.01758148642789164}}, "diagnostics": {"catalog_invalid_rate": 0.0, "seen_repeat_rate": 0.0, "short_list_rate": 0.0}}
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 11.25it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 19.76it/s]

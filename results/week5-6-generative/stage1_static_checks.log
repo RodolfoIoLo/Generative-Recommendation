@@ -1,0 +1,4 @@
+static_checks=PASS
+ python_and_imports=PASS 
+ torch= 2.14.0+cu126
+ transformers= 5.19.0
