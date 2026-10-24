@@ -4,7 +4,7 @@
 用法:
     python scripts/check_prefix_consistency.py \
       --emb item_emb.npy --ids semantic_ids_rqvae.json \
-      --n_boot 1000 --outdir results/week3-4-semantic-id
+      --n_boot 1000 --outdir results/week3-4-semantic-id/04-prefix-validation
 """
 import argparse
 import csv
@@ -63,7 +63,10 @@ def main():
     ap.add_argument("--n_boot", type=int, default=1000)
     ap.add_argument("--max_pairs", type=int, default=20000,
                     help="算随机基线时最多用多少对(组太大时封顶,避免跑几十分钟)")
-    ap.add_argument("--outdir", default="results/week3-4-semantic-id")
+    ap.add_argument(
+        "--outdir",
+        default="results/week3-4-semantic-id/04-prefix-validation",
+    )
     args = ap.parse_args()
 
     E = normed(np.load(args.emb).astype(np.float32))

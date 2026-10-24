@@ -4,7 +4,7 @@
 用法:
     python scripts/analyze_codebook.py \
       --kmeans semantic_ids_kmeans.json --rqvae semantic_ids_rqvae.json \
-      --outdir results/week3-4-semantic-id
+      --outdir results/week3-4-semantic-id/02-codebook-analysis
 """
 import argparse
 import json
@@ -61,7 +61,7 @@ def plot_hist(codes, outdir, tag, codebook_size, has_dedup=True):
         ax.set_ylabel("number of codewords (log)")
         ax.set_title(f"{tag} level {l}  (avg {n/codebook_size:.1f} items/codeword)")
         ax.grid(alpha=0.3)
-        path = os.path.join(outdir, "figs", f"util_{tag}_level{l}.png")
+        path = os.path.join(outdir, "figures", f"util_{tag}_level{l}.png")
         os.makedirs(os.path.dirname(path), exist_ok=True)
         fig.tight_layout()
         fig.savefig(path, dpi=150)
@@ -76,7 +76,10 @@ def main():
     ap.add_argument("--codebook_size", type=int, default=256)
     ap.add_argument("--no_dedup", action="store_true",
                     help="语义 ID 末位不是消歧码时加这个(跑备选方案用)")
-    ap.add_argument("--outdir", default="results/week3-4-semantic-id")
+    ap.add_argument(
+        "--outdir",
+        default="results/week3-4-semantic-id/02-codebook-analysis",
+    )
     args = ap.parse_args()
 
     has_dedup = not args.no_dedup

@@ -1,6 +1,6 @@
 # `(L, K)` 网格与冲突消解
 
-> 输入：`item_emb.npy`（3,416 × 384，SHA-256 `162d6d...b77a4`）  
+> 输入：`item_emb.npy`（3,416 × 384，SHA-256 `162d6d...b77a4`）
 > 协议：seed 42；RQ-VAE 先预训练 AE 200 epochs，再联合训练 2,000 epochs；每层码本利用率须不低于 90%。
 
 ## 8 组主网格
@@ -34,5 +34,5 @@
 
 - 9 份 JSON 均覆盖连续物品 ID `0..3415`，码值位于 `[0, K-1]`，形状与设置一致。
 - 8 组主网格追加消歧位后均为 3,416 个唯一 ID；4 层备选不追加消歧位也达到 3,416 个唯一 ID。
-- `grid/` 保存各组 JSON，`grid/logs/` 保存独立日志，`grid_search.log` 保存合并日志。
-- 同一 seed 在不同 GPU 上不保证逐码一致；阶段 3 正式主方案仍以 `semantic_ids_rqvae.json` 及其已复验 checkpoint 为准，本页网格文件用于横向比较。
+- `candidates/` 保存各组 JSON，`logs/` 保存独立日志，`grid_search.log` 保存合并日志。
+- 同一 seed 在不同 GPU 上不保证逐码一致；阶段 3 正式主方案仍以 [`../01-quantization/semantic_ids_rqvae.json`](../01-quantization/semantic_ids_rqvae.json) 及其已复验 checkpoint 为准，本页网格文件用于横向比较。

@@ -58,25 +58,25 @@ RQ-KMeans 虽然每层使用了全部码字，但第三层困惑度只有 14.9�
 | 2 | 0.7116 | 0.2832 | +0.4284 | `[0.4079,0.4498]` | 195 |
 | 3 | 0.8089 | 0.2832 | +0.5257 | `[0.4101,0.6314]` | 5 |
 
-三个深度的差值区间均完全大于 0，说明在当前 MovieLens embedding 上，共享前缀稳定对应更高文本相似度。第三层只有 5 个成对样本，区间较宽，不能据此作总体显著性或因果推断。人工检查记录了 10 组正例和 2 组反例，详见 [`prefix_consistency.md`](prefix_consistency.md)。
+三个深度的差值区间均完全大于 0，说明在当前 MovieLens embedding 上，共享前缀稳定对应更高文本相似度。第三层只有 5 个成对样本，区间较宽，不能据此作总体显著性或因果推断。人工检查记录了 10 组正例和 2 组反例，详见 [`prefix_consistency.md`](../04-prefix-validation/prefix_consistency.md)。
 
 ## 6. 冻结接口
 
 最终物品标识为 `(c₁,c₂,c₃,d)`：前三位来自 RQ-VAE，`d` 是冲突组内序号。第四位不参与码本利用率和困惑度分析，但在生成模型中占独立的 256-token 位置，因此物品 token 数为 `4×256=1024`，加入 `<pad>/<bos>/<eos>` 后总词表为 1,027。
 
-`frozen/` 中包含语义 ID、三个语义序列 split、词表和元数据。独立复验确认：3,416 个四元组全部唯一；码值均在 `0..255`；三个 split 各 6,040 行且逐项转换正确；`meta.json` 中 embedding、checkpoint、语义 ID 和原始 split 的 SHA-256 均可重算一致。
+`../05-frozen-interface/` 中包含语义 ID、三个语义序列 split、词表和元数据。独立复验确认：3,416 个四元组全部唯一；码值均在 `0..255`；三个 split 各 6,040 行且逐项转换正确；`meta.json` 中 embedding、checkpoint、语义 ID 和原始 split 的 SHA-256 均可重算一致。
 
 ## 7. 局限性
 
 - 文本仅包含标题、年份和类型，前缀可能受片名词面或年份影响，不等同于人工电影分类。
 - pair-bootstrap 以物品对为描述单位，共享物品会造成相关性，因此不外推为 MovieLens 之外的严格显著性结论。
 - 第四位是确定性消歧码而非语义码；四层纯语义方案需要保存并复验正式 checkpoint 后才能公平替换。
-- 当前只验证语义结构和接口正确性；它能否提高推荐指标，需要在下一阶段生成式模型中检验。
+- 本阶段只验证语义结构和接口正确性；后续生成实验未显示相对序列基线的指标优势，详见 [`Week 5–6 主实验`](../../week5-6-generative/06-reports/main_results.md)。
 
 ## 8. 产物索引
 
-- 训练与修复过程：[`residual_quantization.md`](residual_quantization.md)
-- 完整网格：[`grid_search.md`](grid_search.md)
-- 前缀验证：[`prefix_consistency.md`](prefix_consistency.md)
+- 训练与修复过程：[`residual_quantization.md`](../01-quantization/residual_quantization.md)
+- 完整网格：[`grid_search.md`](../03-grid-search/grid_search.md)
+- 前缀验证：[`prefix_consistency.md`](../04-prefix-validation/prefix_consistency.md)
 - 机器可读统计：[`codebook_stats.json`](codebook_stats.json)
-- 冻结接口：`frozen/`
+- 冻结接口：[`05-frozen-interface/`](../05-frozen-interface/)
