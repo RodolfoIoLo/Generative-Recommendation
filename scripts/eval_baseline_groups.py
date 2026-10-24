@@ -36,6 +36,10 @@ KNOWN = {
                      "ndcg@5": 0.0958, "ndcg@10": 0.1191},
     ("gru4rec", 42): {"recall@5": 0.1861, "recall@10": 0.2657,
                       "ndcg@5": 0.1261, "ndcg@10": 0.1517},
+    ("gru4rec", 43): {"recall@5": 0.1836, "recall@10": 0.2624,
+                       "ndcg@5": 0.1258, "ndcg@10": 0.1512},
+    ("gru4rec", 44): {"recall@5": 0.1796, "recall@10": 0.2613,
+                       "ndcg@5": 0.1235, "ndcg@10": 0.1498},
 }
 
 
@@ -46,7 +50,10 @@ def parse_args():
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--split", choices=["valid", "test"], default="test")
     parser.add_argument("--frozen_dir", default="exported")
-    parser.add_argument("--result_dir", default="results/week5-6-generative")
+    parser.add_argument(
+        "--result_dir",
+        default="results/week5-6-generative/05-baseline-evaluation",
+    )
     return parser.parse_args()
 
 
@@ -71,7 +78,11 @@ def main():
     loader = valid_data if args.split == "valid" else test_data
     device = config["device"]
     model.eval()
-    rows = []
+    rows, legacy_rows = [], []
+    item_to_inner = {
+        external_int(dataset, dataset.iid_field, inner): inner
+        for inner in range(1, dataset.item_num)
+    }
 
     with torch.inference_mode():
         for batched_data in loader:
@@ -80,18 +91,30 @@ def main():
             scores = model.full_sort_predict(interaction)
             scores = scores.view(-1, dataset.item_num)
             scores[:, 0] = -torch.inf
-            history_rows = history_index[0].to(scores.device)
-            history_items = history_index[1].to(scores.device)
-            scores[history_rows, history_items] = -torch.inf
-            top_items = torch.topk(scores, k=10, dim=1).indices.cpu()
+            legacy_top_items = torch.topk(scores, k=10, dim=1).indices.cpu()
+            user_inner = interaction[dataset.uid_field].detach().cpu().long()
+            batch_users = [
+                external_int(dataset, dataset.uid_field, inner)
+                for inner in user_inner
+            ]
+            # Some RecBole versions return history_index=None when loading a
+            # checkpoint.  Mask from the frozen split instead so valid uses
+            # train history and test uses train+valid history in every run.
+            for row_index, user in enumerate(batch_users):
+                seen_items = [
+                    artifacts.code_item(code)
+                    for code in frozen_by_user[user]["history"]
+                ]
+                seen_inner = [item_to_inner[item] for item in seen_items]
+                scores[row_index, seen_inner] = -torch.inf
+            aligned_top_items = torch.topk(scores, k=10, dim=1).indices.cpu()
 
             target_inner = torch.full((scores.size(0),), -1, dtype=torch.long)
             target_inner[positive_u.cpu().long()] = positive_i.cpu().long()
-            user_inner = interaction[dataset.uid_field].detach().cpu().long()
 
             for row_index in range(scores.size(0)):
                 assert target_inner[row_index] >= 0, "leave-one-out batch must have one target per user"
-                user = external_int(dataset, dataset.uid_field, user_inner[row_index])
+                user = batch_users[row_index]
                 recbole_target = external_int(dataset, dataset.iid_field, target_inner[row_index])
                 frozen = frozen_by_user[user]
                 frozen_target = artifacts.code_item(frozen["target"])
@@ -101,17 +124,28 @@ def main():
                     )
                 ranked = [
                     external_int(dataset, dataset.iid_field, inner)
-                    for inner in top_items[row_index]
+                    for inner in aligned_top_items[row_index]
+                ]
+                legacy_ranked = [
+                    external_int(dataset, dataset.iid_field, inner)
+                    for inner in legacy_top_items[row_index]
                 ]
                 rows.append({
                     "user": user,
                     "target_item": frozen_target,
                     "ranked_items": ranked,
                 })
+                legacy_rows.append({
+                    "user": user,
+                    "target_item": frozen_target,
+                    "ranked_items": legacy_ranked,
+                })
 
     assert len(rows) == len(frozen_rows) == 6040
     assert len({row["user"] for row in rows}) == len(rows)
+    assert len(legacy_rows) == len(rows)
     metrics = aggregate_rows(rows, groups)
+    legacy_metrics = aggregate_rows(legacy_rows, groups)
     output = {
         "model": args.model,
         "seed": args.seed,
@@ -119,12 +153,14 @@ def main():
         "checkpoint": str(Path(args.checkpoint).resolve()),
         "n_users": len(rows),
         "metrics": metrics,
+        "legacy_unmasked_metrics": legacy_metrics,
+        "protocol": "metrics masks the complete frozen history; legacy_unmasked_metrics reproduces the original RecBole sequential evaluation",
     }
 
     expected = KNOWN.get((args.model.lower(), args.seed)) if args.split == "test" else None
     if expected:
         for key, old_value in expected.items():
-            new_value = metrics["all"][key]
+            new_value = legacy_metrics["all"][key]
             if abs(new_value - old_value) > 1e-4:
                 raise AssertionError(
                     f"old-log mismatch {key}: recomputed={new_value:.6f}, old={old_value:.4f}"

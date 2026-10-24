@@ -31,6 +31,7 @@ def parse_args():
     )
     parser.add_argument("--max_users", type=int)
     parser.add_argument("--save_predictions", action="store_true")
+    parser.add_argument("--result_dir")
     return parser.parse_args()
 
 
@@ -61,7 +62,10 @@ def main():
     model = T5ForConditionalGeneration.from_pretrained(args.checkpoint).to(device)
     model.eval()
 
-    result_dir = Path(cfg["paths"]["result_root"])
+    result_dir = Path(
+        args.result_dir
+        or cfg["paths"].get("evaluation_result_dir", cfg["paths"]["result_root"])
+    )
     result_dir.mkdir(parents=True, exist_ok=True)
     modes = ["unconstrained", "constrained"] if args.mode == "both" else [args.mode]
     for mode in modes:

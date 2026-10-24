@@ -42,6 +42,7 @@ def parse_args():
     parser.add_argument("--max_train_examples", type=int)
     parser.add_argument("--max_eval_users", type=int)
     parser.add_argument("--resume")
+    parser.add_argument("--result_dir")
     parser.add_argument("--audit_only", action="store_true")
     return parser.parse_args()
 
@@ -203,7 +204,10 @@ def main():
 
     run_name = args.run_name or f"t5_sid_seed{seed}"
     checkpoint_dir = Path(cfg["paths"]["checkpoint_root"]) / run_name
-    result_dir = Path(cfg["paths"]["result_root"])
+    result_dir = Path(
+        args.result_dir
+        or cfg["paths"].get("training_result_dir", cfg["paths"]["result_root"])
+    )
     result_dir.mkdir(parents=True, exist_ok=True)
     history_path = result_dir / f"{run_name}_history.jsonl"
 

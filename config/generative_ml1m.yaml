@@ -2,6 +2,8 @@ paths:
   frozen_dir: exported
   checkpoint_root: saved/generative
   result_root: results/week5-6-generative
+  training_result_dir: results/week5-6-generative/03-formal-training
+  evaluation_result_dir: results/week5-6-generative/04-generative-evaluation
 
 model:
   vocab_size: 1027
