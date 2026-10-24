@@ -6,8 +6,8 @@
 |---|---|---|
 | Week 1 | `week1-data-stats/`；预处理数据位于服务器 `/data/zby/data/ml-1m/processed/` | ✅ 完成 |
 | Week 2 | `week2-sasrec-baseline/`；checkpoint 位于服务器 `~/genrec/saved/` | ✅ 完成 |
-| Week 3–4 | 文本编码、残差量化、码本统计、前缀验证与接口冻结 | ✅ 完成 |
-| Week 5–6 | `week5-6-generative/`；Stage 0–3 审计、链路验证与学习率预实验 | 🟡 进行中 |
+| Week 3–4 | [`week3-4-semantic-id/`](week3-4-semantic-id/)；残差量化、码本分析、前缀验证与接口冻结 | ✅ 完成 |
+| Week 5–6 | [`week5-6-generative/`](week5-6-generative/)；Stage 0–7 训练、评测与最终汇总 | ✅ 完成 |
 | Week 7 | 冷启动 / 长尾实验、消融与最终报告 | ⏳ 未开始 |
 
 约定：
@@ -120,6 +120,8 @@ userID:token    itemID:token    timestamp:float
 | GRU4Rec | 44 | 80 | 68 | 0.1796 | 0.2613 | 0.1235 | 0.1498 |
 | **GRU4Rec** | **均值 ± std** | — | — | **0.1831 ± 0.0027** | **0.2631 ± 0.0019** | **0.1251 ± 0.0012** | **0.1509 ± 0.0008** |
 
+本表保留 RecBole 原始序列评测口径，未额外屏蔽历史物品。Week 5–6 使用六个 checkpoint 逐项复现了这些数值，并另行计算屏蔽完整历史的公平主表；两套结果不可直接混用。
+
 独立汇总表见 [`baseline_table.md`](week2-sasrec-baseline/baseline_table.md)。
 
 ### 仓库内文件
@@ -174,13 +176,13 @@ seed 42 的 `eval_only.py` 结果与 best epoch 的 valid 指标逐位一致，�
 | RQ-KMeans | — | 256 / 256 / 256 | 201.0 / 97.4 / 14.9 | 2.78% | 3,416 |
 | RQ-VAE | 0.623914 | 256 / 253 / 253 | 219.3 / 232.0 / 241.1 | 0.15% | 3,416 |
 
-RQ-VAE 使用“AE 预训练 → 潜空间残差 K-Means 初始化 → 联合训练”，修复了随机初始化造成的码本坍塌。完整过程和独立复验见 [`residual_quantization.md`](week3-4-semantic-id/residual_quantization.md)。
+RQ-VAE 使用“AE 预训练 → 潜空间残差 K-Means 初始化 → 联合训练”，修复了随机初始化造成的码本坍塌。完整过程和独立复验见 [`residual_quantization.md`](week3-4-semantic-id/01-quantization/residual_quantization.md)。
 
 表中的 `—` 表示原始 RQ-KMeans 脚本未记录 R²，并非该指标不可计算。以三层聚类中心之和作为重建向量，对正式码本只读复算得到 `R²=0.595971`、mean-MSE `0.00075384`；该补充值未参与原实验的模型选择。
 
 ### `(L,K)` 网格与冲突消解
 
-8 组主网格全部完成。主网格中 `RQ-VAE, L=3, K=256` 最优：R² 为 0.6245，消歧前冲突率 0.18%；追加序号后全部唯一。额外的 4 层纯 RQ-VAE 不使用序号消歧，也得到 3,416 个唯一 ID，R² 为 0.6566。详见 [`grid_search.md`](week3-4-semantic-id/grid_search.md)。
+8 组主网格全部完成。主网格中 `RQ-VAE, L=3, K=256` 最优：R² 为 0.6245，消歧前冲突率 0.18%；追加序号后全部唯一。额外的 4 层纯 RQ-VAE 不使用序号消歧，也得到 3,416 个唯一 ID，R² 为 0.6566。详见 [`grid_search.md`](week3-4-semantic-id/03-grid-search/grid_search.md)。
 
 ### 前缀语义一致性与冻结接口
 
@@ -192,9 +194,9 @@ RQ-VAE 使用“AE 预训练 → 潜空间残差 K-Means 初始化 → 联合训
 | 2 | 0.7116 | 0.2832 | +0.4284 `[0.4079, 0.4498]` |
 | 3 | 0.8089 | 0.2832 | +0.5257 `[0.4101, 0.6314]` |
 
-完整统计、10 组人工正例和 2 组反例见 [`prefix_consistency.md`](week3-4-semantic-id/prefix_consistency.md)，原始抽样见 [`prefix_samples.csv`](week3-4-semantic-id/prefix_samples.csv)。四层纯语义候选得到近似的前缀指标，但没有正式可复验 checkpoint，因此保留为后续消融方案。阶段结论统一汇总于 [`codebook_report.md`](week3-4-semantic-id/codebook_report.md)。
+完整统计、10 组人工正例和 2 组反例见 [`prefix_consistency.md`](week3-4-semantic-id/04-prefix-validation/prefix_consistency.md)，原始抽样见 [`prefix_samples.csv`](week3-4-semantic-id/04-prefix-validation/prefix_samples.csv)。四层纯语义候选得到近似的前缀指标，但没有正式可复验 checkpoint，因此保留为后续消融方案。阶段结论统一汇总于 [`codebook_report.md`](week3-4-semantic-id/02-codebook-analysis/codebook_report.md)。
 
-`frozen/` 是下一阶段生成模型的固定输入：
+`05-frozen-interface/` 是生成模型使用的固定输入：
 
 | 文件 | 内容 |
 |---|---|
@@ -209,21 +211,17 @@ RQ-VAE 使用“AE 预训练 → 潜空间残差 K-Means 初始化 → 联合训
 
 | 路径 | 内容 |
 |---|---|
-| `semantic_ids_kmeans.json` / `semantic_ids_rqvae.json` | 阶段 3 正式语义 ID |
-| `rq_kmeans.log` / `rqvae_train.log` | 正式运行日志 |
-| `codebook_stats.json` / `figs/*.png` | 码本统计与 6 张频次图 |
-| `grid_search.md` | 8 组网格、4 层备选与结论 |
-| `grid/semantic_ids_*.json` | 9 组对照实验的语义 ID |
-| `grid/logs/*.log` / `grid_search.log` | 独立日志与合并日志 |
-| `prefix_consistency.md` / `prefix_samples.csv` | 前缀语义一致性统计与人工检查样本 |
-| `codebook_report.md` | 码本质量、参数网格、前缀验证、冻结决策与局限性总报告 |
-| `frozen/` | 面向生成模型的 6 类冻结接口文件 |
+| `01-quantization/` | 正式语义 ID、运行日志与残差量化说明 |
+| `02-codebook-analysis/` | 码本统计、6 张利用率图和阶段总报告 |
+| `03-grid-search/` | 9 组候选语义 ID、独立日志与网格结论 |
+| `04-prefix-validation/` | 前缀语义一致性统计与人工检查样本 |
+| `05-frozen-interface/` | 面向生成模型的 6 类冻结接口文件 |
 
 二进制量化器、checkpoint 和可重建的 `item_emb.npy` 留在服务器 `~/genrec/`，不进入 Git。
 
 ## Week 5–6：生成式推荐
 
-Stage 0–3 依次完成冻结接口复核、训练代码审计、冒烟/恢复/过拟合测试和两档学习率预实验；三种子正式训练及最终 test 属于后续 Stage 4–7，不在本节提前报告。
+Stage 0–7 已完成：冻结接口审计、训练链路验证、学习率选择、三随机种子正式训练、双模式解码、序列基线统一口径复评与最终汇总。
 
 ### 固定设置
 
@@ -235,6 +233,8 @@ Stage 0–3 依次完成冻结接口复核、训练代码审计、冒烟/恢复/
 | 样本 | 981,491 个在线前缀训练样本；valid/test 各 6,040 用户 |
 | 解码 | beam=20，Top-10；动态 Trie 屏蔽目录外路径和完整历史已见物品 |
 | 学习率预实验 | seed 42；`3e-4` / `1e-3`；各 5,000 step；前 1,000 个 valid 用户 |
+| 正式训练 | seeds 42/43/44；30,000 step；每 5,000 step 在完整 valid 上评测 |
+| 统计 | 三种子均值 ± 总体标准差，`numpy.std(ddof=0)` |
 
 ### Stage 0–2 验证结论
 
@@ -252,19 +252,41 @@ Stage 0–3 依次完成冻结接口复核、训练代码审计、冒烟/恢复/
 
 两组均使用 seed 42、完全相同的数据顺序和固定前 1,000 个 valid 用户，未读取 test。最终差值 `0.017103 > 0.002`，因此按预注册规则选择 `3e-4` 进入 Stage 4；这组 pilot 不是最终主实验结果。
 
+### Stage 4–5 正式训练与生成评测
+
+三个 seed 的最佳 checkpoint 均出现在 step 30,000；完整 valid 上的约束解码 NDCG@10 分别为 `0.139328`、`0.133119`、`0.117808`。随后分别在 valid/test 上执行约束与无约束解码，共生成 12 份指标文件；test 预测明细保留在服务器。
+
+无约束解码没有生成目录外 ID，但平均 `37.69% ± 0.49%` 的推荐槽位为用户已见物品，且 `96.55% ± 0.28%` 的用户不足十条有效新推荐。动态 Trie 约束后，目录外 ID、已见物品槽位和短列表用户三项均为 0。
+
+### Stage 6–7 公平对比与最终结论
+
+RecBole 原始序列评测没有屏蔽历史物品，而生成模型的约束解码会屏蔽完整历史。为保证公平，六个基线 checkpoint 均在一次前向计算中记录两套结果：
+
+- `metrics`：屏蔽冻结 test 文件中的完整历史，用于最终主表；
+- `legacy_unmasked_metrics`：不屏蔽历史，仅用于复现第 2 周旧日志，六组误差均不超过 `1e-4`。
+
+最终 test 结果如下；均为三个 seed 的均值 ± 总体标准差：
+
+| 模型 | Recall@5 | Recall@10 | NDCG@5 | NDCG@10 |
+|---|---:|---:|---:|---:|
+| SASRec | 0.1976 ± 0.0054 | 0.2832 ± 0.0039 | 0.1361 ± 0.0039 | 0.1637 ± 0.0034 |
+| GRU4Rec | **0.2300 ± 0.0019** | **0.3196 ± 0.0007** | **0.1594 ± 0.0016** | **0.1882 ± 0.0009** |
+| Generative-T5 | 0.1419 ± 0.0145 | 0.2131 ± 0.0156 | 0.0950 ± 0.0088 | 0.1180 ± 0.0092 |
+
+生成模型在总体与长尾组均未超过判别式基线；严格冷启动组没有样本（`n=0`），因此不能声称获得冷启动收益。全部少样本、长尾、头部结果及证据受限的分析见 [`main_results.md`](week5-6-generative/06-reports/main_results.md)，20 个固定用户的双模式输出见 [`decode_samples.md`](week5-6-generative/06-reports/decode_samples.md)。
+
 ### 仓库内文件
 
 | 文件 | 内容 |
 |---|---|
-| `audit.log` | 冻结接口、样本数、词表、分组和模型参数审计 |
-| `stage1_static_checks.log` | 编译、命令行入口和依赖导入检查 |
-| `smoke.log` / `smoke_history.jsonl` | 20-step 冒烟及从 step 20 恢复到 step 30 的证据 |
-| `overfit256.log` / `overfit256_history.jsonl` | 256 样本过拟合测试 |
-| `pilot_lr3e-4.*` / `pilot_lr1e-3.*` | 两档学习率的训练日志、验证历史与 best-valid 指标 |
-| `pilot_summary.md` | 按预注册规则生成的学习率选择结论 |
-| `stage0-3_report.md` | 生成式训练管线验证与学习率预实验报告 |
+| `01-pipeline-validation/` | 接口审计、静态检查、冒烟/恢复、过拟合与 Stage 0–3 报告 |
+| `02-learning-rate-selection/` | 两档 pilot 的日志、轨迹、best-valid 与选择结论 |
+| `03-formal-training/` | 三种子正式训练日志、验证轨迹与最佳 valid 指标 |
+| `04-generative-evaluation/` | valid/test × 约束/无约束 × 三种子的 12 份指标 |
+| `05-baseline-evaluation/` | 六份统一口径基线复评指标及完整日志 |
+| `06-reports/` | 最终主表、分组结论与固定用户解码样例 |
 
-大模型 checkpoint 只保留在服务器 `~/genrec/saved/generative/`，不进入 Git。Week 7 结果将放入 `results/week7-ablation-and-final/`。
+三个正式模型的 `best/last` checkpoint（约 1.8 GB）和六份 test 预测明细（约 13 MB 结果目录的一部分）只保留在服务器，不进入 Git；仓库保留可审计的配置、代码、日志与聚合结果。
 
 ## 复现入口
 
@@ -278,10 +300,15 @@ Stage 0–3 依次完成冻结接口复核、训练代码审计、冒烟/恢复/
 | checkpoint 复评 | `python scripts/eval_only.py --model_file saved/<checkpoint>.pth` |
 | 编码物品文本 | `python scripts/encode_items.py --model /data/LLMs/all-MiniLM-L6-v2 --out item_emb.npy` |
 | 构建语义 ID | `python scripts/build_semantic_id.py --config config/rqvae_ml1m.yaml --emb item_emb.npy --method rqvae --device cuda:0 --out semantic_ids_rqvae.json` |
-| 分析码本 | `python scripts/analyze_codebook.py --kmeans semantic_ids_kmeans.json --rqvae semantic_ids_rqvae.json --outdir results/week3-4-semantic-id` |
-| 验证前缀语义 | `python scripts/check_prefix_consistency.py --emb item_emb.npy --ids semantic_ids_rqvae.json --text /data/zby/data/ml-1m/processed/item_text.json --outdir results/week3-4-semantic-id` |
+| 分析码本 | `python scripts/analyze_codebook.py --kmeans semantic_ids_kmeans.json --rqvae semantic_ids_rqvae.json --outdir results/week3-4-semantic-id/02-codebook-analysis` |
+| 验证前缀语义 | `python scripts/check_prefix_consistency.py --emb item_emb.npy --ids semantic_ids_rqvae.json --text /data/zby/data/ml-1m/processed/item_text.json --outdir results/week3-4-semantic-id/04-prefix-validation` |
 | 冻结生成模型接口 | `python scripts/export_semantic.py --ids semantic_ids_rqvae.json --emb item_emb.npy --quantizer_checkpoint saved/rqvae_ml1m.pt --processed /data/zby/data/ml-1m/processed --outdir exported` |
 | 审计生成模型接口 | `python scripts/train_generative.py --config config/generative_ml1m.yaml --audit_only` |
-| 训练链路冒烟 | `python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name smoke --max_steps 20 --eval_steps 10 --max_train_examples 2048 --max_eval_users 128` |
-| 学习率预实验 | `python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name pilot_lr3e-4 --lr 3e-4 --max_steps 5000 --eval_steps 2500 --max_eval_users 1000` |
+| 训练链路冒烟 | `python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name smoke --max_steps 20 --eval_steps 10 --max_train_examples 2048 --max_eval_users 128 --result_dir results/week5-6-generative/01-pipeline-validation` |
+| 学习率预实验 | `python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name pilot_lr3e-4 --lr 3e-4 --max_steps 5000 --eval_steps 2500 --max_eval_users 1000 --result_dir results/week5-6-generative/02-learning-rate-selection` |
 | 汇总学习率 | `python scripts/summarize_generative.py --results results/week5-6-generative --pilot_only` |
+| 正式训练 | `python scripts/train_generative.py --config config/generative_ml1m.yaml --seed 42 --run_name t5_sid_seed42` |
+| 双模式评测 | `python scripts/evaluate_generative.py --config config/generative_ml1m.yaml --checkpoint saved/generative/t5_sid_seed42/best --seed 42 --split test --mode both --save_predictions` |
+| 基线统一口径复评 | `python scripts/eval_baseline_groups.py --model SASRec --checkpoint saved/<checkpoint>.pth --seed 42 --split test` |
+| 完整性检查 | `python scripts/summarize_generative.py --results results/week5-6-generative --check_only` |
+| 生成最终报告 | `python scripts/summarize_generative.py --results results/week5-6-generative --output results/week5-6-generative/06-reports/main_results.md` |

@@ -1,6 +1,6 @@
 # 序列推荐基线
 
-> MovieLens 1M，3,416 个物品全量排序；Recall@5/10 与 NDCG@5/10。  
+> MovieLens 1M，3,416 个物品全量排序；Recall@5/10 与 NDCG@5/10。下表保留 RecBole 原始序列评测口径；统一屏蔽完整历史的公平复评见 [`../week5-6-generative/06-reports/main_results.md`](../week5-6-generative/06-reports/main_results.md)。
 > SASRec 与 GRU4Rec 汇总均使用总体标准差 `numpy.std(ddof=0)`。
 
 | 模型 | Seed | 总 epoch | Best epoch | Recall@5 | Recall@10 | NDCG@5 | NDCG@10 |
@@ -19,7 +19,7 @@
 - RecBole 1.2.1，隐式反馈，CE loss。
 - 每个用户按时间 leave-one-out：最后一条 test，倒数第二条 valid。
 - 最大序列长度 200；valid NDCG@10 早停，`stopping_step=10`。
-- 评测时屏蔽训练期已见物品，候选集为全部 3,416 个真实物品。
+- RecBole 1.2.1 的原始序列全量排序未额外屏蔽历史物品；Week 5–6 已复现这些数值，并另行计算屏蔽完整历史的主实验结果。
 
 ## 证据文件
 
