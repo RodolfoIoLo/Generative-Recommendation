@@ -1,0 +1,47 @@
+{
+  "step": 30000,
+  "mode": "constrained",
+  "n_users": 6040,
+  "metrics": {
+    "all": {
+      "n": 6040,
+      "recall@5": 0.16374172185430463,
+      "recall@10": 0.24387417218543048,
+      "ndcg@5": 0.10714960687041387,
+      "ndcg@10": 0.1331188136252557
+    },
+    "strict_cold": {
+      "n": 0,
+      "recall@5": null,
+      "recall@10": null,
+      "ndcg@5": null,
+      "ndcg@10": null
+    },
+    "few_shot_le20": {
+      "n": 44,
+      "recall@5": 0.0,
+      "recall@10": 0.0,
+      "ndcg@5": 0.0,
+      "ndcg@10": 0.0
+    },
+    "tail_bottom80": {
+      "n": 2499,
+      "recall@5": 0.08323329331732693,
+      "recall@10": 0.139655862344938,
+      "ndcg@5": 0.052633120731760366,
+      "ndcg@10": 0.07087684085885325
+    },
+    "head_top20": {
+      "n": 3541,
+      "recall@5": 0.22055916407794407,
+      "recall@10": 0.31742445636825756,
+      "ndcg@5": 0.14562368166863376,
+      "ndcg@10": 0.177045018071243
+    }
+  },
+  "diagnostics": {
+    "catalog_invalid_rate": 0.0,
+    "seen_repeat_rate": 0.0,
+    "short_list_rate": 0.0
+  }
+}

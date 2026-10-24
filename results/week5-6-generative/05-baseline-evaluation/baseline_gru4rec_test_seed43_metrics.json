@@ -1,0 +1,83 @@
+{
+  "model": "GRU4Rec",
+  "seed": 43,
+  "split": "test",
+  "checkpoint": "/home/zby/genrec/saved/GRU4Rec-Oct-22-2026_18-42-50.pth",
+  "n_users": 6040,
+  "metrics": {
+    "all": {
+      "n": 6040,
+      "recall@5": 0.23062913907284768,
+      "recall@10": 0.31920529801324504,
+      "ndcg@5": 0.15995229423110485,
+      "ndcg@10": 0.18859522592007408
+    },
+    "strict_cold": {
+      "n": 0,
+      "recall@5": null,
+      "recall@10": null,
+      "ndcg@5": null,
+      "ndcg@10": null
+    },
+    "few_shot_le20": {
+      "n": 72,
+      "recall@5": 0.05555555555555555,
+      "recall@10": 0.05555555555555555,
+      "ndcg@5": 0.05042957991071469,
+      "ndcg@10": 0.05042957991071469
+    },
+    "tail_bottom80": {
+      "n": 2629,
+      "recall@5": 0.16127805249144161,
+      "recall@10": 0.2388740966146824,
+      "ndcg@5": 0.10769466573428095,
+      "ndcg@10": 0.13271091515395336
+    },
+    "head_top20": {
+      "n": 3411,
+      "recall@5": 0.28408091468777485,
+      "recall@10": 0.3811199061858693,
+      "ndcg@5": 0.20022942859585252,
+      "ndcg@10": 0.2316675956075944
+    }
+  },
+  "legacy_unmasked_metrics": {
+    "all": {
+      "n": 6040,
+      "recall@5": 0.1836092715231788,
+      "recall@10": 0.26241721854304634,
+      "ndcg@5": 0.12582639989921884,
+      "ndcg@10": 0.15122971210548286
+    },
+    "strict_cold": {
+      "n": 0,
+      "recall@5": null,
+      "recall@10": null,
+      "ndcg@5": null,
+      "ndcg@10": null
+    },
+    "few_shot_le20": {
+      "n": 72,
+      "recall@5": 0.05555555555555555,
+      "recall@10": 0.05555555555555555,
+      "ndcg@5": 0.035577865439511816,
+      "ndcg@10": 0.035577865439511816
+    },
+    "tail_bottom80": {
+      "n": 2629,
+      "recall@5": 0.11829593001141119,
+      "recall@10": 0.18638265500190188,
+      "ndcg@5": 0.07793408509850767,
+      "ndcg@10": 0.0998664919004354
+    },
+    "head_top20": {
+      "n": 3411,
+      "recall@5": 0.2339489885664028,
+      "recall@10": 0.3210202286719437,
+      "ndcg@5": 0.16273900488634047,
+      "ndcg@10": 0.19081748868685822
+    }
+  },
+  "protocol": "metrics masks the complete frozen history; legacy_unmasked_metrics reproduces the original RecBole sequential evaluation",
+  "old_log_alignment": "passed (tolerance=1e-4)"
+}

@@ -1,0 +1,50 @@
+{
+  "mode": "unconstrained",
+  "n_users": 6040,
+  "metrics": {
+    "all": {
+      "n": 6040,
+      "recall@5": 0.08973509933774834,
+      "recall@10": 0.1433774834437086,
+      "ndcg@5": 0.060021375666654234,
+      "ndcg@10": 0.07720945916142524
+    },
+    "strict_cold": {
+      "n": 0,
+      "recall@5": null,
+      "recall@10": null,
+      "ndcg@5": null,
+      "ndcg@10": null
+    },
+    "few_shot_le20": {
+      "n": 72,
+      "recall@5": 0.0,
+      "recall@10": 0.0,
+      "ndcg@5": 0.0,
+      "ndcg@10": 0.0
+    },
+    "tail_bottom80": {
+      "n": 2629,
+      "recall@5": 0.034233548877900345,
+      "recall@10": 0.06124001521491061,
+      "ndcg@5": 0.019993916131838034,
+      "ndcg@10": 0.028671372689215064
+    },
+    "head_top20": {
+      "n": 3411,
+      "recall@5": 0.1325124596892407,
+      "recall@10": 0.20668425681618294,
+      "ndcg@5": 0.0908722085945437,
+      "ndcg@10": 0.11461978731605454
+    }
+  },
+  "diagnostics": {
+    "catalog_invalid_rate": 0.0,
+    "seen_repeat_rate": 0.38269867549668873,
+    "short_list_rate": 0.9678807947019867
+  },
+  "model": "Generative-T5",
+  "seed": 44,
+  "split": "test",
+  "checkpoint": "/home/zby/genrec/saved/generative/t5_sid_seed44/best"
+}
