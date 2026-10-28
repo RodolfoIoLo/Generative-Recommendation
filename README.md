@@ -1,8 +1,8 @@
-# GENREC-demo:基于语义标识符的生成式推荐
+# 🎬 GENREC-demo：基于语义标识符的生成式推荐
 
 > 7 周科研轮转项目,持续更新中.目标是从可复现的序列推荐基线出发,构建"物品文本 → 语义标识符 → 自回归推荐"的完整实验链路.
 
-## 这是什么
+## 👀 这是什么
 
 传统推荐通常为候选物品逐个打分,再从数千个分数中排序;生成式推荐则先把物品表示成一串离散语义 token,让模型像生成句子一样,直接生成下一个物品的标识符.作为端到端的推荐新范式, 生成式推荐可以更好地利用物品文本,用户序列和语义结构,尤其在冷启动和长尾场景中,是未来推荐系统的一个重要方向.
 
@@ -22,9 +22,7 @@ Toy Story → [37, 128, 5, 0]
 - **可比较**:先建立 SASRec / GRU4Rec 全量排序基线,再进入生成式模型.
 - **可解释**:不仅报告推荐指标,也检查码本利用率,冲突率和前缀语义一致性.
 
-## 当前进度
-
-更新于 **2026-10-28**.
+## 📍 当前进度
 
 | 周次 | 工作 | 状态 |
 |---|---|---|
@@ -32,7 +30,7 @@ Toy Story → [37, 128, 5, 0]
 | 第 2 周 | SASRec 三随机种子,GRU4Rec 基线与 checkpoint 复评 | ✅ 完成 |
 | 第 3–4 周 | 文本编码,RQ-Kmeans / RQ-VAE,语义 ID 与码本分析 | ✅️已完成 |
 | 第 5–6 周 | T5 类生成式推荐:管线验证、三种子训练、约束解码与基线复评 | ✅ 完成 |
-| 第 7 周 | 文本—协同融合、语义ID消融与仓库整理 | 进行中：Step 7.0–7.3 |
+| 第 7 周 | 文本—协同融合、语义ID消融与仓库整理 | 四组ID已构建；生成模型消融待开展 |
 
 ### 已得到的核心结果
 
@@ -54,9 +52,16 @@ Toy Story → [37, 128, 5, 0]
 | Week 2 | 行为序列 | RecBole 复现 SASRec / GRU4Rec,多种子全量排序评测 | 训练日志,checkpoint,基线表 |
 | Week 3–4 | `title + year + genres` | MiniLM 文本编码,残差量化,冲突消解,码本质量分析 | `item_emb.npy`,4-token 语义 ID,码本报告 |
 | Week 5–6 | 语义 ID 序列 | 审计接口,验证训练链路,选择学习率,三种子训练,约束解码与统一口径复评 | 日志、指标、分组对比与解码样例 |
-| Week 7 | 文本向量与训练交互 | SVD协同表示、四组融合、量化与消融 | 已完成448维输入；量化与正式训练待开展 |
+| Week 7 | 文本向量与训练交互 | SVD协同表示、四组融合、量化与消融 | 四组语义ID与码本分析；生成模型训练待开展 |
 
-Week 7已完成CPU管线验证与四组融合输入，尚无新的推荐指标；[当前产物与验证](results/week7-improvement/README.md)单独记录。
+Week 7已完成四组RQ-VAE量化、唯一ID导出及接口验收，尚无新的推荐指标；[当前产物与验证](results/week7-improvement/README.md)单独记录。
+
+## 🧭 从哪里开始
+
+- [学习路径](docs/learning-guide.md)：从电影文本到生成Top-10，一步看懂整条链路。
+- [复现指南](docs/reproduction.md)：安装依赖、CPU测试、数据准备与训练入口。
+- [实验协议](docs/experiment-protocol.md)：划分、评测口径和四组融合对照。
+- [四组语义ID与码本结果](results/week7-improvement/03-semantic-ids/README.md)：量化质量与前缀观察。
 
 ## Week 1–6 冻结实验协议
 
@@ -73,7 +78,7 @@ Week 7已完成CPU管线验证与四组融合输入，尚无新的推荐指标�
 | 生成训练 | 目标为 4 个位置 token + EOS;AdamW;BF16;有效 batch 256;pilot 选定 lr=`3e-4`;valid NDCG@10 选模 |
 | 解码 | beam=20,Top-10;动态 Trie 只允许生成目录内且用户未见的物品 |
 
-## 环境与复现
+## ⚙️ 环境与复现
 
 - Ubuntu 服务器:4 × NVIDIA RTX 4090
 - Python 3.11.16
@@ -81,6 +86,7 @@ Week 7已完成CPU管线验证与四组融合输入，尚无新的推荐指标�
 - RecBole 1.2.1
 - NumPy 1.26.4 / SciPy 1.17.1 / scikit-learn 1.9.1
 - 完整环境快照:[`requirements.txt`](requirements.txt)
+- Week 7直接依赖:[`requirements-week7.txt`](requirements-week7.txt)
 
 ```bash
 # 环境
@@ -145,15 +151,23 @@ python scripts/run_week7.py features
 
 MovieLens 1M 可从 [GroupLens](https://grouplens.org/datasets/movielens/1m/) 获取.原始数据,embedding 和 checkpoint 不进入 Git;它们的路径,规格和校验信息记录在结果索引中.
 
-## 目录
+## 📁 目录
 
 ### 1. GitHub 仓库
 
 ```text
 repository/
 ├── .gitignore
+├── .github/workflows/ci.yml
+├── CITATION.cff
+├── LICENSE
 ├── README.md
 ├── requirements.txt
+├── requirements-week7.txt
+├── docs/
+│   ├── learning-guide.md
+│   ├── reproduction.md
+│   └── experiment-protocol.md
 ├── config/
 │   ├── sasrec_ml1m.yaml
 │   ├── rqvae_ml1m.yaml
@@ -256,10 +270,20 @@ repository/
 │       │   └── cpu-smoke/
 │       │       ├── smoke_historical_s42_best.json
 │       │       └── smoke_historical_s42_history.jsonl
-│       └── 02-embeddings/
-│           ├── meta.json
-│           ├── weights.json
-│           └── neighbors.json
+│       ├── 02-embeddings/
+│       │   ├── meta.json
+│       │   ├── weights.json
+│       │   └── neighbors.json
+│       └── 03-semantic-ids/
+│           ├── README.md
+│           └── {text,fixed,fixed_match,adaptive}/
+│               ├── semantic_ids.json
+│               ├── meta.json
+│               ├── quantizer_quality.json
+│               ├── codebook_stats.json
+│               ├── prefix_quality.json
+│               ├── rqvae.log
+│               └── figures/（三层码本分配图）
 └── note/
     ├── week0-生成式推荐_三阶段全链路.md
     ├── week1-真实数据实例说明.md
@@ -397,7 +421,7 @@ repository/
 │   └── week7-improvement/
 │       ├── 01-diagnostics/（输入与旧代码哈希、环境）
 │       ├── 02-embeddings/（meta、weights、neighbors）
-│       ├── 03-semantic-ids/（预建空目录）
+│       ├── 03-semantic-ids/（四组量化日志、质量统计与图）
 │       ├── 04-screening/（预建空目录）
 │       ├── 05-formal-training/（当前仅CPU smoke记录）
 │       ├── 06-evaluation/（预建空目录）
@@ -408,7 +432,8 @@ repository/
 │   ├── valid.semantic.jsonl
 │   ├── test.semantic.jsonl
 │   ├── token_vocab.json
-│   └── meta.json
+│   ├── meta.json
+│   └── week7/{text,fixed,fixed_match,adaptive}/（每组六份冻结接口）
 ├── saved/
 │   ├── SASRec-Sep-28-2026_19-18-04.pth
 │   ├── SASRec-Oct-15-2026_13-00-52.pth
@@ -427,6 +452,7 @@ repository/
 │   │   ├── t5_sid_seed43/{best,last}/
 │   │   └── t5_sid_seed44/{best,last}/
 │   └── week7/
+│       ├── quantizers/{text,fixed,fixed_match,adaptive}.pt
 │       └── generative/
 │           └── smoke_historical_s42/{best,last}/
 ├── work/
@@ -436,7 +462,8 @@ repository/
 │       ├── fixed.npy
 │       ├── fixed_match.npy
 │       ├── adaptive.npy
-│       └── frequency.json
+│       ├── frequency.json
+│       └── semantic_ids_{text,fixed,fixed_match,adaptive}.json
 └── log_tensorboard/
     ├── SASRec-ml-1m-Sep-28-2026_19-17-25-dbfc42/
     │   ├── events.out.tfevents.1790594284.amax510.2957982.0
