@@ -19,6 +19,11 @@ saved/
 log_tensorboard/
 log/
 
+# ---------- Week 7 可重建中间产物 ----------
+/work/
+/exported/week7/
+/dist/
+
 # ---------- Python ----------
 __pycache__/
 *.py[cod]

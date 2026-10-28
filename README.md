@@ -24,7 +24,7 @@ Toy Story → [37, 128, 5, 0]
 
 ## 当前进度
 
-更新于 **2026-10-24**.
+更新于 **2026-10-28**.
 
 | 周次 | 工作 | 状态 |
 |---|---|---|
@@ -32,7 +32,7 @@ Toy Story → [37, 128, 5, 0]
 | 第 2 周 | SASRec 三随机种子,GRU4Rec 基线与 checkpoint 复评 | ✅ 完成 |
 | 第 3–4 周 | 文本编码,RQ-Kmeans / RQ-VAE,语义 ID 与码本分析 | ✅️已完成 |
 | 第 5–6 周 | T5 类生成式推荐:管线验证、三种子训练、约束解码与基线复评 | ✅ 完成 |
-| 第 7 周 | 冷启动 / 长尾改进,消融实验与结项报告 | ⏳ 计划中 |
+| 第 7 周 | 文本—协同融合、语义ID消融与仓库整理 | 进行中：Step 7.0–7.3 |
 
 ### 已得到的核心结果
 
@@ -54,9 +54,11 @@ Toy Story → [37, 128, 5, 0]
 | Week 2 | 行为序列 | RecBole 复现 SASRec / GRU4Rec,多种子全量排序评测 | 训练日志,checkpoint,基线表 |
 | Week 3–4 | `title + year + genres` | MiniLM 文本编码,残差量化,冲突消解,码本质量分析 | `item_emb.npy`,4-token 语义 ID,码本报告 |
 | Week 5–6 | 语义 ID 序列 | 审计接口,验证训练链路,选择学习率,三种子训练,约束解码与统一口径复评 | 日志、指标、分组对比与解码样例 |
-| Week 7 | 完整模型与物品频次 | 冷启动 / 长尾实验,消融与误差分析 | 最终报告与可复现实验表 |
+| Week 7 | 文本向量与训练交互 | SVD协同表示、四组融合、量化与消融 | 已完成448维输入；量化与正式训练待开展 |
 
-## 冻结实验协议
+Week 7已完成CPU管线验证与四组融合输入，尚无新的推荐指标；[当前产物与验证](results/week7-improvement/README.md)单独记录。
+
+## Week 1–6 冻结实验协议
 
 | 类别 | 设置 |
 |---|---|
@@ -133,6 +135,14 @@ python scripts/summarize_generative.py --results results/week5-6-generative --ch
 python scripts/summarize_generative.py --results results/week5-6-generative --output results/week5-6-generative/06-reports/main_results.md
 ```
 
+Week 7的CPU准备入口如下，要求现有exported/冻结接口和item_emb.npy；生成的数组留在work/week7/：
+
+```bash
+python -m unittest discover -s tests -p "test_week7.py" -v
+python scripts/run_week7.py init
+python scripts/run_week7.py features
+```
+
 MovieLens 1M 可从 [GroupLens](https://grouplens.org/datasets/movielens/1m/) 获取.原始数据,embedding 和 checkpoint 不进入 Git;它们的路径,规格和校验信息记录在结果索引中.
 
 ## 目录
@@ -147,7 +157,14 @@ repository/
 ├── config/
 │   ├── sasrec_ml1m.yaml
 │   ├── rqvae_ml1m.yaml
-│   └── generative_ml1m.yaml
+│   ├── generative_ml1m.yaml
+│   └── week7/
+│       ├── rqvae.yaml
+│       ├── generative_historical.yaml
+│       ├── generative_text.yaml
+│       ├── generative_fixed.yaml
+│       ├── generative_fixed_match.yaml
+│       └── generative_adaptive.yaml
 ├── scripts/
 │   ├── preprocess.py
 │   ├── stats.py
@@ -164,7 +181,17 @@ repository/
 │   ├── train_generative.py
 │   ├── evaluate_generative.py
 │   ├── eval_baseline_groups.py
-│   └── summarize_generative.py
+│   ├── summarize_generative.py
+│   ├── week7_common.py
+│   ├── week7_prepare.py
+│   ├── week7_train.py
+│   ├── week7_evaluate.py
+│   ├── week7_baseline.py
+│   ├── week7_report.py
+│   ├── week7_release.py
+│   └── run_week7.py
+├── tests/
+│   └── test_week7.py
 ├── results/
 │   ├── README.md
 │   ├── week1-data-stats/
@@ -210,16 +237,29 @@ repository/
 │   │       ├── test.semantic.jsonl
 │   │       ├── token_vocab.json
 │   │       └── meta.json
-│   └── week5-6-generative/
+│   ├── week5-6-generative/
+│   │   ├── README.md
+│   │   ├── 01-pipeline-validation/（审计、冒烟、恢复、过拟合）
+│   │   ├── 02-learning-rate-selection/（两档 pilot 与选择报告）
+│   │   ├── 03-formal-training/（三种子日志、轨迹与 best-valid）
+│   │   ├── 04-generative-evaluation/（12 份生成评测指标）
+│   │   ├── 05-baseline-evaluation/（6 份基线复评指标与日志）
+│   │   └── 06-reports/
+│   │       ├── main_results.md
+│   │       └── decode_samples.md
+│   └── week7-improvement/
 │       ├── README.md
-│       ├── 01-pipeline-validation/（审计、冒烟、恢复、过拟合）
-│       ├── 02-learning-rate-selection/（两档 pilot 与选择报告）
-│       ├── 03-formal-training/（三种子日志、轨迹与 best-valid）
-│       ├── 04-generative-evaluation/（12 份生成评测指标）
-│       ├── 05-baseline-evaluation/（6 份基线复评指标与日志）
-│       └── 06-reports/
-│           ├── main_results.md
-│           └── decode_samples.md
+│       ├── 01-diagnostics/
+│       │   ├── environment.json
+│       │   ├── input_sha256.txt
+│       │   ├── reused_code_sha256.txt
+│       │   └── cpu-smoke/
+│       │       ├── smoke_historical_s42_best.json
+│       │       └── smoke_historical_s42_history.jsonl
+│       └── 02-embeddings/
+│           ├── meta.json
+│           ├── weights.json
+│           └── neighbors.json
 └── note/
     ├── week0-生成式推荐_三阶段全链路.md
     ├── week1-真实数据实例说明.md
@@ -246,7 +286,14 @@ repository/
 ├── config/
 │   ├── sasrec_ml1m.yaml
 │   ├── rqvae_ml1m.yaml
-│   └── generative_ml1m.yaml
+│   ├── generative_ml1m.yaml
+│   └── week7/
+│       ├── rqvae.yaml
+│       ├── generative_historical.yaml
+│       ├── generative_text.yaml
+│       ├── generative_fixed.yaml
+│       ├── generative_fixed_match.yaml
+│       └── generative_adaptive.yaml
 ├── scripts/
 │   ├── preprocess.py
 │   ├── stats.py
@@ -263,7 +310,17 @@ repository/
 │   ├── train_generative.py
 │   ├── evaluate_generative.py
 │   ├── eval_baseline_groups.py
-│   └── summarize_generative.py
+│   ├── summarize_generative.py
+│   ├── week7_common.py
+│   ├── week7_prepare.py
+│   ├── week7_train.py
+│   ├── week7_evaluate.py
+│   ├── week7_baseline.py
+│   ├── week7_report.py
+│   ├── week7_release.py
+│   └── run_week7.py
+├── tests/
+│   └── test_week7.py
 ├── log/
 │   ├── GRU4Rec/
 │   │   ├── GRU4Rec-ml-1m-Oct-15-2026_09-39-08-c5973e.log
@@ -311,32 +368,40 @@ repository/
 │   │       ├── semantic_ids_rqvae_L3_K256.json
 │   │       ├── semantic_ids_rqvae_L4_K256_no_dedup.json
 │   │       └── logs/（对应 9 组独立日志）
-│   └── week5-6-generative/
-│       ├── audit.log
-│       ├── stage1_static_checks.log
-│       ├── smoke.log
-│       ├── smoke_history.jsonl
-│       ├── smoke_best_valid_metrics.json
-│       ├── overfit256.log
-│       ├── overfit256_history.jsonl
-│       ├── overfit256_best_valid_metrics.json
-│       ├── pilot_lr3e-4.log
-│       ├── pilot_lr3e-4_history.jsonl
-│       ├── pilot_lr3e-4_best_valid_metrics.json
-│       ├── pilot_lr1e-3.log
-│       ├── pilot_lr1e-3_history.jsonl
-│       ├── pilot_lr1e-3_best_valid_metrics.json
-│       ├── pilot_summary.md
-│       ├── stage0-3_report.md
-│       ├── train_seed{42,43,44}.log
-│       ├── t5_sid_seed{42,43,44}_history.jsonl
-│       ├── t5_sid_seed{42,43,44}_best_valid_metrics.json
-│       ├── generative_{valid,test}_{constrained,unconstrained}_seed{42,43,44}_metrics.json
-│       ├── generative_test_{constrained,unconstrained}_seed{42,43,44}_predictions.jsonl
-│       ├── baseline_{sasrec,gru4rec}_test_seed{42,43,44}_metrics.json
-│       ├── baseline_eval.log
-│       ├── main_results.md
-│       └── decode_samples.md
+│   ├── week5-6-generative/
+│   │   ├── audit.log
+│   │   ├── stage1_static_checks.log
+│   │   ├── smoke.log
+│   │   ├── smoke_history.jsonl
+│   │   ├── smoke_best_valid_metrics.json
+│   │   ├── overfit256.log
+│   │   ├── overfit256_history.jsonl
+│   │   ├── overfit256_best_valid_metrics.json
+│   │   ├── pilot_lr3e-4.log
+│   │   ├── pilot_lr3e-4_history.jsonl
+│   │   ├── pilot_lr3e-4_best_valid_metrics.json
+│   │   ├── pilot_lr1e-3.log
+│   │   ├── pilot_lr1e-3_history.jsonl
+│   │   ├── pilot_lr1e-3_best_valid_metrics.json
+│   │   ├── pilot_summary.md
+│   │   ├── stage0-3_report.md
+│   │   ├── train_seed{42,43,44}.log
+│   │   ├── t5_sid_seed{42,43,44}_history.jsonl
+│   │   ├── t5_sid_seed{42,43,44}_best_valid_metrics.json
+│   │   ├── generative_{valid,test}_{constrained,unconstrained}_seed{42,43,44}_metrics.json
+│   │   ├── generative_test_{constrained,unconstrained}_seed{42,43,44}_predictions.jsonl
+│   │   ├── baseline_{sasrec,gru4rec}_test_seed{42,43,44}_metrics.json
+│   │   ├── baseline_eval.log
+│   │   ├── main_results.md
+│   │   └── decode_samples.md
+│   └── week7-improvement/
+│       ├── 01-diagnostics/（输入与旧代码哈希、环境）
+│       ├── 02-embeddings/（meta、weights、neighbors）
+│       ├── 03-semantic-ids/（预建空目录）
+│       ├── 04-screening/（预建空目录）
+│       ├── 05-formal-training/（当前仅CPU smoke记录）
+│       ├── 06-evaluation/（预建空目录）
+│       └── 07-release/（预建空目录）
 ├── exported/
 │   ├── semantic_ids.json
 │   ├── train.semantic.jsonl
@@ -353,14 +418,25 @@ repository/
 │   ├── GRU4Rec-Oct-22-2026_18-51-36.pth
 │   ├── rq_kmeans_ml1m.npz
 │   ├── rqvae_ml1m.pt
-│   └── generative/
-│       ├── smoke/{best,last}/
-│       ├── overfit256/{best,last}/
-│       ├── pilot_lr3e-4/{best,last}/
-│       ├── pilot_lr1e-3/{best,last}/
-│       ├── t5_sid_seed42/{best,last}/
-│       ├── t5_sid_seed43/{best,last}/
-│       └── t5_sid_seed44/{best,last}/
+│   ├── generative/
+│   │   ├── smoke/{best,last}/
+│   │   ├── overfit256/{best,last}/
+│   │   ├── pilot_lr3e-4/{best,last}/
+│   │   ├── pilot_lr1e-3/{best,last}/
+│   │   ├── t5_sid_seed42/{best,last}/
+│   │   ├── t5_sid_seed43/{best,last}/
+│   │   └── t5_sid_seed44/{best,last}/
+│   └── week7/
+│       └── generative/
+│           └── smoke_historical_s42/{best,last}/
+├── work/
+│   └── week7/
+│       ├── collab.npy
+│       ├── text.npy
+│       ├── fixed.npy
+│       ├── fixed_match.npy
+│       ├── adaptive.npy
+│       └── frequency.json
 └── log_tensorboard/
     ├── SASRec-ml-1m-Sep-28-2026_19-17-25-dbfc42/
     │   ├── events.out.tfevents.1790594284.amax510.2957982.0
