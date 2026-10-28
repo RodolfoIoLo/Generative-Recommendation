@@ -1,0 +1,14 @@
+{
+  "embedding_dim": 448,
+  "embedding_sha256": "db25539475529ec021f7696a8f2732f327591a887d6a3a8e82a5404a76887819",
+  "feature_meta_sha256": "58ddb455f6b71b5d1e7707bad1f72d90c99b081be78de1050afa0b302de66eab",
+  "n_items": 3416,
+  "protocol_version": "week7-v5.1",
+  "quantizer_sha256": "b7a2db960daf267180683113f20b83cfbe850c238777037f97d55db26ea3e795",
+  "source_split_sha256": {
+    "test": "c211c01a64d43843676f6fcbb9aa1b360de07a7412b2065d28988a21d4b0dcb1",
+    "train": "f97ed435a47664ccf5ccb0914cce20d87598177f98b15f62b0f0b6aaa372a007",
+    "valid": "aa0f71c096f951971ab159c8f4aa3082df6c5c77c498184a0aefe82d68f54f2b"
+  },
+  "variant": "text"
+}
