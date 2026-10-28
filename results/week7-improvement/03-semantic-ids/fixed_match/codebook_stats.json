@@ -1,0 +1,31 @@
+{
+  "rqvae": {
+    "n_items": 3416,
+    "n_levels": 3,
+    "levels": [
+      {
+        "level": 0,
+        "utilization": 1.0,
+        "n_codes_used": 256,
+        "codebook_size": 256,
+        "perplexity": 233.98
+      },
+      {
+        "level": 1,
+        "utilization": 1.0,
+        "n_codes_used": 256,
+        "codebook_size": 256,
+        "perplexity": 238.25
+      },
+      {
+        "level": 2,
+        "utilization": 0.9883,
+        "n_codes_used": 253,
+        "codebook_size": 256,
+        "perplexity": 240.98
+      }
+    ],
+    "n_unique_ids": 3416,
+    "collision_rate_before_dedup": 0.002
+  }
+}
