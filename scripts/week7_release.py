@@ -139,19 +139,24 @@ def main():
         真实GPU耗时和磁盘量以本次日志为准，不把未知耗时写成保证。
         大checkpoint保留于实验服务器，公开仓库保留配置、哈希和轻量结果。
     """)
-    save("requirements-week7.txt", """
-        # Install a suitable CPU/CUDA torch wheel first. Existing server uses its current environment.
-        numpy>=1.26,<2
-        scipy>=1.10,<1.18
-        scikit-learn>=1.4,<2
-        PyYAML>=6,<7
-        matplotlib>=3.8,<4
-        transformers>=5.19,<6
-        safetensors
-    """)
+    if not Path("requirements.txt").exists():
+        save("requirements.txt", """
+            # Install a suitable CPU/CUDA PyTorch wheel first.
+            numpy==1.26.4
+            pandas==3.0.5
+            scipy==1.17.1
+            scikit-learn==1.9.1
+            PyYAML==6.0.3
+            matplotlib==3.11.2
+            transformers==5.19.0
+            sentence-transformers==6.1.0
+            safetensors==0.8.0
+            recbole==1.2.1
+            setuptools<82
+        """)
     save(".github/workflows/ci.yml", """
         name: week7-cpu-tests
-        on: [push, pull_request]
+        'on': [push, pull_request]
         jobs:
           cpu-tests:
             runs-on: ubuntu-latest
@@ -160,9 +165,9 @@ def main():
               - uses: actions/setup-python@v5
                 with:
                   python-version: '3.11'
-              - run: python -m pip install "numpy<2" scipy scikit-learn PyYAML
               - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-              - run: python -m pip install "transformers>=5.19,<6"
+              - run: python -m pip install -r requirements.txt
+              - run: python -m pip check
               - run: python -m compileall -q scripts
               - run: python -m unittest discover -s tests -p "test_week7.py" -v
     """)
@@ -300,9 +305,12 @@ def main():
     files += list(Path("docs").glob("*.md"))
     files += [Path(name) for name in (
         "README.md", "results/README.md", ".gitignore",
-        "requirements-week7.txt", "CITATION.cff", "LICENSE",
+        "requirements.txt", "CITATION.cff", "LICENSE",
         ".github/workflows/ci.yml",
     )]
+    snapshot = Path("environment/server-requirements.txt")
+    if snapshot.is_file():
+        files.append(snapshot)
     files += [p for p in ROOT.rglob("*")
               if p.is_file() and "07-release" not in p.parts
               and not p.name.startswith("smoke_")]

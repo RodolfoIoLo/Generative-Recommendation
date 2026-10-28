@@ -4,16 +4,29 @@
 
 ## 1. 安装与 CPU 测试
 
-推荐 Python 3.11。先按运行设备安装 PyTorch，再安装项目依赖；以下为 CPU 安装示例：
+推荐使用独立的 Python 3.11 环境。先按运行设备安装 PyTorch，再安装项目依赖；以下为 CPU 安装示例：
 
 ~~~bash
+conda create -n genrec python=3.11 -y
+conda activate genrec
 python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-python -m pip install -r requirements-week7.txt
+python -m pip install -r requirements.txt
+python -m pip check
 python -m unittest discover -s tests -p "test_week7.py" -v
 python -m compileall -q scripts tests
 ~~~
 
-正式生成模型训练和评测需要 CUDA 版 PyTorch 与可用 GPU。仓库 [requirements.txt](../requirements.txt) 是实验服务器的完整环境快照；其中的 CUDA 包和本机路径不一定适合其他机器。
+正式生成模型训练和评测需要 CUDA 版 PyTorch 与可用 GPU。根据机器的驱动与运行环境选择 PyTorch 版本，再安装同一份 `requirements.txt`。实验服务器使用 Python 3.11.16 和 PyTorch 2.14.0+cu126；[服务器环境快照](../environment/server-requirements.txt)记录了完整包版本，供对照和排查。快照包含平台相关依赖，在其他机器上不保证能直接安装。
+
+在与实验服务器相近的 Linux 和 CUDA 环境中，也可在新的独立环境里尝试安装快照：
+
+~~~bash
+python -m pip install torch==2.14.0+cu126 --index-url https://download.pytorch.org/whl/cu126
+python -m pip install -r environment/server-requirements.txt
+python -m pip check
+~~~
+
+复现实验还需使用相同的数据、模型权重、配置和随机种子；环境一致不保证结果逐位相同。
 
 ## 2. 准备数据与文本向量
 

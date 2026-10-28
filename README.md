@@ -85,11 +85,11 @@ Week 7已完成四组RQ-VAE量化、唯一ID导出及接口验收，尚无新的
 - PyTorch 2.14.0+cu126
 - RecBole 1.2.1
 - NumPy 1.26.4 / SciPy 1.17.1 / scikit-learn 1.9.1
-- 完整环境快照:[`requirements.txt`](requirements.txt)
-- Week 7直接依赖:[`requirements-week7.txt`](requirements-week7.txt)
+- 项目直接依赖:[`requirements.txt`](requirements.txt)
+- 服务器环境快照:[`environment/server-requirements.txt`](environment/server-requirements.txt)
 
 ```bash
-# 环境
+# 示例：与实验服务器相同的 CUDA 版 PyTorch；CPU 安装见复现指南
 pip install torch==2.14.0+cu126 --index-url https://download.pytorch.org/whl/cu126
 pip install -r requirements.txt
 
@@ -163,7 +163,8 @@ repository/
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
-├── requirements-week7.txt
+├── environment/
+│   └── server-requirements.txt
 ├── docs/
 │   ├── learning-guide.md
 │   ├── reproduction.md
