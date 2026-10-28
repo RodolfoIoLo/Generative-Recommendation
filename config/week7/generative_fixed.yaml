@@ -1,0 +1,47 @@
+paths:
+  frozen_dir: exported/week7/fixed
+  checkpoint_root: saved/week7/generative
+  result_root: results/week7-improvement
+  training_result_dir: results/week5-6-generative/03-formal-training
+  evaluation_result_dir: results/week5-6-generative/04-generative-evaluation
+model:
+  vocab_size: 1027
+  d_model: 256
+  d_ff: 1024
+  num_layers: 6
+  num_decoder_layers: 6
+  num_heads: 8
+  d_kv: 32
+  dropout_rate: 0.1
+  pad_token_id: 0
+  decoder_start_token_id: 1
+  eos_token_id: 2
+data:
+  max_history_items: 20
+  expected_items: 3416
+  expected_users: 6040
+  expected_train_examples: 981491
+train:
+  seed: 42
+  batch_size: 64
+  eval_batch_size: 16
+  gradient_accumulation: 4
+  max_steps: 60000
+  eval_steps: 5000
+  logging_steps: 100
+  lr: 0.0003
+  warmup_steps: 1500
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  patience: 4
+  num_workers: 0
+  bf16: true
+  min_lr_ratio: 0.05
+  early_stop_after: 30000
+  min_delta: 0.001
+decode:
+  num_beams: 20
+  topk: 10
+  max_new_tokens: 5
+protocol_version: week7-v5.1
+variant: fixed
