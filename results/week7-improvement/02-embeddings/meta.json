@@ -1,0 +1,50 @@
+{
+  "collab_sha256": "2de555423c7e93307dba92ee92290cad5d958277c73a45abb27a240e2338b10a",
+  "explained_variance_ratio_sum": 0.4394683837890625,
+  "item_map_sha256": "d3b92f8fc17accf3fcbabf30536b836f22b1da1b6f0aea40004abd758438718a",
+  "protocol_version": "week7-v5.1",
+  "shape": [
+    3416,
+    64
+  ],
+  "source": "train_only",
+  "svd_n_iter": 10,
+  "svd_seed": 42,
+  "text_sha256": "162d6d2a9fb89e6b9e096d97a79a46338d83507ad5cbc07581a730d43e2b77a4",
+  "train_sha256": "f97ed435a47664ccf5ccb0914cce20d87598177f98b15f62b0f0b6aaa372a007",
+  "variants": {
+    "adaptive": {
+      "sha256": "e0712901b836313d9a27bc61c48edf6aba0334f7880b56f821dc5c62ac2d7409",
+      "shape": [
+        3416,
+        448
+      ]
+    },
+    "fixed": {
+      "sha256": "c2d27e0f37b7670ed7857f891e89a91c65102e32d88407d1131c0cb11e221ba7",
+      "shape": [
+        3416,
+        448
+      ]
+    },
+    "fixed_match": {
+      "sha256": "92275a06b2d0aa975fe8f8eb27a2a85ae3ec1ccf05b6774f32ded49e54d95bb9",
+      "shape": [
+        3416,
+        448
+      ]
+    },
+    "text": {
+      "sha256": "db25539475529ec021f7696a8f2732f327591a887d6a3a8e82a5404a76887819",
+      "shape": [
+        3416,
+        448
+      ]
+    }
+  },
+  "weight_definition": {
+    "adaptive_mean_collab_energy": 0.36922890651649154,
+    "matched_weight": 0.7650889961007427,
+    "q80": 455.0
+  }
+}

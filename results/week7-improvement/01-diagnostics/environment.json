@@ -1,0 +1,11 @@
+{
+  "packages": {
+    "numpy": "1.26.4",
+    "recbole": "1.2.1",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.17.1",
+    "torch": "2.14.0+cu126",
+    "transformers": "5.19.0"
+  },
+  "python": "3.11.16"
+}

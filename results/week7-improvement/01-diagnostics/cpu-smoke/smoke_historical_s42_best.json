@@ -1,0 +1,114 @@
+{
+  "artifact_hash": "c9c04344d939dab06bf50ce426c4c7e424ba40f00f441758e978c5933b76db1f",
+  "best_step": 2,
+  "checkpoint": "saved/week7/generative/smoke_historical_s42/best",
+  "config": {
+    "data": {
+      "expected_items": 3416,
+      "expected_train_examples": 981491,
+      "expected_users": 6040,
+      "max_history_items": 20
+    },
+    "decode": {
+      "max_new_tokens": 5,
+      "num_beams": 20,
+      "topk": 10
+    },
+    "model": {
+      "d_ff": 64,
+      "d_kv": 16,
+      "d_model": 32,
+      "decoder_start_token_id": 1,
+      "dropout_rate": 0.1,
+      "eos_token_id": 2,
+      "num_decoder_layers": 1,
+      "num_heads": 2,
+      "num_layers": 1,
+      "pad_token_id": 0,
+      "vocab_size": 1027
+    },
+    "paths": {
+      "checkpoint_root": "saved/week7/generative",
+      "evaluation_result_dir": "results/week5-6-generative/04-generative-evaluation",
+      "frozen_dir": "exported",
+      "result_root": "results/week7-improvement",
+      "training_result_dir": "results/week5-6-generative/03-formal-training"
+    },
+    "protocol_version": "week7-v5.1",
+    "train": {
+      "batch_size": 2,
+      "bf16": false,
+      "early_stop_after": 20,
+      "eval_batch_size": 2,
+      "eval_steps": 2,
+      "gradient_accumulation": 1,
+      "logging_steps": 100,
+      "lr": 0.0003,
+      "max_grad_norm": 1.0,
+      "max_steps": 20,
+      "min_delta": 0.001,
+      "min_lr_ratio": 0.05,
+      "num_workers": 0,
+      "patience": 4,
+      "seed": 42,
+      "warmup_steps": 2,
+      "weight_decay": 0.01
+    },
+    "variant": "historical"
+  },
+  "environment": {
+    "packages": {
+      "numpy": "1.26.4",
+      "recbole": "1.2.1",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.17.1",
+      "torch": "2.14.0+cu126",
+      "transformers": "5.19.0"
+    },
+    "python": "3.11.16"
+  },
+  "finished": false,
+  "metrics": {
+    "all": {
+      "n": 8,
+      "ndcg@10": 0.0,
+      "ndcg@5": 0.0,
+      "recall@10": 0.0,
+      "recall@5": 0.0
+    },
+    "few_shot_le20": {
+      "n": 0,
+      "ndcg@10": null,
+      "ndcg@5": null,
+      "recall@10": null,
+      "recall@5": null
+    },
+    "head_top20": {
+      "n": 6,
+      "ndcg@10": 0.0,
+      "ndcg@5": 0.0,
+      "recall@10": 0.0,
+      "recall@5": 0.0
+    },
+    "strict_cold": {
+      "n": 0,
+      "ndcg@10": null,
+      "ndcg@5": null,
+      "recall@10": null,
+      "recall@5": null
+    },
+    "tail_bottom80": {
+      "n": 2,
+      "ndcg@10": 0.0,
+      "ndcg@5": 0.0,
+      "recall@10": 0.0,
+      "recall@5": 0.0
+    }
+  },
+  "protocol_version": "week7-v5.1",
+  "seed": 42,
+  "signature": "037c7b9b877d6d29b6051eb58a21cfe86e9bf12701bc1dc281c969ca4f70b92a",
+  "smoke": true,
+  "step": 2,
+  "variant": "historical"
+}
