@@ -1,0 +1,13 @@
+# 安装与设备匹配的 PyTorch 后，再安装这些直接依赖。
+# 完整服务器环境快照见 requirements.txt。
+numpy==1.26.4
+pandas==3.0.5
+scipy==1.17.1
+scikit-learn==1.9.1
+PyYAML==6.0.3
+matplotlib==3.11.2
+transformers==5.19.0
+sentence-transformers==6.1.0
+safetensors==0.8.0
+recbole==1.2.1
+setuptools<82
