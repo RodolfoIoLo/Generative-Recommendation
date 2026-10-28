@@ -1,6 +1,6 @@
 # Week 7：文本—协同融合式语义标识符
 
-更新于2026-10-28，当前完成Step 7.0–7.3：输入冻结、源码与配置、CPU冒烟及恢复、协同特征与四组融合输入。新一轮RQ-VAE和正式生成模型训练尚未开展，本目录不包含新的推荐效果结论。
+已完成输入冻结、CPU冒烟及恢复、协同特征构建，以及四组RQ-VAE量化与语义ID导出。生成模型的融合消融和正式评测尚未开展，本目录暂不包含新的推荐效果结论。
 
 ## 目录与证据
 
@@ -13,6 +13,7 @@
 | [02-embeddings/meta.json](02-embeddings/meta.json) | SVD参数、输入/数组哈希、维度与权重定义 |
 | [02-embeddings/weights.json](02-embeddings/weights.json) | 四组逐物品协同权重，第i项对应item i |
 | [02-embeddings/neighbors.json](02-embeddings/neighbors.json) | 20个固定锚点的Top-10协同近邻 |
+| [03-semantic-ids/](03-semantic-ids/README.md) | 四组ID、码本质量、训练日志与前缀分析 |
 
 CPU冒烟源文件位于服务器results/week7-improvement/05-formal-training/；仓库将其归入01-diagnostics/cpu-smoke/，避免与正式训练混淆。两份文件名称和内容均保持不变，仅调整展示目录。
 
@@ -23,6 +24,7 @@ CPU冒烟源文件位于服务器results/week7-improvement/05-formal-training/�
 - 小模型从step2恢复到step4；在step2和4分别对8名用户进行约束验证，非法ID、已见物品和短列表率均为0。
 - 所有新向量均为float32、有限值、单位范数；四组融合输入均为3416×448，逐行范数最大误差小于1.8e-7。
 - 保存的频次与train重算一致；四组权重与公式一致；融合数组与重算结果一致；哈希与metadata一致。
+- 四组checkpoint均可重现全部保存的ID；train、valid、test各6,040行，经映射后与原始物品和目标逐条一致。
 
 冒烟Recall/NDCG为0，只验证前向、反向、保存、恢复和解码。best保留在step2，last在step4；smoke的finished=false表示未跑满其20步日程，不代表4步恢复检查失败。
 
@@ -74,4 +76,4 @@ fixed_match与adaptive整体协同占比相同，分配方式不同。它检验�
 └── frequency.json
 ~~~
 
-数组和CPU checkpoint不进入Git；代码、配置、哈希和轻量证据保留在仓库。下一步为四组RQ-VAE量化与语义ID导出，随后才能训练对应生成模型。
+数组和checkpoint不进入Git；四组语义ID映射、代码、配置及轻量质量证据保留在仓库。下一步可用空闲GPU进行搜索诊断和生成模型训练。
