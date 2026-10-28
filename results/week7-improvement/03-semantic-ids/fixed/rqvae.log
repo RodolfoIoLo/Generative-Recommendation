@@ -1,0 +1,45 @@
+最终配置: {'config': 'config/week7/rqvae.yaml', 'emb': 'work/week7/fixed.npy', 'method': 'rqvae', 'in_dim': 448, 'n_levels': 3, 'codebook_size': 256, 'latent': 32, 'beta': 0.25, 'epochs': 2000, 'batch_size': 256, 'lr': 0.0001, 'pretrain_epochs': 200, 'pretrain_lr': 0.001, 'init_n_init': 10, 'min_utilization': 0.9, 'seed': 42, 'log_every': 100, 'device': 'cpu', 'checkpoint': 'saved/week7/quantizers/fixed.pt', 'no_dedup': False, 'out': 'work/week7/semantic_ids_fixed.json'}
+输入 (3416, 448) | norm mean=1.00000000
+[AE 预训练] epochs=200 lr=0.001
+AE epoch    50 | mean-MSE 0.00066921 | R2 0.5628
+AE epoch   100 | mean-MSE 0.00056309 | R2 0.6321
+AE epoch   150 | mean-MSE 0.00050433 | R2 0.6705
+AE epoch   200 | mean-MSE 0.00046476 | R2 0.6963
+[AE 预训练完成] best R2=0.6963
+[潜空间 K-Means 初始化] 利用率 [256, 256, 256] | 困惑度 [230.9, 225.3, 213.2] | 唯一 ID 3412
+RQ epoch     0 | mean-MSE 0.00060287 | R2 0.6061 | codebook 6.209e-01 | beta*commit 1.552e-01 | 利用率 [256, 256, 256] | 困惑度 [230.9, 225.3, 213.2] | 唯一 ID 3412
+[RQ-VAE 联合训练] epochs=2000 lr=0.0001 合格利用率阈值=90%
+RQ epoch   100 | mean-MSE 0.00056626 | R2 0.6300 | codebook 3.092e-01 | beta*commit 7.731e-02 | 利用率 [256, 255, 252] | 困惑度 [229.8, 212.6, 205.5] | 唯一 ID 3409
+RQ epoch   200 | mean-MSE 0.00055539 | R2 0.6371 | codebook 2.556e-01 | beta*commit 6.389e-02 | 利用率 [256, 255, 252] | 困惑度 [229.6, 215.6, 213.7] | 唯一 ID 3409
+RQ epoch   300 | mean-MSE 0.00054792 | R2 0.6420 | codebook 2.306e-01 | beta*commit 5.764e-02 | 利用率 [256, 255, 252] | 困惑度 [229.6, 219.5, 223.2] | 唯一 ID 3410
+RQ epoch   400 | mean-MSE 0.00054342 | R2 0.6449 | codebook 2.168e-01 | beta*commit 5.420e-02 | 利用率 [256, 255, 252] | 困惑度 [229.7, 221.1, 229.0] | 唯一 ID 3412
+RQ epoch   500 | mean-MSE 0.00053890 | R2 0.6479 | codebook 2.090e-01 | beta*commit 5.225e-02 | 利用率 [256, 255, 252] | 困惑度 [229.7, 223.1, 230.3] | 唯一 ID 3409
+RQ epoch   600 | mean-MSE 0.00053531 | R2 0.6503 | codebook 2.029e-01 | beta*commit 5.072e-02 | 利用率 [256, 255, 252] | 困惑度 [229.7, 225.0, 230.7] | 唯一 ID 3412
+RQ epoch   700 | mean-MSE 0.00053171 | R2 0.6526 | codebook 1.986e-01 | beta*commit 4.964e-02 | 利用率 [256, 255, 252] | 困惑度 [229.8, 227.0, 230.8] | 唯一 ID 3412
+RQ epoch   800 | mean-MSE 0.00052906 | R2 0.6543 | codebook 1.966e-01 | beta*commit 4.916e-02 | 利用率 [256, 255, 252] | 困惑度 [230.1, 228.8, 234.6] | 唯一 ID 3411
+RQ epoch   900 | mean-MSE 0.00052775 | R2 0.6552 | codebook 1.966e-01 | beta*commit 4.915e-02 | 利用率 [256, 255, 252] | 困惑度 [230.1, 230.9, 235.0] | 唯一 ID 3412
+RQ epoch  1000 | mean-MSE 0.00052424 | R2 0.6575 | codebook 1.947e-01 | beta*commit 4.868e-02 | 利用率 [256, 255, 252] | 困惑度 [230.4, 231.0, 236.2] | 唯一 ID 3411
+RQ epoch  1100 | mean-MSE 0.00052258 | R2 0.6586 | codebook 1.945e-01 | beta*commit 4.862e-02 | 利用率 [256, 255, 252] | 困惑度 [230.2, 232.6, 236.5] | 唯一 ID 3411
+RQ epoch  1200 | mean-MSE 0.00051844 | R2 0.6613 | codebook 1.944e-01 | beta*commit 4.860e-02 | 利用率 [256, 255, 252] | 困惑度 [230.5, 234.5, 236.4] | 唯一 ID 3411
+RQ epoch  1300 | mean-MSE 0.00051510 | R2 0.6635 | codebook 1.932e-01 | beta*commit 4.830e-02 | 利用率 [256, 255, 252] | 困惑度 [230.6, 234.1, 235.7] | 唯一 ID 3413
+RQ epoch  1400 | mean-MSE 0.00051379 | R2 0.6643 | codebook 1.942e-01 | beta*commit 4.854e-02 | 利用率 [256, 255, 252] | 困惑度 [230.6, 234.6, 236.9] | 唯一 ID 3411
+RQ epoch  1500 | mean-MSE 0.00051360 | R2 0.6644 | codebook 1.948e-01 | beta*commit 4.869e-02 | 利用率 [256, 255, 252] | 困惑度 [230.6, 235.3, 235.7] | 唯一 ID 3410
+RQ epoch  1600 | mean-MSE 0.00050999 | R2 0.6668 | codebook 1.937e-01 | beta*commit 4.843e-02 | 利用率 [256, 255, 252] | 困惑度 [230.8, 234.8, 236.9] | 唯一 ID 3412
+RQ epoch  1700 | mean-MSE 0.00050893 | R2 0.6675 | codebook 1.941e-01 | beta*commit 4.852e-02 | 利用率 [256, 255, 252] | 困惑度 [231.1, 235.8, 236.1] | 唯一 ID 3405
+RQ epoch  1800 | mean-MSE 0.00050562 | R2 0.6696 | codebook 1.940e-01 | beta*commit 4.851e-02 | 利用率 [256, 255, 252] | 困惑度 [230.5, 235.2, 237.4] | 唯一 ID 3412
+RQ epoch  1900 | mean-MSE 0.00050576 | R2 0.6696 | codebook 1.946e-01 | beta*commit 4.866e-02 | 利用率 [256, 255, 252] | 困惑度 [230.9, 235.7, 234.7] | 唯一 ID 3409
+RQ epoch  2000 | mean-MSE 0.00050356 | R2 0.6710 | codebook 1.956e-01 | beta*commit 4.889e-02 | 利用率 [256, 255, 252] | 困惑度 [230.8, 235.3, 235.5] | 唯一 ID 3415
+[选择 checkpoint] epoch=2000 | R2=0.6710 | 利用率=[256, 255, 252] | 唯一 ID=3415
+RQ-VAE 最佳重建 R2 = 0.6710
+saved checkpoint saved/week7/quantizers/fixed.pt
+[rqvae 消解前] 物品 3416|唯一 ID 3415|冲突率 0.0003
+  level 0: 利用率 256/256|困惑度 230.8
+  level 1: 利用率 255/256|困惑度 235.3
+  level 2: 利用率 252/256|困惑度 235.5
+[rqvae 消解后] 物品 3416|唯一 ID 3416|冲突率 0.0000
+  level 0: 利用率 256/256|困惑度 230.8
+  level 1: 利用率 255/256|困惑度 235.3
+  level 2: 利用率 252/256|困惑度 235.5
+  level 3: 利用率 2/256|困惑度 1.0  ← 消歧码,不是码本
+最大冲突组大小 = 2(第 4 位容量 256)
+saved work/week7/semantic_ids_fixed.json  形状 (3416, 4)
