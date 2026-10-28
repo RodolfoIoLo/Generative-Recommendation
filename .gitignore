@@ -21,8 +21,9 @@ log/
 
 # ---------- Week 7 可重建中间产物 ----------
 /work/
-/exported/week7/
+/exported/
 /dist/
+/item_emb*.npy
 
 # ---------- Python ----------
 __pycache__/

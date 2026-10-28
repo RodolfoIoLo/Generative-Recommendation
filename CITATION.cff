@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "如果使用本学习仓库，请引用本项目及所使用的方法论文。"
+title: "GENREC-demo: 基于语义标识符的生成式推荐"
+authors:
+  - name: "RodolfoIoLo"
+repository-code: "https://github.com/RodolfoIoLo/GENREC-demo"
+license: MIT

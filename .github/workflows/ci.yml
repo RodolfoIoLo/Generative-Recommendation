@@ -1,0 +1,27 @@
+name: CPU checks
+
+'on':
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-week7.txt
+      - name: Install CPU test dependencies
+        run: |
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy==1.26.4 scipy==1.17.1 scikit-learn==1.9.1 PyYAML==6.0.3 transformers==5.19.0
+      - name: Check Python syntax
+        run: python -m compileall -q scripts tests
+      - name: Run CPU tests without skips
+        run: python -c "import sys,unittest; suite=unittest.defaultTestLoader.discover('tests',pattern='test_week7.py'); result=unittest.TextTestRunner(verbosity=2).run(suite); sys.exit(int(not result.wasSuccessful() or bool(result.skipped)))"
