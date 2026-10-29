@@ -1,0 +1,456 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="8300" viewBox="0 0 3000 8300" role="img" aria-labelledby="title desc">
+<title id="title">生成式推荐模型训练全过程：真实实验大张量与 Encoder–Decoder 逐层展开</title>
+<desc id="desc">以 MovieLens 1M 冻结实验为依据，展示输入、共享嵌入、六层编码器、六层解码器、注意力、掩码、交叉熵、反向传播、梯度累积及验证保存。大张量由真实配置推导，数值未知处不作伪造。</desc>
+<defs>
+<marker id="arrow-blue" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 12 6 L 0 12 Z" fill="#1867BC"/></marker>
+<marker id="arrow-teal" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 12 6 L 0 12 Z" fill="#087D83"/></marker>
+<marker id="arrow-purple" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 12 6 L 0 12 Z" fill="#7146BE"/></marker>
+<marker id="arrow-red" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 12 6 L 0 12 Z" fill="#C04550"/></marker>
+<marker id="arrow-pink" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 12 6 L 0 12 Z" fill="#BA338C"/></marker>
+<marker id="arrow-orange" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 12 6 L 0 12 Z" fill="#AE620B"/></marker>
+<marker id="arrow-muted" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 12 6 L 0 12 Z" fill="#53627A"/></marker>
+</defs>
+<rect x="0" y="0" width="3000" height="8300" rx="0" fill="#F5F8FC" stroke="none" stroke-width="2"/>
+<rect x="0" y="0" width="3000" height="282" rx="0" fill="#142640" stroke="none" stroke-width="2"/>
+<rect x="70" y="42" width="15" height="95" rx="5" fill="#46D4CA" stroke="none" stroke-width="2"/>
+<text x="108" y="104" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="65" font-weight="700" fill="#FFFFFF" text-anchor="start">生成式推荐：训练时，模型里发生了什么？</text>
+<text x="110" y="158" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="400" fill="#C9DAF1" text-anchor="start">Encoder–Decoder 超详细流程图  /  MovieLens 1M · Week 5–6 冻结实验</text>
+<text x="110" y="213" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="29" font-weight="400" fill="#E4ECF7" text-anchor="start">11,281,664 个可训练参数   ·   6 层 Encoder + 6 层 Decoder   ·   8 个注意力头 × 32 维</text>
+<rect x="112" y="242" width="19" height="19" rx="5" fill="#AE620B" stroke="none" stroke-width="2"/>
+<text x="143" y="260" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="23" font-weight="400" fill="#E4ECF7" text-anchor="start">离散编号</text>
+<rect x="490" y="242" width="19" height="19" rx="5" fill="#1867BC" stroke="none" stroke-width="2"/>
+<text x="521" y="260" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="23" font-weight="400" fill="#E4ECF7" text-anchor="start">历史张量</text>
+<rect x="900" y="242" width="19" height="19" rx="5" fill="#087D83" stroke="none" stroke-width="2"/>
+<text x="931" y="260" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="23" font-weight="400" fill="#E4ECF7" text-anchor="start">编码器记忆</text>
+<rect x="1395" y="242" width="19" height="19" rx="5" fill="#7146BE" stroke="none" stroke-width="2"/>
+<text x="1426" y="260" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="23" font-weight="400" fill="#E4ECF7" text-anchor="start">解码张量</text>
+<rect x="1840" y="242" width="19" height="19" rx="5" fill="#C04550" stroke="none" stroke-width="2"/>
+<text x="1871" y="260" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="23" font-weight="400" fill="#E4ECF7" text-anchor="start">正确标签</text>
+<rect x="2290" y="242" width="19" height="19" rx="5" fill="#BA338C" stroke="none" stroke-width="2"/>
+<text x="2321" y="260" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="23" font-weight="400" fill="#E4ECF7" text-anchor="start">反向梯度</text>
+<rect x="70" y="318" width="57" height="57" rx="17" fill="#1867BC" stroke="none" stroke-width="2"/>
+<text x="98" y="358" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+<text x="146" y="359" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="40" font-weight="700" fill="#17263D" text-anchor="start">从真实训练集组成一个 batch</text>
+<text x="2920" y="358" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="end">主线展示完整 batch；小样本只用于解释编号</text>
+<rect x="70" y="402" width="915" height="500" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="70" y="402" width="9" height="500" rx="4" fill="#1867BC" stroke="none" stroke-width="2"/>
+<text x="100" y="450" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#1867BC" text-anchor="start">01  数据和模型从哪里来</text>
+<text x="100" y="508.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">MovieLens 1M：所有评分视为交互 → 去重 → 迭代 5-core → 重映射 </text>
+<text x="100" y="548.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">ID → 按时间排序。</text>
+<text x="100" y="602.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">6,040 个用户 / 3,416 个物品。每人最后一次交互留作 test，倒数第二</text>
+<text x="100" y="642.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">次留作 valid，其余为 train。</text>
+<text x="100" y="696.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">训练交互 987,531 条，前缀展开后得到 981,491 道“历史 → 下一物品</text>
+<text x="100" y="736.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">”训练题。</text>
+<text x="100" y="790.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">T5 按配置随机初始化；正式实验 seed = 42 / 43 / 44；每次运行使用 </text>
+<text x="100" y="830.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">cuda:0。</text>
+<rect x="1015" y="402" width="915" height="500" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1015" y="402" width="9" height="500" rx="4" fill="#AE620B" stroke="none" stroke-width="2"/>
+<text x="1045" y="450" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#AE620B" text-anchor="start">02  物品先有固定的四位编码</text>
+<text x="1045" y="508.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">预先计算：物品文本 → MiniLM 384 维 → RQ-VAE 32 维潜空间 → 三</text>
+<text x="1045" y="548.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">层残差量化。</text>
+<text x="1045" y="602.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">前三位是量化码，第四位是碰撞消歧码；每一位的编号范围均为 0～255。</text>
+<text x="1045" y="655.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">token_id = 3 + 位置 × 256 + 该位编码；位置从 0 开始。词表 = 4 × </text>
+<text x="1045" y="696.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">256 + 3 = 1,027。</text>
+<text x="1045" y="749.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">PAD = 0，BOS = 1，EOS = 2。生成模型训练期间，物品编码映射和</text>
+<text x="1045" y="790.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">上游量化器保持固定。</text>
+<rect x="1960" y="402" width="970" height="500" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1960" y="402" width="9" height="500" rx="4" fill="#1867BC" stroke="none" stroke-width="2"/>
+<text x="1990" y="450" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#1867BC" text-anchor="start">03  截断、打乱、分批、补齐</text>
+<text x="1990" y="508.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">长度为 n 的 train 序列展开 n−1 个样本；每个目标只使用它之前的物品。历</text>
+<text x="1990" y="548.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">史截取最近 20 个物品。</text>
+<text x="1990" y="602.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">DataLoader：shuffle=True，batch_size=64，num_workers=2，pin_me</text>
+<text x="1990" y="642.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">mory=True。</text>
+<text x="1990" y="696.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">每个物品 4 token；历史末尾加 EOS。源长度 T ≤ 20 × 4 + 1 = 81；同批</text>
+<text x="1990" y="736.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">按最长长度右侧补 PAD。</text>
+<text x="1990" y="790.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">以下主线取常规完整批 B=64、T=81。它是实际配置对应的形状，不冒充某</text>
+<text x="1990" y="830.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">次日志捕获的 batch。</text>
+<rect x="70" y="944" width="57" height="57" rx="17" fill="#1867BC" stroke="none" stroke-width="2"/>
+<text x="98" y="984" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+<text x="146" y="985" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="40" font-weight="700" fill="#17263D" text-anchor="start">两条输入支路：历史给 Encoder，正确前缀给 Decoder</text>
+<text x="2920" y="984" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="end">B = batch 样本数；T = 该批补齐后的历史 token 数</text>
+<rect x="70" y="1028" width="1385" height="500" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="70" y="1028" width="9" height="500" rx="4" fill="#1867BC" stroke="none" stroke-width="2"/>
+<text x="100" y="1076" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#1867BC" text-anchor="start">04  历史输入：input_ids + attention_mask</text>
+<rect x="105" y="1110" width="650" height="119" rx="16" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="430.0" y="1157" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#1867BC" text-anchor="middle">input_ids [64, 81]</text>
+<text x="430.0" y="1201" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">整数编号：64 道题，每题最多 81 个 token</text>
+<rect x="790" y="1110" width="625" height="119" rx="16" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="1102.5" y="1157" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#1867BC" text-anchor="middle">mask [64, 81]</text>
+<text x="1102.5" y="1201" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">1 = 有效历史 / EOS；0 = 补齐 PAD</text>
+<text x="105" y="1277" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#17263D" text-anchor="start">真实样本放大：user=0 的 train 序列有 51 个物品；最后一题以第 51 个物品为目标，历史取第 31～50 个。</text>
+<text x="105" y="1381" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">输入首个物品码 [225,80,150,0] → [228,339,665,771]；最后一个历史物品 → [253,466,760,771]；之后接 E</text>
+<text x="105" y="1421.5" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">OS=2。</text>
+<text x="105" y="1500" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="start">目标物品不进入该样本的 Encoder 历史；用户 ID 仅作记录，不是模型输入。</text>
+<rect x="1545" y="1028" width="1385" height="500" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1545" y="1028" width="9" height="500" rx="4" fill="#C04550" stroke="none" stroke-width="2"/>
+<text x="1575" y="1076" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#C04550" text-anchor="start">05  监督标签 + 右移：teacher forcing</text>
+<text x="1580" y="1130" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="30" font-weight="700" fill="#C04550" text-anchor="start">目标：物品 1314，Semantic ID = [225,160,83,0]</text>
+<rect x="1580" y="1160" width="1310" height="74" rx="16" fill="#FDECEE" stroke="#C04550" stroke-width="2"/>
+<text x="2235.0" y="1207" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#C04550" text-anchor="middle">labels [64, 5]   例：[228,419,598,771,2]</text>
+<polyline points="2235,1248 2235,1294" fill="none" stroke="#C04550" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-red)"/>
+<rect x="1580" y="1310" width="1310" height="74" rx="16" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="2235.0" y="1357" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#7146BE" text-anchor="middle">decoder_input_ids [64, 5]   例：[1,228,419,598,771]</text>
+<text x="1580" y="1434" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">T5 自动把 labels 右移一位，并在开头放 BOS=1；EOS 不出现在这次右移输入中。labels 还会直接送往后面</text>
+<text x="1580" y="1474.5" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">的损失计算。</text>
+<rect x="70" y="1572" width="57" height="57" rx="17" fill="#AE620B" stroke="none" stroke-width="2"/>
+<text x="98" y="1612" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+<text x="146" y="1613" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="40" font-weight="700" fill="#17263D" text-anchor="start">整数编号查表后，才成为 256 维向量</text>
+<text x="2920" y="1612" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="end">同一份可训练 E 同时服务 Encoder、Decoder 和 LM Head</text>
+<rect x="70" y="1656" width="2860" height="368" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="112" y="1697" width="810" height="119" rx="16" fill="#FFF3DC" stroke="#AE620B" stroke-width="2"/>
+<text x="517.0" y="1744" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#AE620B" text-anchor="middle">E [1027, 256]</text>
+<text x="517.0" y="1788" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">共享 embedding 表：262,912 个参数</text>
+<polyline points="930,1752 1060,1752" fill="none" stroke="#1867BC" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+<rect x="1080" y="1682" width="815" height="119" rx="16" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="1487.5" y="1729" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#1867BC" text-anchor="middle">X₀ [64, 81, 256]</text>
+<text x="1487.5" y="1773" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">每个历史 token 查 E 的一行，再做 Dropout(0.1)</text>
+<rect x="2010" y="1682" width="865" height="119" rx="16" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="2442.5" y="1729" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#7146BE" text-anchor="middle">Y₀ [64, 5, 256]</text>
+<text x="2442.5" y="1773" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">每个右移 token 查同一张 E，再做 Dropout(0.1)</text>
+<polyline points="930,1789 994,1789 994,1842 2442,1842 2442,1810" fill="none" stroke="#7146BE" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<text x="112" y="1910" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="29" font-weight="400" fill="#17263D" text-anchor="start">形状读法：[64,81,256] = 64 个样本 × 每题 81 个位置 × 每位置 256 个连续特征。一个编号只负责查表；向量各分量由训练学习。</text>
+<text x="112" y="1990" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#53627A" text-anchor="start">T5 用注意力分数中的相对位置偏置表达顺序；不会在这里额外拼接位置向量。</text>
+<rect x="70" y="2070" width="57" height="57" rx="17" fill="#087D83" stroke="none" stroke-width="2"/>
+<text x="98" y="2110" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
+<text x="146" y="2111" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="40" font-weight="700" fill="#17263D" text-anchor="start">中央主流程：六层 Encoder 与六层 Decoder</text>
+<text x="2920" y="2110" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="end">实线 = 前向数据流；矩阵形状均按 B=64、T=81 展开</text>
+<rect x="70" y="2154" width="1320" height="2760" rx="28" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<rect x="1610" y="2154" width="1320" height="2760" rx="28" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="730" y="2222" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="38" font-weight="700" fill="#1867BC" text-anchor="middle">ENCODER  ·  把历史读成上下文记忆</text>
+<text x="2270" y="2222" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="38" font-weight="700" fill="#7146BE" text-anchor="middle">DECODER  ·  用前缀和历史预测下一位</text>
+<rect x="125" y="2260" width="1210" height="74" rx="16" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="730.0" y="2307" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#1867BC" text-anchor="middle">X₀ [64, 81, 256]</text>
+<rect x="1665" y="2260" width="1210" height="74" rx="16" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="2270.0" y="2307" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#7146BE" text-anchor="middle">Y₀ [64, 5, 256]</text>
+<polyline points="730,2347 730,2390" fill="none" stroke="#1867BC" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+<polyline points="2270,2347 2270,2390" fill="none" stroke="#7146BE" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<text x="135" y="2427" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#1867BC" text-anchor="start">06  一个 Encoder block（以下结构重复 6 次）</text>
+<text x="1675" y="2427" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#7146BE" text-anchor="start">07  一个 Decoder block（以下结构重复 6 次）</text>
+<rect x="125" y="2460" width="1210" height="700" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="125" y="2460" width="9" height="700" rx="4" fill="#1867BC" stroke="none" stroke-width="2"/>
+<text x="155" y="2508" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#1867BC" text-anchor="start">A  双向 Self-Attention：历史之间相互参考</text>
+<text x="160" y="2560" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#1867BC" text-anchor="start">RMSNorm(X) → 三组线性投影 Wq / Wk / Wv，各为 [256,256]</text>
+<rect x="160" y="2590" width="350" height="100" rx="13" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="335" y="2628" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="700" fill="#1867BC" text-anchor="middle">Q 查询</text>
+<text x="335" y="2666" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#1867BC" text-anchor="middle">[64,8,81,32]</text>
+<rect x="550" y="2590" width="350" height="100" rx="13" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="725" y="2628" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="700" fill="#1867BC" text-anchor="middle">K 索引</text>
+<text x="725" y="2666" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#1867BC" text-anchor="middle">[64,8,81,32]</text>
+<rect x="940" y="2590" width="350" height="100" rx="13" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="1115" y="2628" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="700" fill="#1867BC" text-anchor="middle">V 信息</text>
+<text x="1115" y="2666" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#1867BC" text-anchor="middle">[64,8,81,32]</text>
+<polyline points="335,2703 335,2733 730,2733 730,2752" fill="none" stroke="#1867BC" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+<polyline points="725,2703 725,2752" fill="none" stroke="#1867BC" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+<rect x="160" y="2767" width="1140" height="74" rx="16" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="730.0" y="2814" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#1867BC" text-anchor="middle">QKᵀ → scores [64,8,81,81]</text>
+<text x="160" y="2886" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#53627A" text-anchor="start">8 头 × 每题 81×81 对位置；整批共 3,359,232 个分数。</text>
+<polyline points="730,2903 730,2928" fill="none" stroke="#1867BC" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+<rect x="160" y="2940" width="1140" height="72" rx="13" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="730" y="2985" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="700" fill="#1867BC" text-anchor="middle">+ 相对位置偏置 + PAD 掩码 → Softmax → Dropout</text>
+<polyline points="730,3026 730,3050" fill="none" stroke="#1867BC" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+<text x="160" y="3087" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="29" font-weight="700" fill="#1867BC" text-anchor="start">权重 × V → [64,8,81,32] → 合并各头 [64,81,256]</text>
+<text x="160" y="3136" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">→ Wₒ 投影 → Dropout → 与本子层原输入 X 残差相加。</text>
+<polyline points="730,3175 730,3226" fill="none" stroke="#1867BC" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+<rect x="125" y="3245" width="1210" height="564" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="125" y="3245" width="9" height="564" rx="4" fill="#1867BC" stroke="none" stroke-width="2"/>
+<text x="155" y="3293" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#1867BC" text-anchor="start">B  Feed-Forward：逐位置加工 256 个特征</text>
+<text x="155" y="3351.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">RMSNorm → 无偏置线性层 256→1024 → ReLU（负值置零）→ Dropout(0.1) → 无偏置线性</text>
+<text x="155" y="3391.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">层 1024→256。</text>
+<text x="155" y="3445.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="29" font-weight="700" fill="#1867BC" text-anchor="start">[64,81,256] → [64,81,1024] → [64,81,256]</text>
+<text x="155" y="3501.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">再做 Dropout(0.1)，与前馈子层的输入相加。残差保留已有信息，让每层在原表示上逐步修正。</text>
+<text x="155" y="3555.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">两个子层都先归一化，再计算和残差相加；本图中的 Attention 简写均包含投影与相应 Dropout。</text>
+<text x="155" y="3608.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="30" font-weight="700" fill="#1867BC" text-anchor="start">一个 block 输出仍为 [64,81,256]。</text>
+<polyline points="730,3826 730,3880" fill="none" stroke="#1867BC" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+<rect x="125" y="3900" width="1210" height="119" rx="16" fill="#EAF3FF" stroke="#1867BC" stroke-width="2"/>
+<text x="730.0" y="3947" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#1867BC" text-anchor="middle">Block 1 → 2 → 3 → 4 → 5 → 6</text>
+<text x="730.0" y="3991" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">结构相同；各层的注意力与前馈权重分别学习</text>
+<polyline points="730,4035 730,4083" fill="none" stroke="#1867BC" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)"/>
+<rect x="125" y="4100" width="1210" height="213" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="125" y="4100" width="9" height="213" rx="4" fill="#087D83" stroke="none" stroke-width="2"/>
+<text x="155" y="4148" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="31" font-weight="700" fill="#087D83" text-anchor="start">C  栈末尾：Final RMSNorm → Dropout(0.1)</text>
+<text x="155" y="4202.3" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#17263D" text-anchor="start">6 层都处理整段历史；输出保留 81 个位置，每个位置都有 256 个上下文特征。</text>
+<polyline points="730,4327 730,4372" fill="none" stroke="#087D83" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-teal)"/>
+<rect x="125" y="4387" width="1210" height="119" rx="16" fill="#E6F6F4" stroke="#087D83" stroke-width="2"/>
+<text x="730.0" y="4434" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#087D83" text-anchor="middle">H [64, 81, 256]</text>
+<text x="730.0" y="4478" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">Encoder 最终输出：每个样本都有完整历史记忆</text>
+<rect x="125" y="4542" width="1210" height="330" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="125" y="4542" width="9" height="330" rx="4" fill="#087D83" stroke="none" stroke-width="2"/>
+<text x="155" y="4590" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="31" font-weight="700" fill="#087D83" text-anchor="start">H 同时供六层 Decoder 的 Cross-Attention 读取</text>
+<text x="155" y="4644.3" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">每层 Decoder 都以自己的 Wₖ / Wᵥ 从同一个 H 生成 K、V；它收到的是全部历史向量，不是</text>
+<text x="155" y="4684.8" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">压成一个 256 维向量。</text>
+<text x="155" y="4738.3" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">H 内有 1,327,104 个标量。这里只报告真实形状和元素数；未记录的向量数值不填造。</text>
+<rect x="1665" y="2460" width="1210" height="910" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1665" y="2460" width="9" height="910" rx="4" fill="#7146BE" stroke="none" stroke-width="2"/>
+<text x="1695" y="2508" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#7146BE" text-anchor="start">A  Causal Self-Attention：只读正确前缀</text>
+<text x="1700" y="2560" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#7146BE" text-anchor="start">RMSNorm(Y) → Q / K / V 投影 → 各拆成 8 头</text>
+<rect x="1700" y="2590" width="1140" height="74" rx="16" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="2270.0" y="2637" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#7146BE" text-anchor="middle">Q / K / V [64,8,5,32]</text>
+<polyline points="2270,2676 2270,2710" fill="none" stroke="#7146BE" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<rect x="1700" y="2725" width="1140" height="74" rx="16" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="2270.0" y="2772" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#7146BE" text-anchor="middle">QKᵀ → scores [64,8,5,5]</text>
+<text x="1700" y="2840" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">+ 相对位置偏置 + 因果掩码；屏蔽位置加极大负数。</text>
+<text x="1700" y="2880" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="700" fill="#7146BE" text-anchor="start">掩码示意：行=预测位置，列=Decoder 输入位置</text>
+<text x="1840" y="2915" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="middle">BOS</text>
+<text x="1982" y="2915" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="middle">228</text>
+<text x="2124" y="2915" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="middle">419</text>
+<text x="2266" y="2915" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="middle">598</text>
+<text x="2408" y="2915" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="middle">771</text>
+<text x="1700" y="2971" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="start">→228</text>
+<rect x="1780" y="2941" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="1840" y="2968" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="1922" y="2941" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="1982" y="2968" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<rect x="2064" y="2941" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="2124" y="2968" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<rect x="2206" y="2941" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="2266" y="2968" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<rect x="2348" y="2941" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="2408" y="2968" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<text x="1700" y="3019" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="start">→419</text>
+<rect x="1780" y="2989" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="1840" y="3016" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="1922" y="2989" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="1982" y="3016" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="2064" y="2989" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="2124" y="3016" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<rect x="2206" y="2989" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="2266" y="3016" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<rect x="2348" y="2989" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="2408" y="3016" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<text x="1700" y="3067" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="start">→598</text>
+<rect x="1780" y="3037" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="1840" y="3064" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="1922" y="3037" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="1982" y="3064" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="2064" y="3037" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="2124" y="3064" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="2206" y="3037" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="2266" y="3064" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<rect x="2348" y="3037" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="2408" y="3064" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<text x="1700" y="3115" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="start">→771</text>
+<rect x="1780" y="3085" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="1840" y="3112" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="1922" y="3085" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="1982" y="3112" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="2064" y="3085" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="2124" y="3112" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="2206" y="3085" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="2266" y="3112" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="2348" y="3085" width="121" height="37" rx="7" fill="#E6E7EE" stroke="none" stroke-width="2"/>
+<text x="2408" y="3112" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#53627A" text-anchor="middle">屏蔽</text>
+<text x="1700" y="3163" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#7146BE" text-anchor="start">→EOS</text>
+<rect x="1780" y="3133" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="1840" y="3160" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="1922" y="3133" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="1982" y="3160" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="2064" y="3133" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="2124" y="3160" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="2206" y="3133" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="2266" y="3160" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<rect x="2348" y="3133" width="121" height="37" rx="7" fill="#BFCDE9" stroke="none" stroke-width="2"/>
+<text x="2408" y="3160" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#7146BE" text-anchor="middle">可见</text>
+<text x="1700" y="3240" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">Softmax → Dropout → 权重 × V → 合并各头 → Wₒ → Dropout → 残差，输出 [64,5,256]。</text>
+<text x="1700" y="3280.5" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">五个位置在一次前向中并行计算；掩码阻止偷看。</text>
+<polyline points="2270,3385 2270,3435" fill="none" stroke="#7146BE" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<rect x="1665" y="3450" width="1210" height="662" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1665" y="3450" width="9" height="662" rx="4" fill="#087D83" stroke="none" stroke-width="2"/>
+<text x="1695" y="3498" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#087D83" text-anchor="start">B  Cross-Attention：拿着前缀查询历史</text>
+<text x="1700" y="3550" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#087D83" text-anchor="start">历史 H 投影出 K、V；Decoder 状态先 RMSNorm，再投影出 Q。</text>
+<rect x="1700" y="3580" width="550" height="109" rx="13" fill="#E6F6F4" stroke="#087D83" stroke-width="2"/>
+<text x="1975" y="3623" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="700" fill="#087D83" text-anchor="middle">H → K、V（历史）</text>
+<text x="1975" y="3663" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#087D83" text-anchor="middle">[64,8,81,32]</text>
+<rect x="2290" y="3580" width="550" height="109" rx="13" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="2565" y="3623" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="700" fill="#7146BE" text-anchor="middle">Decoder → Q（查询）</text>
+<text x="2565" y="3663" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#7146BE" text-anchor="middle">[64,8,5,32]</text>
+<polyline points="1975,3703 1975,3720 2270,3720 2270,3740" fill="none" stroke="#087D83" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-teal)"/>
+<polyline points="2565,3703 2565,3720 2270,3720" fill="none" stroke="#7146BE" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<rect x="1700" y="3755" width="1140" height="74" rx="16" fill="#E6F6F4" stroke="#087D83" stroke-width="2"/>
+<text x="2270.0" y="3802" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#087D83" text-anchor="middle">QKᵀ → scores [64,8,5,81]</text>
+<text x="1700" y="3880" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">+ 历史 PAD 掩码 → Softmax → Dropout → 权重 × V → [64,8,5,32] → 合并 [64,5,256] → </text>
+<text x="1700" y="3920.5" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">Wₒ → Dropout → 与本子层输入残差相加。</text>
+<text x="1700" y="4025" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#17263D" text-anchor="start">每个预测位置从全部历史中提取所需信息；不加可学习相对位置偏置。每层有各自的 Q/K/V 投影</text>
+<text x="1700" y="4064.0" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#17263D" text-anchor="start">权重。</text>
+<polyline points="1340,4447 1490,4447 1490,3635 1685,3635" fill="none" stroke="#087D83" stroke-width="9" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-teal)"/>
+<rect x="1401" y="3490" width="197" height="99" rx="16" fill="#E6F6F4" stroke="#087D83" stroke-width="2"/>
+<text x="1499" y="3532" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="700" fill="#087D83" text-anchor="middle">同一份 H</text>
+<text x="1499" y="3568" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#087D83" text-anchor="middle">提供 K、V</text>
+<polyline points="2270,4128 2270,4176" fill="none" stroke="#7146BE" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<rect x="1665" y="4190" width="1210" height="341" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1665" y="4190" width="9" height="341" rx="4" fill="#7146BE" stroke="none" stroke-width="2"/>
+<text x="1695" y="4238" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="31" font-weight="700" fill="#7146BE" text-anchor="start">C  Feed-Forward + 残差</text>
+<text x="1695" y="4292.3" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#17263D" text-anchor="start">RMSNorm → 256→1024 → ReLU → Dropout → 1024→256 → Dropout → 与该子层输入相加。</text>
+<text x="1695" y="4344.3" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="700" fill="#7146BE" text-anchor="start">[64,5,256] → [64,5,1024] → [64,5,256]</text>
+<text x="1695" y="4399.3" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#17263D" text-anchor="start">这一整个 Decoder block 共含：因果自注意力、交叉注意力、前馈网络三个子层。</text>
+<polyline points="2270,4546 2270,4590" fill="none" stroke="#7146BE" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<rect x="1665" y="4605" width="1210" height="74" rx="16" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="2270.0" y="4652" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#7146BE" text-anchor="middle">6 个 Decoder blocks → Final RMSNorm → Dropout</text>
+<polyline points="2270,4693 2270,4733" fill="none" stroke="#7146BE" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<rect x="1665" y="4748" width="1210" height="119" rx="16" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="2270.0" y="4795" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#7146BE" text-anchor="middle">D [64, 5, 256]</text>
+<text x="2270.0" y="4839" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">共 81,920 个隐藏特征；5 个位置各自准备预测下一 token</text>
+<polyline points="2270,4880 2270,4932 35,4932 35,5166 92,5166" fill="none" stroke="#7146BE" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<rect x="1040" y="4911" width="540" height="40" rx="5" fill="#F5F8FC" stroke="none" stroke-width="2"/>
+<text x="1310" y="4940" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="700" fill="#7146BE" text-anchor="middle">Decoder 输出 D → 下方 LM Head</text>
+<rect x="70" y="4958" width="57" height="57" rx="17" fill="#C04550" stroke="none" stroke-width="2"/>
+<text x="98" y="4998" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+<text x="146" y="4999" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="40" font-weight="700" fill="#17263D" text-anchor="start">从连续向量到正确 token 的概率，再到一个损失标量</text>
+<text x="2920" y="4998" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="end">此处仍在训练前向传播内；不先 argmax，也不先运行 Beam Search</text>
+<rect x="70" y="5042" width="1385" height="700" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="70" y="5042" width="9" height="700" rx="4" fill="#7146BE" stroke="none" stroke-width="2"/>
+<text x="100" y="5090" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#7146BE" text-anchor="start">08  LM Head：每个位置都为 1,027 个 token 打分</text>
+<rect x="105" y="5129" width="1310" height="74" rx="16" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="760.0" y="5176" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#7146BE" text-anchor="middle">D [64,5,256] ÷ √256 = D ÷ 16</text>
+<polyline points="760,5220 760,5260" fill="none" stroke="#7146BE" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-purple)"/>
+<rect x="105" y="5275" width="1310" height="119" rx="16" fill="#F1ECFC" stroke="#7146BE" stroke-width="2"/>
+<text x="760.0" y="5322" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#7146BE" text-anchor="middle">logits = (D ÷ 16) × Eᵀ    [64,5,1027]</text>
+<text x="760.0" y="5366" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">输出权重与 embedding 共享；Eᵀ 形状 [256,1027]</text>
+<text x="105" y="5445" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="29" font-weight="400" fill="#17263D" text-anchor="start">每个位置输出 1,027 个实数分数：一批共 328,640 个 logits。它们经过 Softmax 才成为加起来等于 1</text>
+<text x="105" y="5488.5" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="29" font-weight="400" fill="#17263D" text-anchor="start"> 的词表概率。</text>
+<text x="105" y="5570" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#17263D" text-anchor="start">训练按完整 1,027 词表计算损失；每一位所属码本范围、合法目录路径和排除已见物品的 Trie 约束，在评</text>
+<text x="105" y="5612.0" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#17263D" text-anchor="start">估生成时使用。</text>
+<text x="105" y="5711" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#53627A" text-anchor="start">连续 256 维特征 → 词表分数；这里不比较两个 256 维向量的距离。</text>
+<polyline points="1469,5380 1526,5380" fill="none" stroke="#C04550" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-red)"/>
+<rect x="1545" y="5042" width="1385" height="700" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1545" y="5042" width="9" height="700" rx="4" fill="#C04550" stroke="none" stroke-width="2"/>
+<text x="1575" y="5090" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#C04550" text-anchor="start">09  Cross-Entropy：只读取各位置正确答案的概率</text>
+<text x="1580" y="5145" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="31" font-weight="700" fill="#C04550" text-anchor="start">labels [64,5]   例：[228,419,598,771,2]</text>
+<text x="1580" y="5200" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#C04550" text-anchor="start">预测对应：BOS→228；228→419；419→598；598→771；771→EOS</text>
+<rect x="1580" y="5238" width="1310" height="119" rx="16" fill="#FDECEE" stroke="#C04550" stroke-width="2"/>
+<text x="2235.0" y="5285" font-family="Consolas,Microsoft YaHei,Arial,sans-serif" font-size="35" font-weight="700" fill="#C04550" text-anchor="middle">[320,1027] logits  +  [320] labels → 标量 L</text>
+<text x="2235.0" y="5329" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="middle">64 个样本 × 5 个监督位置 = 320 次分类</text>
+<text x="1580" y="5413" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="36" font-weight="700" fill="#C04550" text-anchor="start">L = −(1/320) Σᵦ Σⱼ log pᵦ,ⱼ[ labelsᵦ,ⱼ ]</text>
+<text x="1580" y="5476" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#17263D" text-anchor="start">p = Softmax(logits)。正确 token 的概率越低，惩罚越大。实际 CrossEntropy 直接接收 logits，内部稳</text>
+<text x="1580" y="5518.0" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#17263D" text-anchor="start">定地完成 LogSoftmax 等运算。</text>
+<text x="1580" y="5598" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#17263D" text-anchor="start">标签是整数类别索引；反向梯度沿概率计算回传到模型参数。labels 中的 −100 不计入损失；本实验所有</text>
+<text x="1580" y="5640.0" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="28" font-weight="400" fill="#17263D" text-anchor="start">目标固定 5 位，无需补目标 PAD。</text>
+<text x="1580" y="5711" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="26" font-weight="400" fill="#53627A" text-anchor="start">图中没有虚构 p 值、注意力权重或单个样本的 loss。</text>
+<polyline points="2904,1197 2962,1197 2962,5145 2944,5145" fill="none" stroke="#C04550" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-red)" stroke-dasharray="13 10"/>
+<g transform="translate(2984 3000) rotate(90)"><text font-family="Microsoft YaHei,Arial,sans-serif" font-size="23" fill="#C04550">监督旁路：正确 labels 直接送交叉熵；不作为待优化参数</text></g>
+<rect x="70" y="5788" width="57" height="57" rx="17" fill="#BA338C" stroke="none" stroke-width="2"/>
+<text x="98" y="5828" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#FFFFFF" text-anchor="middle">6</text>
+<text x="146" y="5829" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="40" font-weight="700" fill="#17263D" text-anchor="start">反向传播与更新：怎样让下次预测更接近答案</text>
+<text x="2920" y="5828" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="end">一个 optimizer step 包含 4 次小批量前向 + 反向</text>
+<rect x="70" y="5872" width="915" height="640" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="70" y="5872" width="9" height="640" rx="4" fill="#BA338C" stroke="none" stroke-width="2"/>
+<text x="100" y="5920" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#BA338C" text-anchor="start">10  loss / 4 → backward()</text>
+<text x="100" y="5978.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">autocast(cuda, bfloat16)：让合适的前向算子使用 BF16；归一化等稳</text>
+<text x="100" y="6018.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">定性敏感计算可保留 FP32。整数 token 不变成 BF16。</text>
+<text x="100" y="6072.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">检查 loss 有限 → L/4 → backward()。自动微分沿计算图反向求每个参</text>
+<text x="100" y="6112.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">数对损失的影响。</text>
+<text x="100" y="6166.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">梯度经过 LM Head → Decoder → Cross-Attention → Encoder；共</text>
+<text x="100" y="6206.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">享 E 也从两侧输入查表与输出投影获得梯度。</text>
+<text x="100" y="6260.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">梯度描述“每个参数朝哪个方向微调会降低损失”；离散物品编码和标</text>
+<text x="100" y="6300.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">签不参与参数更新。</text>
+<text x="100" y="6354.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">每个小批量结束后累积 .grad，尚不执行 optimizer.step()；BF16 训练</text>
+<text x="100" y="6394.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">代码没有使用 GradScaler。</text>
+<rect x="1015" y="5872" width="915" height="640" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1015" y="5872" width="9" height="640" rx="4" fill="#BA338C" stroke="none" stroke-width="2"/>
+<text x="1045" y="5920" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#BA338C" text-anchor="start">11  累积 4 批 → 裁剪梯度</text>
+<text x="1045" y="5978.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">重复 4 次：取一批 64 题 → 前向 → L/4 → 反向。常规一步合计 256 题，</text>
+<text x="1045" y="6018.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">等效汇总 1,280 个 token 监督位置。</text>
+<text x="1045" y="6072.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">clip_grad_norm_(parameters, 1.0)：若整体梯度 L2 范数过大，按比例</text>
+<text x="1045" y="6112.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">缩小，避免一次更新跨得过远。</text>
+<text x="1045" y="6166.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">一轮有 15,336 个小批量：前 15,335 批各 64 题，最后一批 51 题；dr</text>
+<text x="1045" y="6206.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">op_last 未启用。</text>
+<text x="1045" y="6260.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">因此 256 是常规有效 batch；遇到尾批会更小。此时代码仍将各批平均 </text>
+<text x="1045" y="6300.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">loss 除以 4，并非按总 token 数重新加权。</text>
+<text x="1045" y="6354.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">数据读完就重新创建打乱后的 iterator，继续训练；step 统计的是优化</text>
+<text x="1045" y="6394.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">器更新次数。</text>
+<rect x="1960" y="5872" width="970" height="640" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1960" y="5872" width="9" height="640" rx="4" fill="#BA338C" stroke="none" stroke-width="2"/>
+<text x="1990" y="5920" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#BA338C" text-anchor="start">12  AdamW 更新 → 调学习率 → 清空梯度</text>
+<text x="1990" y="5978.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">optimizer.step()：按累积梯度及其历史统计更新全部 11,281,664 个可训练</text>
+<text x="1990" y="6018.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">参数；weight_decay=0.01。</text>
+<text x="1990" y="6072.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">scheduler.step()：正式训练前 1,500 step 线性 warmup 至 0.0003，之后</text>
+<text x="1990" y="6112.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">线性下降，30,000 step 时到 0。</text>
+<text x="1990" y="6166.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">zero_grad(set_to_none=True) → step += 1 → 取后续 batch，使用更新</text>
+<text x="1990" y="6206.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">后的参数重新计算。</text>
+<text x="1990" y="6260.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">每 100 step 打印该区间的小批量原始 loss 平均值和下一步学习率，并写入 </text>
+<text x="1990" y="6300.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">history.jsonl。</text>
+<text x="1990" y="6354.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">真实 seed42 日志：step100 loss=5.651244；step30000 loss=1.169137。</text>
+<text x="1990" y="6394.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">它们是区间均值，不是上方示例题的损失。</text>
+<polyline points="994,6188 1009,6188" fill="none" stroke="#BA338C" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-pink)"/>
+<polyline points="1939,6188 1954,6188" fill="none" stroke="#BA338C" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-pink)"/>
+<rect x="70" y="6556" width="57" height="57" rx="17" fill="#297540" stroke="none" stroke-width="2"/>
+<text x="98" y="6596" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#FFFFFF" text-anchor="middle">7</text>
+<text x="146" y="6597" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="40" font-weight="700" fill="#17263D" text-anchor="start">每 5,000 step：用真实生成能力验证，再保存模型</text>
+<text x="2920" y="6596" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="end">valid 选模；test 留作训练方案确定后的最终评估</text>
+<rect x="70" y="6640" width="915" height="774" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="70" y="6640" width="9" height="774" rx="4" fill="#297540" stroke="none" stroke-width="2"/>
+<text x="100" y="6688" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#297540" text-anchor="start">13  切换到 eval，逐 token 生成 Top-10</text>
+<text x="100" y="6746.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">step % 5000 == 0 或达到 max_steps 时调用 evaluate_model(valid_s</text>
+<text x="100" y="6786.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">et)。model.eval() 关闭 Dropout；inference_mode() 不建反向计算图。</text>
+<text x="100" y="6840.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">valid = 6,040 名用户，每人一个留出的目标；eval_batch_size=16，共</text>
+<text x="100" y="6880.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start"> 378 批，最后一批 8 人。</text>
+<text x="100" y="6934.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">只给历史和 BOS，从预测前缀出发，最多生成 5 个新 token；beam=2</text>
+<text x="100" y="6974.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">0，返回 10 个候选序列。</text>
+<text x="100" y="7028.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">动态 Trie 限制每个前缀的合法后继，确保生成结果在 3,416 个物品目录</text>
+<text x="100" y="7068.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">内，且未出现在用户完整历史中。</text>
+<text x="100" y="7122.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">历史输入仍只取最近 20 个物品；过滤已见物品使用完整历史。解码去</text>
+<text x="100" y="7162.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">掉 BOS/EOS → 位置偏移还原四位码 → 查回 item ID。</text>
+<text x="100" y="7216.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">检查目录外、已见重复和短列表；按目标的 Top-5/10 名次汇总 Recall </text>
+<text x="100" y="7256.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">与 NDCG，并输出冷门/热门等分组。</text>
+<rect x="1015" y="6640" width="915" height="774" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1015" y="6640" width="9" height="774" rx="4" fill="#297540" stroke="none" stroke-width="2"/>
+<text x="1045" y="6688" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#297540" text-anchor="start">14  evaluated users 是评估进度</text>
+<text x="1045" y="6746.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">每完成 100 个评估 batch 打印一次。16×100=1,600，所以看到 1600</text>
+<text x="1045" y="6786.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">/6040、3200/6040、4800/6040。</text>
+<text x="1045" y="6840.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">剩余用户评估完成后输出指标 JSON，不另打一行 6040/6040；评估结</text>
+<text x="1045" y="6880.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">束后才保存 checkpoint。</text>
+<text x="1045" y="6934.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">选择指标：valid 的 all / ndcg@10。严格高于历史最好才算 improved；</text>
+<text x="1045" y="6974.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">连续 3 次无提升会提前停止。</text>
+<text x="1045" y="7028.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">真实 seed42：step5000 valid NDCG@10 = 0.045887；step30000 </text>
+<text x="1045" y="7068.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">= 0.139328。</text>
+<text x="1045" y="7122.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">valid 不更新参数，但决定保存哪个模型和何时停训。test 不参与训练期</text>
+<text x="1045" y="7162.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">的效果选模；训练脚本只对其做接口与统计审计。</text>
+<text x="1045" y="7216.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">最终加载由 valid 选出的 best，用独立 evaluate_generative.py 在 test</text>
+<text x="1045" y="7256.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start"> 上报告成绩。</text>
+<rect x="1960" y="6640" width="970" height="774" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1960" y="6640" width="9" height="774" rx="4" fill="#297540" stroke="none" stroke-width="2"/>
+<text x="1990" y="6688" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#297540" text-anchor="start">15  Writing model shards 是权重落盘</text>
+<text x="1990" y="6746.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">每次验证后保存 last；valid NDCG@10 提升时再保存 best，因此可能连续</text>
+<text x="1990" y="6786.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">出现两次保存进度条。</text>
+<text x="1990" y="6840.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">model.save_pretrained(safe_serialization=True) 写模型配置和 safetenso</text>
+<text x="1990" y="6880.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">rs 权重；日志 1/1 表示该次权重只写一个 shard 文件。</text>
+<text x="1990" y="6934.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">trainer_state.pt 还保存：optimizer、scheduler、随机数状态、global_ste</text>
+<text x="1990" y="6974.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">p、best_ndcg10、bad_rounds、seed 和配置。</text>
+<text x="1990" y="7028.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">先写临时目录，再替换 checkpoint 目录；best 与 last 角色不同：best 用</text>
+<text x="1990" y="7068.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">于选模，last 用于继续训练。</text>
+<text x="1990" y="7122.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">resume 会载入模型、优化器、调度器和 RNG 状态，但未保存 DataLoader</text>
+<text x="1990" y="7162.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start"> iterator 位置；代码不保证恢复后逐 batch 重放原顺序。</text>
+<text x="1990" y="7216.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">未达到早停或 30,000 step 时，下一轮 model.train() 恢复 Dropout，继续</text>
+<text x="1990" y="7256.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">使用 train 数据更新参数。</text>
+<rect x="70" y="7458" width="57" height="57" rx="17" fill="#087D83" stroke="none" stroke-width="2"/>
+<text x="98" y="7498" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="32" font-weight="700" fill="#FFFFFF" text-anchor="middle">8</text>
+<text x="146" y="7499" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="40" font-weight="700" fill="#17263D" text-anchor="start">读图辅助：真实范围、参数账本和证据</text>
+<text x="2920" y="7498" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="25" font-weight="400" fill="#53627A" text-anchor="end">面向初学者的完整算法流程；不展开 CUDA 内核与内存分配</text>
+<rect x="70" y="7542" width="1385" height="610" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="70" y="7542" width="9" height="610" rx="4" fill="#087D83" stroke="none" stroke-width="2"/>
+<text x="100" y="7590" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#087D83" text-anchor="start">张量、掩码与参数，不要混在一起</text>
+<text x="100" y="7648.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">张量 = 多维数字表；[64,8,5,81] 可读作“64 道题 × 8 个头 × 5 个目标位置 × 81 个历史位置”。每对位置一</text>
+<text x="100" y="7688.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">个注意力分数。</text>
+<text x="100" y="7742.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">参数 = 多个 batch 共用且会学习的权重；激活 = 当前 batch 算出的临时特征；梯度 = 损失对参数的变化率。</text>
+<text x="100" y="7782.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">三者不是同一个张量。</text>
+<text x="100" y="7836.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">RMSNorm：按均方根调尺度（ε=1e−6，不减均值）；Dropout=0.1 在训练时随机置零并缩放；残差将子层</text>
+<text x="100" y="7876.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">输入加回来。</text>
+<text x="100" y="7930.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">T5 注意力使用 QKᵀ 加偏置与掩码，不额外除以 √32。每个栈首层学习 32×8 的相对位置桶偏置，并供后续自</text>
+<text x="100" y="7970.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">注意力层使用。</text>
+<text x="100" y="8024.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">共享 embedding 262,912 + Encoder 4,722,176 + Decoder 6,296,576 = 11,281,664 参数；LM Head 绑定</text>
+<text x="100" y="8064.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start"> E，不另计一份权重。</text>
+<rect x="1545" y="7542" width="1385" height="610" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
+<rect x="1545" y="7542" width="9" height="610" rx="4" fill="#087D83" stroke="none" stroke-width="2"/>
+<text x="1575" y="7590" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="34" font-weight="700" fill="#087D83" text-anchor="start">本图的数字如何核实</text>
+<text x="1575" y="7648.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">大张量按正式配置 B=64、T=81、目标长度=5 推导。T 随 batch 内最长历史变化；训练尾批 B=51。BOS=1 </text>
+<text x="1575" y="7688.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">是本仓库设置，不套用其他 T5 默认值。</text>
+<text x="1575" y="7742.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">冻结数据中有 867,003 个前缀训练样本达到 20 个历史物品。图中的具体物品码与 labels 直接取自 user=0；</text>
+<text x="1575" y="7782.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">没有杜撰电影名称。</text>
+<text x="1575" y="7836.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">核心证据：config/generative_ml1m.yaml；scripts/generative_common.py；scripts/train_generative.py；</text>
+<text x="1575" y="7876.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">audit.log；冻结 Semantic ID；seed42_history.jsonl。</text>
+<text x="1575" y="7930.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">T5 子层细节同时核对 Hugging Face 官方 modeling_t5.py / configuration_t5.py；源文件路径和 SHA-256 </text>
+<text x="1575" y="7970.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">见同名 evidence.json。</text>
+<text x="1575" y="8024.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">向量分量、注意力热度、每位置概率未被实验记录，本图只写符号与可验证形状。配套 Markdown 提供来源、</text>
+<text x="1575" y="8064.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">阅读顺序及可复现构建命令。</text>
+<text x="70" y="8255" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#53627A" text-anchor="start">GENREC-demo  /  Week 5–6 historical configuration  /  generated from checked repository evidence</text>
+<text x="2930" y="8255" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#53627A" text-anchor="end">可编辑 SVG · 高清 PNG · 2026-10-29</text>
+</svg>
