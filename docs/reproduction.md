@@ -80,4 +80,6 @@ python scripts/run_week7.py train --variant text --seed 42 --gpu 0 --resume
 
 四组 seed 42 在 valid 上筛选后，Text 与候选补齐种子 43/44；冻结方案后再评测 test。完整计划及结果边界见 [实验协议](experiment-protocol.md)。
 
+已完成的筛选运行、h20基线与候选记录见 [训练记录](../results/week7-improvement/05-formal-training/README.md)和 [验证集筛选](../results/week7-improvement/04-screening/README.md)。可用 `python scripts/run_week7.py curves` 从完成的正式训练记录重建曲线；该命令兼容服务器旧平铺目录与仓库分类目录，并排除冒烟及进行中的第七周运行。
+
 CPU测试可以验证接口和数学规则；完整训练、解码与指标仍需在实际数据和 GPU 环境中执行。checkpoint 和可重建的大数组不保存在仓库。

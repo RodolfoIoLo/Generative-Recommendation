@@ -1,6 +1,16 @@
 # Week 7：文本—协同融合式语义标识符
 
-已完成输入冻结、CPU冒烟及恢复、协同特征构建，以及四组RQ-VAE量化与语义ID导出。生成模型的融合消融和正式评测尚未开展，本目录暂不包含新的推荐效果结论。
+已完成四组语义ID、seed42验证集筛选、Fixed候选冻结，以及SASRec / GRU4Rec共六次h20基线训练。Text与Fixed的三种子复验正在推进，正式test尚未开始。
+
+| 阶段 | 状态 |
+|---|---|
+| 7.0–7.5 数据、量化与仓库准备 | 完成 |
+| 7.6 训练曲线与搜索诊断 | 完成 |
+| 7.7 四组seed42训练 | 全部完成60,000步 |
+| 7.8 候选选择 | Fixed已按valid冻结 |
+| 7.9 Text与Fixed补齐seed43/44 | 进行中，尚未齐备 |
+| 7.10 h20基线 | 两个模型、三个种子全部完成 |
+| 7.11–7.13 正式test、汇总与发布 | 尚未开展 |
 
 ## 目录与证据
 
@@ -14,17 +24,24 @@
 | [02-embeddings/weights.json](02-embeddings/weights.json) | 四组逐物品协同权重，第i项对应item i |
 | [02-embeddings/neighbors.json](02-embeddings/neighbors.json) | 20个固定锚点的Top-10协同近邻 |
 | [03-semantic-ids/](03-semantic-ids/README.md) | 四组ID、码本质量、训练日志与前缀分析 |
+| [01-diagnostics/](01-diagnostics/README.md) | 七条正式训练曲线与五种搜索方法的指标、样例 |
+| [04-screening/](04-screening/README.md) | 四组seed42训练日志、valid消融表 |
+| [selection.json](selection.json) | 候选、筛选分数、控制变量与冻结数据身份 |
+| [05-formal-training/](05-formal-training/README.md) | 四组训练轨迹、最佳指标与六个h20基线记录 |
 
 CPU冒烟源文件位于服务器results/week7-improvement/05-formal-training/；仓库将其归入01-diagnostics/cpu-smoke/，避免与正式训练混淆。两份文件名称和内容均保持不变，仅调整展示目录。
 
 ## 已验证结果
 
 - 6,040名用户、3,416部电影、987,531次训练交互，对应981,491个全前缀训练样本。
-- 11项CPU单元测试全部通过，无失败、错误或跳过。
+- 17项CPU单元测试全部通过，无失败、错误或跳过。
 - 小模型从step2恢复到step4；在step2和4分别对8名用户进行约束验证，非法ID、已见物品和短列表率均为0。
 - 所有新向量均为float32、有限值、单位范数；四组融合输入均为3416×448，逐行范数最大误差小于1.8e-7。
 - 保存的频次与train重算一致；四组权重与公式一致；融合数组与重算结果一致；哈希与metadata一致。
 - 四组checkpoint均可重现全部保存的ID；train、valid、test各6,040行，经映射后与原始物品和目标逐条一致。
+- 四组生成模型均完成60,000步；best/last签名与配置、数据哈希、最佳valid指标和训练轨迹一致，约束验证的三项合法性诊断均为0。
+- Fixed的valid NDCG@10为0.19352，较Text的0.17761相对提高约8.96%；仅为seed42筛选结果。
+- 六个h20基线checkpoint、原始日志和选模分数一致；旧模型512用户搜索诊断的指标已由完整预测明细重算核对。
 
 冒烟Recall/NDCG为0，只验证前向、反向、保存、恢复和解码。best保留在step2，last在step4；smoke的finished=false表示未跑满其20步日程，不代表4步恢复检查失败。
 
@@ -62,7 +79,7 @@ fixed_match与adaptive整体协同占比相同，分配方式不同。它检验�
 | Species (1995) | Alien: Resurrection (1997) | 0.9145 |
 | Species (1995) | Species II (1998) | 0.9014 |
 
-这些例子表明表示包含可读的共同交互结构，尚不能证明融合ID会提高推荐指标。
+这些例子帮助理解共同交互结构；是否带来推荐收益，应以独立的训练与评测结果判断。
 
 ## 服务器保留
 
@@ -76,4 +93,4 @@ fixed_match与adaptive整体协同占比相同，分配方式不同。它检验�
 └── frequency.json
 ~~~
 
-数组和checkpoint不进入Git；四组语义ID映射、代码、配置及轻量质量证据保留在仓库。下一步可用空闲GPU进行搜索诊断和生成模型训练。
+数组和checkpoint不进入Git；四组语义ID映射、代码、配置与已完成实验的轻量证据保留在仓库。下一步补齐Text与Fixed的seed43/44，通过完整性检查后再进行正式test。

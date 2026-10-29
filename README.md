@@ -30,11 +30,11 @@ Toy Story → [37, 128, 5, 0]
 | 第 2 周 | SASRec 三随机种子,GRU4Rec 基线与 checkpoint 复评 | ✅ 完成 |
 | 第 3–4 周 | 文本编码,RQ-Kmeans / RQ-VAE,语义 ID 与码本分析 | ✅️ 完成 |
 | 第 5–6 周 | T5 类生成式推荐:管线验证、三种子训练、约束解码与基线复评 | ✅ 完成 |
-| 第 7 周 | 文本—协同融合、语义ID消融与仓库整理 | 四组ID已构建；生成模型消融待开展 |
+| 第 7 周 | 文本—协同融合、语义ID消融与仓库整理 | seed42筛选、候选冻结与h20基线完成；三种子复验进行中 |
 
 ### 已得到的核心结果
 
-测试集采用 **3,416 个物品全量排序**,主表对所有模型统一屏蔽用户完整历史中的物品.结果为三个随机种子的均值 ± 总体标准差.
+下表为Week 1–6的正式test结果。测试集采用 **3,416 个物品全量排序**,主表对所有模型统一屏蔽用户完整历史中的物品.结果为三个随机种子的均值 ± 总体标准差.
 
 | 模型 | Recall@5 | Recall@10 | NDCG@5 | NDCG@10 |
 |---|---:|---:|---:|---:|
@@ -52,9 +52,9 @@ Toy Story → [37, 128, 5, 0]
 | Week 2 | 行为序列 | RecBole 复现 SASRec / GRU4Rec,多种子全量排序评测 | 训练日志,checkpoint,基线表 |
 | Week 3–4 | `title + year + genres` | MiniLM 文本编码,残差量化,冲突消解,码本质量分析 | `item_emb.npy`,4-token 语义 ID,码本报告 |
 | Week 5–6 | 语义 ID 序列 | 审计接口,验证训练链路,选择学习率,三种子训练,约束解码与统一口径复评 | 日志、指标、分组对比与解码样例 |
-| Week 7 | 文本向量与训练交互 | SVD协同表示、四组融合、量化与消融 | 四组语义ID与码本分析；生成模型训练待开展 |
+| Week 7 | 文本向量与训练交互 | SVD协同表示、四组融合、量化与消融 | 四组seed42验证结果、Fixed候选与六个h20基线；正式test待开展 |
 
-Week 7已完成四组RQ-VAE量化、唯一ID导出及接口验收，尚无新的推荐指标；[当前产物与验证](results/week7-improvement/README.md)单独记录。
+Week 7的Fixed方案在seed42上取得valid NDCG@10 **0.19352**，Text为0.17761；已按规则冻结Fixed，三种子复验正在推进。该结果是验证集筛选，不能与上方test主表直接比较；[当前产物与验证](results/week7-improvement/README.md)单独记录。
 
 ## 🧭 从哪里开始
 
@@ -62,6 +62,7 @@ Week 7已完成四组RQ-VAE量化、唯一ID导出及接口验收，尚无新的
 - [复现指南](docs/reproduction.md)：安装依赖、CPU测试、数据准备与训练入口。
 - [实验协议](docs/experiment-protocol.md)：划分、评测口径和四组融合对照。
 - [四组语义ID与码本结果](results/week7-improvement/03-semantic-ids/README.md)：量化质量与前缀观察。
+- [融合方案筛选](results/week7-improvement/04-screening/README.md)：四组valid对照、候选依据与训练记录。
 
 ## Week 1–6 冻结实验协议
 
@@ -264,10 +265,17 @@ repository/
 │   │       └── decode_samples.md
 │   └── week7-improvement/
 │       ├── README.md
+│       ├── selection.json
 │       ├── 01-diagnostics/
+│       │   ├── README.md
 │       │   ├── environment.json
 │       │   ├── input_sha256.txt
 │       │   ├── reused_code_sha256.txt
+│       │   ├── training_curves.csv
+│       │   ├── training_curves.png
+│       │   ├── search_diagnosis.md
+│       │   ├── historical_30k_s42_valid_{beam10,beam20,beam50,beam100,exact}_n512.json
+│       │   ├── historical_30k_s42_valid_{beam10,beam20,beam50,beam100,exact}_n512_samples.json
 │       │   └── cpu-smoke/
 │       │       ├── smoke_historical_s42_best.json
 │       │       └── smoke_historical_s42_history.jsonl
@@ -275,16 +283,27 @@ repository/
 │       │   ├── meta.json
 │       │   ├── weights.json
 │       │   └── neighbors.json
-│       └── 03-semantic-ids/
+│       ├── 03-semantic-ids/
+│       │   ├── README.md
+│       │   └── {text,fixed,fixed_match,adaptive}/
+│       │       ├── semantic_ids.json
+│       │       ├── meta.json
+│       │       ├── quantizer_quality.json
+│       │       ├── codebook_stats.json
+│       │       ├── prefix_quality.json
+│       │       ├── rqvae.log
+│       │       └── figures/（三层码本分配图）
+│       ├── 04-screening/
+│       │   ├── README.md
+│       │   ├── ablation.json
+│       │   └── {text,fixed,fixed_match,adaptive}-s42.log
+│       └── 05-formal-training/
 │           ├── README.md
-│           └── {text,fixed,fixed_match,adaptive}/
-│               ├── semantic_ids.json
-│               ├── meta.json
-│               ├── quantizer_quality.json
-│               ├── codebook_stats.json
-│               ├── prefix_quality.json
-│               ├── rqvae.log
-│               └── figures/（三层码本分配图）
+│           ├── {text,fixed,fixed_match,adaptive}_s42_best.json
+│           ├── {text,fixed,fixed_match,adaptive}_s42_history.jsonl
+│           ├── {sasrec,gru4rec}_h20_s{42,43,44}.json
+│           └── baseline-logs/
+│               └── {sasrec,gru4rec}_h20_s{42,43,44}.log
 └── note/
     ├── week0-生成式推荐_三阶段全链路.md
     ├── week1-真实数据实例说明.md
@@ -420,11 +439,12 @@ repository/
 │   │   ├── main_results.md
 │   │   └── decode_samples.md
 │   └── week7-improvement/
-│       ├── 01-diagnostics/（输入与旧代码哈希、环境）
+│       ├── selection.json（Fixed候选与冻结控制变量）
+│       ├── 01-diagnostics/（输入哈希、环境、训练曲线与搜索诊断）
 │       ├── 02-embeddings/（meta、weights、neighbors）
 │       ├── 03-semantic-ids/（四组量化日志、质量统计与图）
-│       ├── 04-screening/（预建空目录）
-│       ├── 05-formal-training/（当前仅CPU smoke记录）
+│       ├── 04-screening/（四组seed42日志与valid消融表）
+│       ├── 05-formal-training/（已完成训练记录；补充种子进行中）
 │       ├── 06-evaluation/（预建空目录）
 │       └── 07-release/（预建空目录）
 ├── exported/
@@ -454,8 +474,11 @@ repository/
 │   │   └── t5_sid_seed44/{best,last}/
 │   └── week7/
 │       ├── quantizers/{text,fixed,fixed_match,adaptive}.pt
-│       └── generative/
-│           └── smoke_historical_s42/{best,last}/
+│       ├── generative/
+│       │   ├── {text,fixed,fixed_match,adaptive}_s42/{best,last}/
+│       │   ├── text_s43/{best,last}/（运行中）
+│       │   └── smoke_historical_s42/{best,last}/
+│       └── baselines/{sasrec,gru4rec}_h20_s{42,43,44}/
 ├── work/
 │   └── week7/
 │       ├── collab.npy
@@ -464,7 +487,8 @@ repository/
 │       ├── fixed_match.npy
 │       ├── adaptive.npy
 │       ├── frequency.json
-│       └── semantic_ids_{text,fixed,fixed_match,adaptive}.json
+│       ├── semantic_ids_{text,fixed,fixed_match,adaptive}.json
+│       └── predictions/（五种旧模型搜索方法的完整512用户预测）
 └── log_tensorboard/
     ├── SASRec-ml-1m-Sep-28-2026_19-17-25-dbfc42/
     │   ├── events.out.tfevents.1790594284.amax510.2957982.0
