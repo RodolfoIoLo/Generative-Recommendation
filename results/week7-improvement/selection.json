@@ -1,0 +1,74 @@
+{
+  "artifact_hashes": {
+    "adaptive": "54dcae4e8277e586282909834c622575ae5cde1f5cf8f00673606ea049bf1877",
+    "fixed": "d877817098a854f967bf65dd69e4622f90e7d2e421b890538ad28359f76efc55",
+    "fixed_match": "388c862b894f848c36a7be77f3df692ddb2e10b6fbba193a55789d2a0f511625",
+    "text": "5780e9731d8cf964c49c4ac2a889309a606511e173113c8d6eeab995814bb41a"
+  },
+  "beam": 20,
+  "controls": {
+    "data": {
+      "expected_items": 3416,
+      "expected_train_examples": 981491,
+      "expected_users": 6040,
+      "max_history_items": 20
+    },
+    "decode": {
+      "max_new_tokens": 5,
+      "num_beams": 20,
+      "topk": 10
+    },
+    "model": {
+      "d_ff": 1024,
+      "d_kv": 32,
+      "d_model": 256,
+      "decoder_start_token_id": 1,
+      "dropout_rate": 0.1,
+      "eos_token_id": 2,
+      "num_decoder_layers": 6,
+      "num_heads": 8,
+      "num_layers": 6,
+      "pad_token_id": 0,
+      "vocab_size": 1027
+    },
+    "train": {
+      "batch_size": 64,
+      "bf16": true,
+      "early_stop_after": 30000,
+      "eval_batch_size": 8,
+      "eval_steps": 5000,
+      "gradient_accumulation": 4,
+      "logging_steps": 100,
+      "lr": 0.0003,
+      "max_grad_norm": 1.0,
+      "max_steps": 60000,
+      "min_delta": 0.001,
+      "min_lr_ratio": 0.05,
+      "num_workers": 0,
+      "patience": 4,
+      "seed": 42,
+      "warmup_steps": 1500,
+      "weight_decay": 0.01
+    }
+  },
+  "delta_vs_text": 0.01590609695938769,
+  "history": 20,
+  "mask_full_history": true,
+  "max_steps": 60000,
+  "metric": "ndcg@10",
+  "passes_practical_screen": true,
+  "protocol_version": "week7-v5.1",
+  "scores": {
+    "adaptive": 0.19017676355172677,
+    "fixed": 0.19351752856403084,
+    "fixed_match": 0.1781336789947324,
+    "text": 0.17761143160464316
+  },
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "selected": "fixed",
+  "selection_split": "valid"
+}
