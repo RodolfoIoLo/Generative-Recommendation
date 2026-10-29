@@ -1,0 +1,16 @@
+{
+  "best_valid_metrics": {
+    "ndcg@10": 0.19568730188595282,
+    "ndcg@5": 0.16407782587768113,
+    "recall@10": 0.33725165562913906,
+    "recall@5": 0.23857615894039735
+  },
+  "best_valid_score": 0.19568730188595282,
+  "checkpoint": "saved/week7/baselines/gru4rec_h20_s43/GRU4Rec-Oct-29-2026_13-21-35.pth",
+  "checkpoint_sha256": "d6aaca0a9475af7597c8ac9f02f09a7d96b582cd7f7fcba146f723ef1aaa62d4",
+  "data_path": "/data/zby/data/recbole",
+  "max_history": 20,
+  "model": "GRU4Rec",
+  "seed": 43,
+  "selected_on": "valid full-sort with complete frozen history masked"
+}
