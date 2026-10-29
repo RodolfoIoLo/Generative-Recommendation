@@ -1,0 +1,16 @@
+{
+  "best_valid_metrics": {
+    "ndcg@10": 0.17781001685069728,
+    "ndcg@5": 0.1470368690468689,
+    "recall@10": 0.31473509933774835,
+    "recall@5": 0.21920529801324504
+  },
+  "best_valid_score": 0.17781001685069728,
+  "checkpoint": "saved/week7/baselines/sasrec_h20_s44/SASRec-Oct-29-2026_09-58-33.pth",
+  "checkpoint_sha256": "84737737221d0b3857f70e4737c8af1726723633e35de0fe4859be2445192865",
+  "data_path": "/data/zby/data/recbole",
+  "max_history": 20,
+  "model": "SASRec",
+  "seed": 44,
+  "selected_on": "valid full-sort with complete frozen history masked"
+}
