@@ -7,30 +7,43 @@ from pathlib import Path
 import shlex
 import subprocess
 import sys
+import time
 
 from week7_common import ROOT, VARIANTS, read_json
 
 
 def check_gpu(index):
-    command = [
-        "nvidia-smi", f"--id={index}",
-        "--query-gpu=memory.used,utilization.gpu",
-        "--format=csv,noheader,nounits",
-    ]
-    result = subprocess.run(command, capture_output=True, text=True, check=True)
-    memory, utilization = map(int, result.stdout.strip().split(","))
-    processes = subprocess.run([
-        "nvidia-smi", f"--id={index}", "--query-compute-apps=pid",
-        "--format=csv,noheader,nounits",
-    ], capture_output=True, text=True, check=True).stdout.strip()
-    active = [line for line in processes.splitlines()
-              if line.strip() and "No running" not in line]
-    if memory > 1024 or utilization > 10 or active:
-        raise SystemExit(
-            f"GPU {index} is occupied (used={memory} MiB, util={utilization}%, "
-            f"compute PIDs={active}). Run CPU steps or retry when idle."
-        )
-    print(f"GPU {index} appears idle; recheck shared-server availability.", flush=True)
+    """Require two idle samples; utilization can lag behind a completed job."""
+    clean_samples = 0
+    for attempt in range(6):
+        result = subprocess.run([
+            "nvidia-smi", f"--id={index}",
+            "--query-gpu=memory.used,utilization.gpu",
+            "--format=csv,noheader,nounits",
+        ], capture_output=True, text=True, check=True)
+        memory, utilization = map(int, result.stdout.strip().split(","))
+        processes = subprocess.run([
+            "nvidia-smi", f"--id={index}", "--query-compute-apps=pid",
+            "--format=csv,noheader,nounits",
+        ], capture_output=True, text=True, check=True).stdout.strip()
+        active = [line for line in processes.splitlines()
+                  if line.strip() and "No running" not in line]
+        detail = (f"used={memory} MiB, util={utilization}%, "
+                  f"compute PIDs={active}")
+        if active:
+            raise SystemExit(f"GPU {index} is occupied ({detail}). Choose an idle GPU.")
+        # Memory and live processes indicate occupancy. Utilization alone may
+        # still describe the previous job's sampling window after it exits.
+        clean_samples = clean_samples + 1 if memory <= 1024 else 0
+        if clean_samples >= 2:
+            print(f"GPU {index} passed two idle checks ({detail}).", flush=True)
+            return
+        if attempt < 5:
+            time.sleep(1)
+    raise SystemExit(
+        f"GPU {index} did not become stably idle ({detail}). "
+        "Recheck memory usage or choose another GPU."
+    )
 
 
 def main():

@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import Mock, patch
 
 import numpy as np
 
@@ -142,6 +143,65 @@ class Week7Tests(unittest.TestCase):
             hand_score = sum(logits[0, t].log_softmax(-1)[int(labels[0, t])]
                              for t in range(5))
         self.assertAlmostEqual(float(vector_score), float(hand_score), places=5)
+
+
+class GPUGuardTests(unittest.TestCase):
+    @staticmethod
+    def samples(*snapshots):
+        results = []
+        for memory, utilization, processes in snapshots:
+            results += [Mock(stdout=f"{memory}, {utilization}\n"),
+                        Mock(stdout=processes)]
+        return results
+
+    def test_utilization_alone_does_not_block_idle_gpu(self):
+        from run_week7 import check_gpu
+        with patch("run_week7.subprocess.run", side_effect=self.samples(
+            (11, 95, ""), (11, 13, ""),
+        )), patch("run_week7.time.sleep"):
+            check_gpu(1)
+
+    def test_live_process_blocks_even_with_low_memory(self):
+        from run_week7 import check_gpu
+        with patch("run_week7.subprocess.run", side_effect=self.samples(
+            (11, 0, "12345\n"),
+        )), patch("run_week7.time.sleep") as sleep:
+            with self.assertRaisesRegex(SystemExit, "occupied"):
+                check_gpu(1)
+            sleep.assert_not_called()
+
+    def test_process_appearing_on_second_sample_blocks(self):
+        from run_week7 import check_gpu
+        with patch("run_week7.subprocess.run", side_effect=self.samples(
+            (11, 0, ""), (11, 0, "12345\n"),
+        )), patch("run_week7.time.sleep"):
+            with self.assertRaisesRegex(SystemExit, "occupied"):
+                check_gpu(1)
+
+    def test_memory_cleanup_is_retried(self):
+        from run_week7 import check_gpu
+        with patch("run_week7.subprocess.run", side_effect=self.samples(
+            (2048, 0, ""), (11, 13, ""), (11, 0, ""),
+        )), patch("run_week7.time.sleep") as sleep:
+            check_gpu(1)
+            self.assertEqual(sleep.call_count, 2)
+
+    def test_persistent_memory_usage_is_rejected(self):
+        from run_week7 import check_gpu
+        with patch("run_week7.subprocess.run", side_effect=self.samples(
+            *((2048, 0, ""),) * 6,
+        )), patch("run_week7.time.sleep") as sleep:
+            with self.assertRaisesRegex(SystemExit, "did not become stably idle"):
+                check_gpu(1)
+            self.assertEqual(sleep.call_count, 5)
+
+    def test_idle_samples_must_be_consecutive(self):
+        from run_week7 import check_gpu
+        with patch("run_week7.subprocess.run", side_effect=self.samples(
+            (11, 0, ""), (2048, 0, ""), (11, 0, ""), (11, 0, ""),
+        )), patch("run_week7.time.sleep") as sleep:
+            check_gpu(1)
+            self.assertEqual(sleep.call_count, 3)
 
 
 if __name__ == "__main__":
