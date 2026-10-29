@@ -14,14 +14,27 @@ from week7_common import (
 
 
 def curves():
-    paths = list(Path("results/week5-6-generative/03-formal-training").glob("*history.jsonl"))
-    paths += list((ROOT / "05-formal-training").glob("*history.jsonl"))
+    # The public repository groups old runs; the server keeps their original
+    # flat directory. Prefer the public location if both copies exist.
+    historical = {}
+    for folder in (Path("results/week5-6-generative/03-formal-training"),
+                   Path("results/week5-6-generative")):
+        for path in sorted(folder.glob("t5_sid_seed*_history.jsonl")):
+            historical.setdefault(path.name, path)
+    paths = list(historical.values())
+    for path in sorted((ROOT / "05-formal-training").glob("*_history.jsonl")):
+        meta_path = path.with_name(path.name.replace("_history.jsonl", "_best.json"))
+        if not meta_path.exists():
+            continue
+        meta = read_json(meta_path)
+        if meta.get("finished") and not meta.get("smoke"):
+            paths.append(path)
     records = []
     for path in paths:
         for row in read_jsonl(path):
             if row.get("type") == "valid":
                 records.append({
-                    "run": path.stem, "step": row["step"],
+                    "run": path.stem.removesuffix("_history"), "step": row["step"],
                     "valid_ndcg10": row["metrics"]["all"]["ndcg@10"],
                 })
     out = ROOT / "01-diagnostics"
