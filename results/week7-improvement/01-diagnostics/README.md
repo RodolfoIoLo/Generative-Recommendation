@@ -2,7 +2,7 @@
 
 | 文件 | 内容 |
 |---|---|
-| [training_curves.png](training_curves.png) / [CSV](training_curves.csv) | 旧三种子与本周四组 seed42 的验证曲线，共 7 个运行、66 个验证点 |
+| [training_curves.png](training_curves.png) / [CSV](training_curves.csv) | 旧三种子、本周四组 seed42，以及 Text / Fixed 的 seed43、44，共 11 个运行、114 个验证点 |
 | [search_diagnosis.md](search_diagnosis.md) | 固定 512 名验证用户上的 Beam 与全目录精确打分对比 |
 | `historical_30k_s42_valid_*_n512.json` | 五种搜索方法的完整指标、用户列表与 checkpoint 哈希 |
 | `historical_30k_s42_valid_*_n512_samples.json` | 各方法前 20 名用户的推荐示例 |
