@@ -30,7 +30,7 @@ Toy Story → [37, 128, 5, 0]
 | 第 2 周 | SASRec 三随机种子,GRU4Rec 基线与 checkpoint 复评 | ✅ 完成 |
 | 第 3–4 周 | 文本编码,RQ-Kmeans / RQ-VAE,语义 ID 与码本分析 | ✅️ 完成 |
 | 第 5–6 周 | T5 类生成式推荐:管线验证、三种子训练、约束解码与基线复评 | ✅ 完成 |
-| 第 7 周 | 文本—协同融合、语义ID消融与仓库整理 | seed42筛选、候选冻结与h20基线完成；三种子复验进行中 |
+| 第 7 周 | 文本—协同融合、语义ID消融与仓库整理 | 截至7.10训练与验收完成；正式test尚未齐备 |
 
 ### 已得到的核心结果
 
@@ -54,7 +54,7 @@ Toy Story → [37, 128, 5, 0]
 | Week 5–6 | 语义 ID 序列 | 审计接口,验证训练链路,选择学习率,三种子训练,约束解码与统一口径复评 | 日志、指标、分组对比与解码样例 |
 | Week 7 | 文本向量与训练交互 | SVD协同表示、四组融合、量化与消融 | 四组seed42验证结果、Fixed候选与六个h20基线；正式test待开展 |
 
-Week 7的Fixed方案在seed42上取得valid NDCG@10 **0.19352**，Text为0.17761；已按规则冻结Fixed，三种子复验正在推进。该结果是验证集筛选，不能与上方test主表直接比较；[当前产物与验证](results/week7-improvement/README.md)单独记录。
+Week 7已完成三种子训练：Fixed的valid NDCG@10为**0.19646±0.00216**，Text为0.17056±0.00644。正式test尚未齐备；这些valid数值不能与上方test主表直接比较。[当前产物与验证](results/week7-improvement/README.md)单独记录。
 
 ## 🧭 从哪里开始
 
@@ -202,6 +202,7 @@ repository/
 │   ├── week7_prepare.py
 │   ├── week7_train.py
 │   ├── week7_evaluate.py
+│   ├── week7_test_queue.py
 │   ├── week7_baseline.py
 │   ├── week7_report.py
 │   ├── week7_release.py
@@ -301,6 +302,9 @@ repository/
 │           ├── README.md
 │           ├── {text,fixed,fixed_match,adaptive}_s42_best.json
 │           ├── {text,fixed,fixed_match,adaptive}_s42_history.jsonl
+│           ├── {text,fixed}_s{43,44}_best.json
+│           ├── {text,fixed}_s{43,44}_history.jsonl
+│           ├── {text,fixed}-s{43,44}.log
 │           ├── {sasrec,gru4rec}_h20_s{42,43,44}.json
 │           └── baseline-logs/
 │               └── {sasrec,gru4rec}_h20_s{42,43,44}.log
@@ -359,6 +363,7 @@ repository/
 │   ├── week7_prepare.py
 │   ├── week7_train.py
 │   ├── week7_evaluate.py
+│   ├── week7_test_queue.py
 │   ├── week7_baseline.py
 │   ├── week7_report.py
 │   ├── week7_release.py
@@ -444,8 +449,8 @@ repository/
 │       ├── 02-embeddings/（meta、weights、neighbors）
 │       ├── 03-semantic-ids/（四组量化日志、质量统计与图）
 │       ├── 04-screening/（四组seed42日志与valid消融表）
-│       ├── 05-formal-training/（已完成训练记录；补充种子进行中）
-│       ├── 06-evaluation/（预建空目录）
+│       ├── 05-formal-training/（筛选、三种子与h20基线训练记录）
+│       ├── 06-evaluation/（部分正式test指标与样例；尚未齐备）
 │       └── 07-release/（预建空目录）
 ├── exported/
 │   ├── semantic_ids.json
@@ -476,7 +481,7 @@ repository/
 │       ├── quantizers/{text,fixed,fixed_match,adaptive}.pt
 │       ├── generative/
 │       │   ├── {text,fixed,fixed_match,adaptive}_s42/{best,last}/
-│       │   ├── text_s43/{best,last}/（运行中）
+│       │   ├── {text,fixed}_s{43,44}/{best,last}/
 │       │   └── smoke_historical_s42/{best,last}/
 │       └── baselines/{sasrec,gru4rec}_h20_s{42,43,44}/
 ├── work/
@@ -488,7 +493,7 @@ repository/
 │       ├── adaptive.npy
 │       ├── frequency.json
 │       ├── semantic_ids_{text,fixed,fixed_match,adaptive}.json
-│       └── predictions/（五种旧模型搜索方法的完整512用户预测）
+│       └── predictions/（搜索诊断及已完成test的完整预测）
 └── log_tensorboard/
     ├── SASRec-ml-1m-Sep-28-2026_19-17-25-dbfc42/
     │   ├── events.out.tfevents.1790594284.amax510.2957982.0
