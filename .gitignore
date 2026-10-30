@@ -25,6 +25,10 @@ log/
 /dist/
 /item_emb*.npy
 
+# ---------- 服务器运维辅助 ----------
+/scripts/week7_test_queue.py
+/scripts/week7_release.py
+
 # ---------- Python ----------
 __pycache__/
 *.py[cod]

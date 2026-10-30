@@ -1,56 +1,20 @@
-"""Explicit command dispatch; require a chosen idle physical GPU for GPU jobs."""
+"""Run the text/collaborative semantic-ID recommendation experiment."""
 from __future__ import annotations
 
 import argparse
 import os
-from pathlib import Path
 import shlex
 import subprocess
 import sys
-import time
 
 from week7_common import ROOT, VARIANTS, read_json
 
 
-def check_gpu(index):
-    """Require two idle samples; utilization can lag behind a completed job."""
-    clean_samples = 0
-    for attempt in range(6):
-        result = subprocess.run([
-            "nvidia-smi", f"--id={index}",
-            "--query-gpu=memory.used,utilization.gpu",
-            "--format=csv,noheader,nounits",
-        ], capture_output=True, text=True, check=True)
-        memory, utilization = map(int, result.stdout.strip().split(","))
-        processes = subprocess.run([
-            "nvidia-smi", f"--id={index}", "--query-compute-apps=pid",
-            "--format=csv,noheader,nounits",
-        ], capture_output=True, text=True, check=True).stdout.strip()
-        active = [line for line in processes.splitlines()
-                  if line.strip() and "No running" not in line]
-        detail = (f"used={memory} MiB, util={utilization}%, "
-                  f"compute PIDs={active}")
-        if active:
-            raise SystemExit(f"GPU {index} is occupied ({detail}). Choose an idle GPU.")
-        # Memory and live processes indicate occupancy. Utilization alone may
-        # still describe the previous job's sampling window after it exits.
-        clean_samples = clean_samples + 1 if memory <= 1024 else 0
-        if clean_samples >= 2:
-            print(f"GPU {index} passed two idle checks ({detail}).", flush=True)
-            return
-        if attempt < 5:
-            time.sleep(1)
-    raise SystemExit(
-        f"GPU {index} did not become stably idle ({detail}). "
-        "Recheck memory usage or choose another GPU."
-    )
-
-
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=(
         "init", "features", "tokenize", "curves", "diagnostics", "train", "smoke",
-        "evaluate", "exact", "baseline", "select", "summarize", "release",
+        "evaluate", "exact", "baseline", "select", "summarize",
     ))
     parser.add_argument("--variant", choices=(*VARIANTS, "historical", "selected"),
                         default="text")
@@ -68,9 +32,6 @@ def main():
     parser.add_argument("--checkpoint")
     parser.add_argument("--model", choices=("SASRec", "GRU4Rec"))
     parser.add_argument("--data_path")
-    parser.add_argument("--author")
-    parser.add_argument("--url")
-    parser.add_argument("--license", choices=("MIT",))
     parser.add_argument("--dry_run", action="store_true")
     args = parser.parse_args()
     variant = args.variant
@@ -127,16 +88,9 @@ def main():
             "--seed", str(args.seed), "--gpu", str(args.gpu),
             "--data_path", args.data_path, "--split", args.split,
         ]
-    else:
-        command += ["scripts/week7_release.py"]
-        for flag in ("author", "url", "license"):
-            if getattr(args, flag):
-                command += ["--" + flag, getattr(args, flag)]
     print(shlex.join(command), flush=True)
     if args.dry_run:
         return
-    if gpu_job:
-        check_gpu(args.gpu)
     env = dict(os.environ, PYTHONUNBUFFERED="1")
     subprocess.run(command, env=env, check=True)
 
