@@ -34,6 +34,6 @@
 
 四组生成模型 seed42 的验证集筛选已完成，按 valid NDCG@10 冻结 Fixed；控制变量与输入身份记录在 [selection.json](../results/week7-improvement/selection.json)。SASRec / GRU4Rec 的 h20 基线也已各完成三个种子，均按完整历史屏蔽后的 valid NDCG@10 选模。
 
-**尚未完成：** Text 与 Fixed 补齐 seed43/44，六个生成模型运行齐备后才开启正式 test。单 seed 筛选与三 seed 正式比较分别报告，test 不参与候选选择。
+Text与Fixed的seed43/44已补齐，六个生成模型运行及test解锁检查均通过。正式test按冻结协议执行，当前尚未齐备；单seed筛选与三seed正式比较分别报告，test不参与候选选择。
 
 新训练方案使用有效 batch 256、peak lr 3e-4、warmup 1,500、最多 60,000 step 和余弦衰减。旧方案同时改变训练预算和学习率轨迹，因此两者对比不能只归因于训练步数。计划中的用户配对 bootstrap 反映当前训练模型条件下的用户抽样不确定性，不能代替更多训练种子。

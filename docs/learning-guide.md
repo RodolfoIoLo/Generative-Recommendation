@@ -44,4 +44,4 @@ Decoder 预测 C 的下一位 → 交叉熵训练
 
 测试采用 leave-one-out：每名用户有一个保留的目标电影，按全目录排序并屏蔽完整历史，计算 Recall@5/10 和 NDCG@5/10。
 
-已完成的基线和生成模型结果见 [主实验](../results/week5-6-generative/06-reports/main_results.md)。Week 7 已构建四套 ID；融合是否改善推荐，仍需等待受控训练和评测。
+旧基线和生成模型结果见 [主实验](../results/week5-6-generative/06-reports/main_results.md)。Week 7 已完成受控三种子训练，Fixed在valid上优于Text；正式test仍需按冻结协议完成，见 [当前结果](../results/week7-improvement/README.md)。
