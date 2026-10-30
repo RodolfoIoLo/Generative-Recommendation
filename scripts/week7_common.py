@@ -32,9 +32,17 @@ def read_jsonl(path):
 def write_json(path, obj):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, ensure_ascii=False, indent=2,
-                               sort_keys=True, allow_nan=False) + "\n",
-                    encoding="utf-8")
+    payload = json.dumps(obj, ensure_ascii=False, indent=2,
+                         sort_keys=True, allow_nan=False) + "\n"
+    temp = path.with_name(path.name + ".tmp")
+    try:
+        with temp.open("w", encoding="utf-8") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        temp.replace(path)
+    finally:
+        temp.unlink(missing_ok=True)
 
 
 def write_jsonl(path, rows):

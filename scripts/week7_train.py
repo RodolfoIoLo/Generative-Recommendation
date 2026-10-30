@@ -3,8 +3,12 @@ from __future__ import annotations
 
 import argparse
 import copy
+import errno
+import json
 import math
 from pathlib import Path
+import shutil
+import time
 
 from week7_common import (
     PROTOCOL, ROOT, append_jsonl, artifact_hash, configure_gpu,
@@ -29,6 +33,113 @@ class RestartableBatches:
             for batch in range(offset, self.per_epoch):
                 yield order[batch * self.batch_size:(batch + 1) * self.batch_size]
             epoch, offset = epoch + 1, 0
+
+
+def commit_checkpoint(path, populate):
+    """Keep the previous checkpoint until its replacement is fully written."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_name(path.name + ".tmp")
+    previous = path.with_name(path.name + ".previous")
+    if previous.exists():
+        if not path.exists():
+            previous.replace(path)
+        else:
+            raise RuntimeError(f"inspect leftover checkpoint backup: {previous}")
+    while True:
+        while shutil.disk_usage(path.parent).free < 512 * 1024**2:
+            print(f"Waiting for checkpoint space at {path.parent}; "
+                  "need at least 512 MiB free. Training state is retained in memory.",
+                  flush=True)
+            time.sleep(30)
+        if temp.exists():
+            shutil.rmtree(temp)
+        temp.mkdir()
+        try:
+            populate(temp)
+        except Exception as error:
+            shutil.rmtree(temp)
+            if (getattr(error, "errno", None) in (errno.ENOSPC, errno.EDQUOT)
+                    or "no space left on device" in str(error).lower()):
+                print(f"Checkpoint storage is full: {path}; preserving the previous "
+                      "checkpoint and retrying in 30 seconds.", flush=True)
+                time.sleep(30)
+                continue
+            raise
+        try:
+            if path.exists():
+                path.replace(previous)
+            temp.replace(path)
+        except Exception:
+            if previous.exists() and not path.exists():
+                previous.replace(path)
+            raise
+        if previous.exists():
+            shutil.rmtree(previous)
+        return
+
+
+def save_training_checkpoint(path, model, optimizer, scheduler, state):
+    import torch
+    from train_generative import rng_state
+    saved = dict(state, optimizer=optimizer.state_dict(),
+                 scheduler=scheduler.state_dict(), rng=rng_state())
+
+    def populate(folder):
+        model.save_pretrained(folder, safe_serialization=True)
+        torch.save(saved, folder / "trainer_state.pt")
+
+    commit_checkpoint(path, populate)
+
+
+def repair_best_checkpoint(destination, best_file, identity, state, history):
+    """Reconcile best weights/metadata after a failure following the last save."""
+    import torch
+    signature = object_hash(identity)
+    valid = [row for row in history if row["type"] == "valid"
+             and int(row["step"]) <= state["global_step"]]
+    if not valid:
+        raise ValueError("cannot recover best checkpoint without saved validation history")
+    best_row = max(valid, key=lambda row: row["metrics"]["all"]["ndcg@10"])
+    score = best_row["metrics"]["all"]["ndcg@10"]
+    if not math.isclose(score, state["best"], rel_tol=0, abs_tol=1e-12):
+        raise ValueError("checkpoint best score differs from saved validation history")
+    best_dir = Path(destination) / "best"
+    best_state_file = best_dir / "trainer_state.pt"
+    weights_exist = (best_dir / "model.safetensors").is_file()
+    best_ok = False
+    if best_state_file.exists() and weights_exist:
+        best_state = torch.load(best_state_file, map_location="cpu", weights_only=False)
+        best_ok = (best_state["signature"] == signature
+                   and best_state["global_step"] == best_row["step"])
+    if not best_ok:
+        if best_row["step"] != state["global_step"]:
+            raise ValueError("missing earlier best weights; last cannot reconstruct them")
+        last = Path(destination) / "last"
+        commit_checkpoint(best_dir, lambda folder: shutil.copytree(last, folder, dirs_exist_ok=True))
+    try:
+        current = read_json(best_file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        current = {}
+    train = identity["config"]["train"]
+    finished = (state["global_step"] >= train["max_steps"]
+                or state["bad"] >= train["patience"])
+    if (best_ok and current.get("signature") == signature
+            and current.get("best_step") == best_row["step"]
+            and current.get("metrics") == best_row["metrics"]
+            and current.get("finished") == finished):
+        return
+    write_json(best_file, {
+        "protocol_version": identity["protocol"], "variant": identity["variant"],
+        "seed": identity["seed"], "step": best_row["step"],
+        "best_step": best_row["step"], "smoke": identity["smoke"],
+        "finished": finished, "artifact_hash": identity["artifact_hash"],
+        "signature": signature, "config": identity["config"],
+        "metrics": best_row["metrics"], "checkpoint": str(best_dir),
+        "environment": environment(),
+    })
+    print(f"Recovered best checkpoint record at step {best_row['step']} "
+          "from saved validation history and matching weights.", flush=True)
 
 
 def main():
@@ -57,7 +168,7 @@ def main():
         EvalDataset, SemanticArtifacts, SemanticTrie, TrainCollator,
         TrainPrefixDataset, build_groups, evaluate_model, seed_everything,
     )
-    from train_generative import restore_rng, save_checkpoint
+    from train_generative import restore_rng
 
     cfg = copy.deepcopy(load_config(args.config))
     cfg["train"]["seed"] = args.seed
@@ -147,6 +258,7 @@ def main():
         if history.exists():
             write_jsonl(history, [row for row in read_jsonl(history)
                                  if int(row["step"]) <= step])
+        repair_best_checkpoint(destination, best_file, identity, state, read_jsonl(history))
     t = cfg["train"]
     loader = DataLoader(
         train,
@@ -208,9 +320,9 @@ def main():
         finished = step >= total or bad >= t["patience"]
         state = {"signature": signature, "global_step": step,
                  "best": best, "anchor": anchor, "bad": bad}
-        save_checkpoint(last, model, optimizer, scheduler, state)
+        save_training_checkpoint(last, model, optimizer, scheduler, state)
         if improved:
-            save_checkpoint(destination / "best", model, optimizer, scheduler, state)
+            save_training_checkpoint(destination / "best", model, optimizer, scheduler, state)
             write_json(best_file, {
                 "protocol_version": PROTOCOL, "variant": name, "seed": args.seed,
                 "step": step, "best_step": step, "smoke": args.smoke,

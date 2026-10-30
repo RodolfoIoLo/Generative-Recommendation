@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import errno
 import math
 from pathlib import Path
 import sys
@@ -202,6 +203,106 @@ class GPUGuardTests(unittest.TestCase):
         )), patch("run_week7.time.sleep") as sleep:
             check_gpu(1)
             self.assertEqual(sleep.call_count, 3)
+
+
+class CheckpointRecoveryTests(unittest.TestCase):
+    def test_failed_checkpoint_write_keeps_previous(self):
+        from week7_train import commit_checkpoint
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "last"
+            path.mkdir()
+            (path / "marker").write_text("previous")
+
+            def fail(temp):
+                (temp / "marker").write_text("partial")
+                raise OSError("synthetic write failure")
+
+            with self.assertRaisesRegex(OSError, "synthetic"):
+                commit_checkpoint(path, fail)
+            self.assertEqual((path / "marker").read_text(), "previous")
+            self.assertFalse(path.with_name("last.tmp").exists())
+
+    def test_full_disk_retries_without_losing_checkpoint(self):
+        from week7_train import commit_checkpoint
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "last"
+            path.mkdir()
+            (path / "marker").write_text("previous")
+            attempts = []
+
+            def populate(temp):
+                attempts.append(1)
+                self.assertEqual((path / "marker").read_text(), "previous")
+                (temp / "marker").write_text("replacement")
+                if len(attempts) == 1:
+                    raise OSError(errno.ENOSPC, "No space left on device")
+
+            with patch("week7_train.time.sleep") as sleep:
+                commit_checkpoint(path, populate)
+            self.assertEqual(len(attempts), 2)
+            sleep.assert_called_once_with(30)
+            self.assertEqual((path / "marker").read_text(), "replacement")
+            self.assertFalse(path.with_name("last.previous").exists())
+
+    def test_low_space_waits_before_writing(self):
+        from week7_train import commit_checkpoint
+        with tempfile.TemporaryDirectory() as folder:
+            with patch("week7_train.shutil.disk_usage", side_effect=[
+                Mock(free=0), Mock(free=2 * 1024**3),
+            ]), patch("week7_train.time.sleep") as sleep:
+                path = Path(folder) / "last"
+                commit_checkpoint(path, lambda temp: (temp / "marker").write_text("saved"))
+            sleep.assert_called_once_with(30)
+            self.assertEqual((path / "marker").read_text(), "saved")
+
+    def make_recovery(self, folder, last_step=5000, existing_best=False):
+        import torch
+        from week7_common import object_hash
+        destination = Path(folder) / "run"
+        last = destination / "last"
+        last.mkdir(parents=True)
+        identity = {"protocol": "test", "variant": "text", "seed": 44,
+                    "artifact_hash": "test-input", "smoke": False,
+                    "config": {"train": {"max_steps": 60000, "patience": 4}}}
+        state = {"signature": object_hash(identity), "global_step": last_step,
+                 "best": 0.2, "bad": 0}
+        torch.save(state, last / "trainer_state.pt")
+        (last / "model.safetensors").write_bytes(b"last weights")
+        history = [{"type": "valid", "step": 5000,
+                    "metrics": {"all": {"ndcg@10": 0.2}}}]
+        if existing_best:
+            best = destination / "best"
+            best.mkdir()
+            torch.save({**state, "global_step": 5000}, best / "trainer_state.pt")
+            (best / "model.safetensors").write_bytes(b"earlier best weights")
+        return destination, Path(folder) / "best.json", identity, state, history
+
+    def test_recover_first_best_from_matching_last(self):
+        from week7_train import repair_best_checkpoint
+        with tempfile.TemporaryDirectory() as folder:
+            args = self.make_recovery(folder)
+            repair_best_checkpoint(*args)
+            self.assertEqual((args[0] / "best/model.safetensors").read_bytes(), b"last weights")
+            result = json.loads(args[1].read_text())
+            self.assertEqual(result["best_step"], 5000)
+            self.assertEqual(result["metrics"], args[4][0]["metrics"])
+            self.assertFalse(result["finished"])
+
+    def test_missing_earlier_best_cannot_be_invented_from_last(self):
+        from week7_train import repair_best_checkpoint
+        with tempfile.TemporaryDirectory() as folder:
+            args = self.make_recovery(folder, last_step=10000)
+            with self.assertRaisesRegex(ValueError, "missing earlier best weights"):
+                repair_best_checkpoint(*args)
+            self.assertFalse(args[1].exists())
+
+    def test_metadata_repair_preserves_existing_best_weights(self):
+        from week7_train import repair_best_checkpoint
+        with tempfile.TemporaryDirectory() as folder:
+            args = self.make_recovery(folder, last_step=10000, existing_best=True)
+            repair_best_checkpoint(*args)
+            self.assertEqual((args[0] / "best/model.safetensors").read_bytes(), b"earlier best weights")
+            self.assertEqual(json.loads(args[1].read_text())["best_step"], 5000)
 
 
 if __name__ == "__main__":
