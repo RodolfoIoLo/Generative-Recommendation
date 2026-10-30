@@ -6,7 +6,7 @@ from pathlib import Path
 
 from week7_common import (
     ROOT, configure_gpu, read_json, read_jsonl, require_test_unlock,
-    sha256, write_json,
+    sha256, write_json, write_jsonl,
 )
 
 
@@ -61,7 +61,7 @@ def main():
     if set(item_inner) != set(a.item_to_code):
         raise ValueError("RecBole item mapping differs from frozen mapping")
 
-    def evaluate(loader, frozen_rows):
+    def evaluate(loader, frozen_rows, return_rows=False):
         import numpy as np
         by_user = {int(row["user"]): row for row in frozen_rows}
         output = []
@@ -96,7 +96,8 @@ def main():
                                    "ranked_items": ranked})
         if len(output) != len(by_user) or len({r["user"] for r in output}) != len(by_user):
             raise ValueError("missing/duplicate baseline users")
-        return aggregate_rows(output, groups)
+        metrics = aggregate_rows(output, groups)
+        return (metrics, output) if return_rows else metrics
 
     class AlignedTrainer(Trainer):
         def _valid_epoch(self, valid_data, show_progress=False):
@@ -121,15 +122,21 @@ def main():
     else:
         require_test_unlock("text", 42)
         info = read_json(info_path)
+        if sha256(info["checkpoint"]) != info["checkpoint_sha256"]:
+            raise ValueError("baseline checkpoint differs from the selected training artifact")
         checkpoint = torch.load(info["checkpoint"], map_location=cfg["device"],
                                 weights_only=False)
         model.load_state_dict(checkpoint["state_dict"])
         model.load_other_parameter(checkpoint.get("other_parameter"))
-        metrics = evaluate(test_data, read_jsonl("exported/test.semantic.jsonl"))
+        metrics, predictions = evaluate(
+            test_data, read_jsonl("exported/test.semantic.jsonl"), return_rows=True,
+        )
         write_json(ROOT / "06-evaluation" / f"{name}_test.json", {
             **info, "split": "test", "n_users": 6040,
             "full_sort": True, "mask_full_history": True, "metrics": metrics,
         })
+        write_jsonl(Path("work/week7/predictions") / f"{name}_test.jsonl", predictions)
+        write_json(ROOT / "06-evaluation" / f"{name}_test_samples.json", predictions[:20])
         print(metrics["all"])
 
 
