@@ -305,5 +305,44 @@ class CheckpointRecoveryTests(unittest.TestCase):
             self.assertEqual(json.loads(args[1].read_text())["best_step"], 5000)
 
 
+class ResumeQueueTests(unittest.TestCase):
+    @staticmethod
+    def make_result(folder):
+        from week7_common import ROOT, sha256
+        from week7_test_queue import result_tag
+        root = Path(folder)
+        checkpoint = root / "model.pth"
+        checkpoint.write_bytes(b"selected model")
+        info = {"checkpoint": "model.pth", "checkpoint_sha256": sha256(checkpoint)}
+        write_json(root / ROOT / "05-formal-training/sasrec_h20_s42.json", info)
+        tag = result_tag("sasrec", 42)
+        write_json(root / ROOT / "06-evaluation" / f"{tag}.json", {
+            **info, "split": "test", "n_users": 6040, "seed": 42,
+            "full_sort": True, "mask_full_history": True,
+            "model": "SASRec", "max_history": 20,
+        })
+        rows = [{"user": i, "target_item": 99, "ranked_items": list(range(10))}
+                for i in range(6040)]
+        predictions = root / "work/week7/predictions" / f"{tag}.jsonl"
+        write_jsonl(predictions, rows)
+        write_json(root / ROOT / "06-evaluation" / f"{tag}_samples.json", rows[:20])
+        return root, checkpoint, predictions, rows
+
+    def test_resume_skips_only_results_from_the_selected_checkpoint(self):
+        from week7_test_queue import completed_result
+        with tempfile.TemporaryDirectory() as folder:
+            root, checkpoint, _, _ = self.make_result(folder)
+            self.assertTrue(completed_result(root, "sasrec", 42))
+            checkpoint.write_bytes(b"different model")
+            self.assertFalse(completed_result(root, "sasrec", 42))
+
+    def test_resume_rejects_truncated_prediction_files(self):
+        from week7_test_queue import completed_result
+        with tempfile.TemporaryDirectory() as folder:
+            root, _, predictions, rows = self.make_result(folder)
+            write_jsonl(predictions, rows[:-1])
+            self.assertFalse(completed_result(root, "sasrec", 42))
+
+
 if __name__ == "__main__":
     unittest.main()
