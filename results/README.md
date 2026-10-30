@@ -8,7 +8,7 @@
 | Week 2 | `week2-sasrec-baseline/`；checkpoint 位于服务器 `~/genrec/saved/` | ✅ 完成 |
 | Week 3–4 | [`week3-4-semantic-id/`](week3-4-semantic-id/)；残差量化、码本分析、前缀验证与接口冻结 | ✅ 完成 |
 | Week 5–6 | [`week5-6-generative/`](week5-6-generative/)；Stage 0–7 训练、评测与最终汇总 | ✅ 完成 |
-| Week 7 | [融合输入、量化、筛选与训练记录](week7-improvement/README.md) | seed42筛选、候选冻结与h20基线完成；三种子复验进行中 |
+| Week 7 | [融合输入、量化、筛选与训练记录](week7-improvement/README.md) | 截至7.10训练与验收完成；正式test尚未齐备 |
 
 约定：
 
@@ -290,13 +290,13 @@ RecBole 原始序列评测没有屏蔽历史物品，而生成模型的约束解
 
 ## Week 7：协同特征与语义 ID
 
-已完成输入冻结、代码与配置、17项CPU测试、step2→4冒烟恢复，以及四组3416×448融合输入。协同表示仅由987,531次train交互经64维SVD构造；q80=455，自适应组平均协同平方范数占比约36.92%，固定匹配组权重为0.765089。
+已完成输入冻结、代码与配置、28项CPU测试、step2→4冒烟恢复，以及四组3416×448融合输入。协同表示仅由987,531次train交互经64维SVD构造；q80=455，自适应组平均协同平方范数占比约36.92%，固定匹配组权重为0.765089。
 
 四组RQ-VAE均已完成量化并导出唯一的四位语义ID；checkpoint重现和数据划分逐条映射检查均通过。重建R²与码本质量见[四组量化结果](week7-improvement/03-semantic-ids/README.md)，不能据此推断推荐效果。完整索引、权重和近邻见[Week 7说明](week7-improvement/README.md)。数组、完整接口序列与checkpoint留在服务器。
 
 四组生成模型seed42均完成60,000步，valid NDCG@10分别为Text 0.17761、Fixed 0.19352、Fixed-Match 0.17813、Adaptive 0.19018；按预定规则冻结Fixed。详见[验证集筛选](week7-improvement/04-screening/README.md)、[训练曲线与搜索诊断](week7-improvement/01-diagnostics/README.md)。
 
-SASRec与GRU4Rec的h20基线各完成三个种子，checkpoint与选模日志均已核对，见[训练记录](week7-improvement/05-formal-training/README.md)。Text与Fixed的补充种子尚未齐备，第七周尚无正式test结果；这些valid数值不能与上方Week 5–6的test主表直接比较。
+SASRec与GRU4Rec的h20基线各完成三个种子，checkpoint与选模日志均已核对。Text与Fixed的六个正式运行也已完成，valid NDCG@10分别为0.17056±0.00644、0.19646±0.00216，见[训练记录](week7-improvement/05-formal-training/README.md)。正式test尚未齐备；这些valid数值不能与上方Week 5–6的test主表直接比较。
 
 ## 复现入口
 
