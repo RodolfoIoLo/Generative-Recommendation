@@ -50,7 +50,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("action", choices=(
         "init", "features", "tokenize", "curves", "diagnostics", "train", "smoke",
-        "evaluate", "exact", "baseline", "select", "summarize", "release", "scaffold",
+        "evaluate", "exact", "baseline", "select", "summarize", "release",
     ))
     parser.add_argument("--variant", choices=(*VARIANTS, "historical", "selected"),
                         default="text")
@@ -128,14 +128,10 @@ def main():
             "--data_path", args.data_path, "--split", args.split,
         ]
     else:
-        if not all((args.author, args.url, args.license)):
-            parser.error("release needs --author, --url, --license MIT")
-        command += [
-            "scripts/week7_release.py", "--author", args.author,
-            "--url", args.url, "--license", args.license,
-        ]
-        if args.action == "scaffold":
-            command += ["--scaffold"]
+        command += ["scripts/week7_release.py"]
+        for flag in ("author", "url", "license"):
+            if getattr(args, flag):
+                command += ["--" + flag, getattr(args, flag)]
     print(shlex.join(command), flush=True)
     if args.dry_run:
         return

@@ -305,6 +305,57 @@ class CheckpointRecoveryTests(unittest.TestCase):
             self.assertEqual(json.loads(args[1].read_text())["best_step"], 5000)
 
 
+class ReleaseTests(unittest.TestCase):
+    @staticmethod
+    def public_root(folder):
+        from week7_release import PUBLIC_FILES
+        root = Path(folder)
+        for name in PUBLIC_FILES:
+            (root / name).write_text("public content", encoding="utf-8")
+        (root / "results").mkdir()
+        (root / "results/evidence.json").write_text("{}")
+        return root
+
+    def test_release_excludes_private_and_transfer_files(self):
+        from week7_release import collect_public_files
+        with tempfile.TemporaryDirectory() as folder:
+            root = self.public_root(folder)
+            for name in ("note", "saved", "work"):
+                (root / name).mkdir()
+                (root / name / "private.txt").write_text("private")
+            for name in ("model.pt", "input.npy", "sync_manifest.json"):
+                (root / "results" / name).write_text("private")
+            names = {p.as_posix() for p in collect_public_files(root)}
+            self.assertIn("results/evidence.json", names)
+            self.assertFalse(any("private" in p or p.endswith((".pt", ".npy"))
+                                 or "sync_manifest" in p for p in names))
+
+    def test_release_archive_preserves_authored_documents(self):
+        from week7_release import collect_public_files, build_archive
+        import zipfile
+        with tempfile.TemporaryDirectory() as folder:
+            root = self.public_root(folder)
+            document = root / "README.md"
+            document.write_text("保留人工编写的说明", encoding="utf-8")
+            before = document.read_bytes()
+            output = root / "dist/public.zip"
+            digest = build_archive(root, output, collect_public_files(root))
+            self.assertEqual(len(digest), 64)
+            self.assertEqual(document.read_bytes(), before)
+            with zipfile.ZipFile(output) as bundle:
+                self.assertEqual(bundle.read("README.md"), before)
+                self.assertFalse(any("manifest" in p for p in bundle.namelist()))
+
+    def test_release_rejects_test_selected_candidate(self):
+        from week7_release import validate_results
+        with tempfile.TemporaryDirectory() as folder:
+            root = self.public_root(folder)
+            write_json(root / "results/week7-improvement/selection.json",
+                       {"selected": "fixed", "selection_split": "test"})
+            with self.assertRaisesRegex(ValueError, "invalid frozen selection"):
+                validate_results(root)
+
+
 class ResumeQueueTests(unittest.TestCase):
     @staticmethod
     def make_result(folder):
