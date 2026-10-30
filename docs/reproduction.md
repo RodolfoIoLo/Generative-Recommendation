@@ -75,60 +75,66 @@ done
 
 量化默认使用CPU。结果分别写入 `work/week7/`、`exported/week7/` 和 `saved/week7/`；已有同名量化器会阻止静默覆盖。
 
-## 4. 后续训练与评测
+## 4. 训练与验证选模
 
-以下为训练入口示例，卡号按实际空闲设备指定。对应变体的量化接口须先完成：
-
-启动器连续两次确认无计算进程且显存占用不超过 1 GiB 后启动任务。利用率只作提示，避免上一任务结束后的采样残留造成误判；无计算进程时最多复查约 5 秒，仍未空闲则退出。
+完整链路为：数据处理 → 文本与协同表示 → 语义ID → 序列模型训练 → 验证选模 → test → 统计对比。量化完成后，先训练四组seed42，再仅按valid选择一次候选。卡号按运行设备填写：
 
 ~~~bash
-python scripts/run_week7.py train --variant text --seed 42 --gpu 0
-# 中断后使用同一配置恢复
-python scripts/run_week7.py train --variant text --seed 42 --gpu 0 --resume
-~~~
-
-恢复会沿用保存的优化器、学习率、随机数和数据位置。checkpoint先写入临时目录，完整写入后再替换旧版本；存储空间不足512 MiB或写入时磁盘满，会等待并重试。恢复时会核对最佳权重与原始valid记录并补齐缺失元数据；当last正好对应最佳验证步时，也可据此重建best。无法找回更早的最佳权重时会明确报错。
-
-四组 seed 42 在 valid 上筛选后，Text 与候选补齐种子 43/44；冻结方案后再评测 test。完整计划及结果边界见 [实验协议](experiment-protocol.md)。
-
-已完成的筛选运行、h20基线与候选记录见 [训练记录](../results/week7-improvement/05-formal-training/README.md)和 [验证集筛选](../results/week7-improvement/04-screening/README.md)。可用 `python scripts/run_week7.py curves` 从完成的正式训练记录重建曲线；该命令兼容服务器旧平铺目录与仓库分类目录，并排除冒烟及进行中的第七周运行。
-
-CPU测试可以验证接口和数学规则；完整训练、解码与指标仍需在实际数据和 GPU 环境中执行。checkpoint 和可重建的大数组不保存在仓库。
-
-## 5. 正式评测与本地打包
-
-四组seed42完成后，只在valid上选择一次候选：
-
-~~~bash
+GENREC_GPU=0
+for variant in text fixed fixed_match adaptive; do
+  python scripts/run_week7.py train --variant "$variant" --seed 42 --gpu "$GENREC_GPU"
+done
 python scripts/run_week7.py select
 ~~~
 
-随后Text与selected补齐seed43/44，并训练两种h20基线；以下为单次入口，基线种子需覆盖42、43、44：
+Text与selected补齐seed43/44，候选和训练配置保持冻结：
 
 ~~~bash
-python scripts/run_week7.py train --variant text --seed 43 --gpu 0
-python scripts/run_week7.py train --variant selected --seed 43 --gpu 0
-python scripts/run_week7.py baseline --model SASRec --seed 42 --split train --data_path "$GENREC_DATA_ROOT/recbole" --gpu 0
-python scripts/run_week7.py baseline --model GRU4Rec --seed 42 --split train --data_path "$GENREC_DATA_ROOT/recbole" --gpu 0
+for variant in text selected; do
+  for seed in 43 44; do
+    python scripts/run_week7.py train --variant "$variant" --seed "$seed" --gpu "$GENREC_GPU"
+  done
+done
 ~~~
 
-生成模型补充种子还需执行seed44。六个生成模型齐备后，用可重复执行的入口补齐全部12项test：
+判别式基线使用相同历史长度20，并按完整历史屏蔽后的valid NDCG@10选模：
 
 ~~~bash
-python scripts/week7_test_queue.py --status
-python scripts/week7_test_queue.py --gpu 0 --data_path "$GENREC_DATA_ROOT/recbole" --wait
+for model in SASRec GRU4Rec; do
+  for seed in 42 43 44; do
+    python scripts/run_week7.py baseline --model "$model" --seed "$seed" \
+      --split train --data_path "$GENREC_DATA_ROOT/recbole" --gpu "$GENREC_GPU"
+  done
+done
+~~~
+
+训练中断时，对同一模型和种子追加 `--resume`，例如：
+
+~~~bash
+python scripts/run_week7.py train --variant text --seed 43 --gpu "$GENREC_GPU" --resume
+~~~
+
+恢复沿用保存的优化器、学习率、随机数和数据位置。新checkpoint完整写入后再替换旧版本；磁盘不足会等待重试。训练记录见 [三种子结果](../results/week7-improvement/05-formal-training/README.md)，选择依据见 [验证集筛选](../results/week7-improvement/04-screening/README.md)。
+
+## 5. 正式评测与结果分析
+
+六个生成模型运行全部完成后，固定beam20、全部6,040名用户，分别评测生成模型和判别式基线：
+
+~~~bash
+for variant in text selected; do
+  for seed in 42 43 44; do
+    python scripts/run_week7.py evaluate --variant "$variant" --seed "$seed" \
+      --split test --gpu "$GENREC_GPU"
+  done
+done
+for model in SASRec GRU4Rec; do
+  for seed in 42 43 44; do
+    python scripts/run_week7.py baseline --model "$model" --seed "$seed" \
+      --split test --data_path "$GENREC_DATA_ROOT/recbole" --gpu "$GENREC_GPU"
+  done
+done
+python scripts/run_week7.py curves
 python scripts/run_week7.py summarize
 ~~~
 
-续跑入口核对模型指纹、完整预测和样例后跳过已完成项，只补缺失或不完整的结果。`--wait`表示卡被占用时等待；不加则在卡忙时退出。通过tmux运行可在断开SSH后继续，Ctrl+C停止后可用同一命令恢复。
-
-完整预测保存在 `work/week7/predictions/`，供指标复核与bootstrap使用；仓库只收录指标和固定20名用户样例。
-
-发布时先将已验收结果同步回公开仓库，再从仓库根目录执行：
-
-~~~bash
-python scripts/week7_release.py --check-only
-python scripts/week7_release.py
-~~~
-
-打包会验证完整结果、生成 `dist/week7-public.zip` 并逐文件校验内容，不重写README、许可证或人工文档，也不生成同步清单。
+汇总输出三种子主表、分组指标和用户配对bootstrap。完整预测位于 `work/week7/predictions/`；仓库保留指标、曲线和固定20名用户样例。test不参与候选选择，完整口径见 [实验协议](experiment-protocol.md)。

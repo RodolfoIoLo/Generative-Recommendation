@@ -8,7 +8,7 @@
 | Week 2 | `week2-sasrec-baseline/`；checkpoint 位于服务器 `~/genrec/saved/` | ✅ 完成 |
 | Week 3–4 | [`week3-4-semantic-id/`](week3-4-semantic-id/)；残差量化、码本分析、前缀验证与接口冻结 | ✅ 完成 |
 | Week 5–6 | [`week5-6-generative/`](week5-6-generative/)；Stage 0–7 训练、评测与最终汇总 | ✅ 完成 |
-| Week 7 | [融合输入、量化、筛选与训练记录](week7-improvement/README.md) | 截至7.10训练与验收完成；正式test尚未齐备 |
+| Week 7 | [融合输入、量化、筛选与训练记录](week7-improvement/README.md) | 三种子训练与验收完成；正式test尚未齐备 |
 
 约定：
 
@@ -290,7 +290,7 @@ RecBole 原始序列评测没有屏蔽历史物品，而生成模型的约束解
 
 ## Week 7：协同特征与语义 ID
 
-已完成输入冻结、代码与配置、28项CPU测试、step2→4冒烟恢复，以及四组3416×448融合输入。协同表示仅由987,531次train交互经64维SVD构造；q80=455，自适应组平均协同平方范数占比约36.92%，固定匹配组权重为0.765089。
+已完成输入冻结、代码与配置、17项核心CPU测试、step2→4冒烟恢复，以及四组3416×448融合输入。协同表示仅由987,531次train交互经64维SVD构造；q80=455，自适应组平均协同平方范数占比约36.92%，固定匹配组权重为0.765089。
 
 四组RQ-VAE均已完成量化并导出唯一的四位语义ID；checkpoint重现和数据划分逐条映射检查均通过。重建R²与码本质量见[四组量化结果](week7-improvement/03-semantic-ids/README.md)，不能据此推断推荐效果。完整索引、权重和近邻见[Week 7说明](week7-improvement/README.md)。数组、完整接口序列与checkpoint留在服务器。
 

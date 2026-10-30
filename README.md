@@ -30,7 +30,7 @@ Toy Story → [37, 128, 5, 0]
 | 第 2 周 | SASRec 三随机种子,GRU4Rec 基线与 checkpoint 复评 | ✅ 完成 |
 | 第 3–4 周 | 文本编码,RQ-Kmeans / RQ-VAE,语义 ID 与码本分析 | ✅️ 完成 |
 | 第 5–6 周 | T5 类生成式推荐:管线验证、三种子训练、约束解码与基线复评 | ✅ 完成 |
-| 第 7 周 | 文本—协同融合、语义ID消融与仓库整理 | 截至7.10训练与验收完成；正式test尚未齐备 |
+| 第 7 周 | 文本—协同融合、语义ID消融与仓库整理 | 三种子训练与验收完成；正式test尚未齐备 |
 
 ### 已得到的核心结果
 
@@ -202,10 +202,8 @@ repository/
 │   ├── week7_prepare.py
 │   ├── week7_train.py
 │   ├── week7_evaluate.py
-│   ├── week7_test_queue.py
 │   ├── week7_baseline.py
 │   ├── week7_report.py
-│   ├── week7_release.py
 │   └── run_week7.py
 ├── tests/
 │   └── test_week7.py
@@ -363,10 +361,8 @@ repository/
 │   ├── week7_prepare.py
 │   ├── week7_train.py
 │   ├── week7_evaluate.py
-│   ├── week7_test_queue.py
 │   ├── week7_baseline.py
 │   ├── week7_report.py
-│   ├── week7_release.py
 │   └── run_week7.py
 ├── tests/
 │   └── test_week7.py
