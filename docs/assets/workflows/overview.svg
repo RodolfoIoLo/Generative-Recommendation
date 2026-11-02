@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="720" viewBox="0 0 1800 720">
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}</style>
+<rect width="100%" height="100%" fill="#f5f7fa"/>
+<text x="65" y="40" font-size="54" fill="#213447" dominant-baseline="text-before-edge">电影先有编号，模型再学会生成编号</text>
+<text x="68" y="122" font-size="28" fill="#526577" dominant-baseline="text-before-edge">先给电影编码，再让模型学习观看顺序；推理时把编号查回真实电影。</text>
+<rect x="65" y="215" width="500" height="255" rx="22" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="92" y="245" font-size="38" fill="#213447" dominant-baseline="text-before-edge">① 认识电影</text>
+<text x="92" y="327" font-size="27" fill="#213447" dominant-baseline="text-before-edge">标题、类型＋训练集观看行为</text>
+<text x="92" y="390" font-size="27" fill="#213447" dominant-baseline="text-before-edge">变成一组描述电影的数字</text>
+<rect x="650" y="215" width="500" height="255" rx="22" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="677" y="245" font-size="38" fill="#213447" dominant-baseline="text-before-edge">② 编成语义ID</text>
+<text x="677" y="327" font-size="27" fill="#213447" dominant-baseline="text-before-edge">相似电影可以共享编号前缀</text>
+<text x="677" y="390" font-size="27" fill="#213447" dominant-baseline="text-before-edge">例如 (37, 128, 5, 0)</text>
+<rect x="1235" y="215" width="500" height="255" rx="22" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="1262" y="245" font-size="38" fill="#213447" dominant-baseline="text-before-edge">③ 逐位生成</text>
+<text x="1262" y="327" font-size="27" fill="#213447" dominant-baseline="text-before-edge">历史电影ID → 生成下一部ID</text>
+<text x="1262" y="390" font-size="27" fill="#213447" dominant-baseline="text-before-edge">合法编号 → 真实电影Top-10</text>
+<polyline points="585,340 627,340" fill="none" stroke="#5b7182" stroke-width="6"/>
+<polyline points="613,327 627,340 613,353" fill="none" stroke="#5b7182" stroke-width="6"/>
+<polyline points="1170,340 1212,340" fill="none" stroke="#5b7182" stroke-width="6"/>
+<polyline points="1198,327 1212,340 1198,353" fill="none" stroke="#5b7182" stroke-width="6"/>
+<rect x="65" y="530" width="1670" height="120" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<text x="95" y="552" font-size="30" fill="#213447" dominant-baseline="text-before-edge">训练：用真实下一部电影教模型逐位预测。推荐：模型接着自己的前缀生成，查回电影。</text>
+<text x="95" y="603" font-size="25" fill="#526577" dominant-baseline="text-before-edge">编号仅为示意  ·  非法编号和完整历史中看过的电影会被排除  ·  最终效果独立测试</text>
+</svg>

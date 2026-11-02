@@ -2,9 +2,9 @@
 
 这张彩色流程图以本仓库 **Week 5–6 冻结实验**为对象，重点展开 Encoder–Decoder 内部发生的计算。主线使用完整 batch 的张量，具体用户样本作为局部放大说明。
 
-[打开可无限放大的 SVG](assets/generative-training-detailed.svg) · [下载高清 PNG（4500 × 12450）](assets/generative-training-detailed.png) · [核验数据与源文件 SHA-256](assets/generative-training-detailed.evidence.json)
+[打开可无限放大的 SVG](assets/generative-training-detailed.svg) · [下载高清 PNG（4500 × 12450）](assets/generative-training-detailed.png)
 
-[![生成式推荐训练详图预览](assets/generative-training-detailed-preview.png)](assets/generative-training-detailed.svg)
+[![生成式推荐训练详图预览](assets/generative-training-detailed.png)](assets/generative-training-detailed.svg)
 
 ## 推荐阅读顺序
 
@@ -65,32 +65,22 @@ LM Head 与共享 embedding 绑定，不另算一份输出矩阵。物品文本�
 仓库内证据：
 
 - [正式配置](../config/generative_ml1m.yaml)：实际模型维度、训练与解码设置。
-- [数据集、词表、collator 与评估实现](../scripts/generative_common.py)：前缀展开、历史截断、补齐、token 偏移、Trie 和指标。
-- [训练实现](../scripts/train_generative.py)：初始化、优化器、自动混合精度、损失、梯度累积、早停与 checkpoint。
-- [审计日志](../results/week5-6-generative/01-pipeline-validation/audit.log)：真实训练规模与参数量。
-- [冻结语义接口](../results/week3-4-semantic-id/05-frozen-interface/)：真实用户序列、Semantic ID、词表与元数据。
-- [seed42 训练历史](../results/week5-6-generative/03-formal-training/t5_sid_seed42_history.jsonl)：loss 和 valid 指标。
+- [数据集、词表、collator 与评估实现](../scripts/week5_6_common.py)：前缀展开、历史截断、补齐、token 偏移、Trie 和指标。
+- [训练实现](../scripts/week5_6_train.py)：初始化、优化器、自动混合精度、损失、梯度累积、早停与 checkpoint。
+- [审计日志](../results/week5-6-generative/01-pipeline-validation/audit/audit.log)：真实训练规模与参数量。
+- [冻结语义接口](../results/week3-4-semantic-id/05-frozen-interface)：真实用户序列、Semantic ID、词表与元数据。
+- [seed42 训练历史](../results/week5-6-generative/03-formal-training/seed42/t5_sid_seed42_history.jsonl)：loss 和 valid 指标。
 
 T5 的归一化、子层顺序、共享权重、输出缩放和标签右移同时参考 [Hugging Face 官方 T5 实现](https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/modeling_t5.py)及[官方配置](https://github.com/huggingface/transformers/blob/main/src/transformers/models/t5/configuration_t5.py)。上游链接指向 main，可能继续变化；本仓库实验依赖版本记录在 [server-requirements.txt](../environment/server-requirements.txt)，实验参数与统计以本地代码、配置和日志为准。
 
-## 重建与文档引用
+## 图片引用
 
-构建脚本会核验配置中的关键维度、数据统计、样本和参数量，再输出 SVG 及证据 JSON。SVG 生成只需要 Python 标准库；可选 Pillow 用于更准确地测量文字。PNG 导出需要 Node.js 的 sharp。
-
-```bash
-# 生成 SVG 与 evidence.json
-python scripts/render_training_diagram.py
-
-# 安装/提供 sharp 后，同时导出高清 PNG 与预览
-python scripts/render_training_diagram.py --sharp-module sharp
-```
-
-也可以用 `--node` 指定 Node 可执行文件，或用 `--sharp-module` 指定 sharp 模块的绝对路径。默认 `--scale 1.5`，输出 PNG 为 4500×12450。文字采用 Microsoft YaHei / SimHei 中文字体；其他系统应安装相应字体或在脚本中调整字体设置后重建。
+SVG保留矢量文字，适合放大阅读和编辑；PNG用于预览与文档插图。图中的模型维度、真实样本和参数量可通过上方配置、代码与冻结记录核对。
 
 在仓库根目录的 Markdown 中插图：
 
 ```markdown
-[![生成式推荐模型训练全过程](docs/assets/generative-training-detailed-preview.png)](docs/assets/generative-training-detailed.svg)
+[![生成式推荐模型训练全过程](docs/assets/generative-training-detailed.png)](docs/assets/generative-training-detailed.svg)
 ```
 
 图片覆盖本仓库训练算法的数据流与控制流，包括一次前向、一次反向、四批累积、优化器更新、验证与保存；没有展开矩阵乘法的 CUDA 内核、显存分配和文件系统底层操作。

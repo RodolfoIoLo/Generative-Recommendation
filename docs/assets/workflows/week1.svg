@@ -1,0 +1,221 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3600" height="3805" viewBox="0 0 3600 3805">
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}</style>
+<rect width="100%" height="100%" fill="#f5f7fa"/>
+<rect x="0" y="0" width="3600" height="28" rx="0" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="120" y="88" font-size="36" fill="#b77d27" dominant-baseline="text-before-edge">WEEK 1   /   FILE-LEVEL WORKFLOW</text>
+<text x="120" y="151" font-size="72" fill="#213447" dominant-baseline="text-before-edge">把观看记录整理成可学习的数据</text>
+<text x="125" y="270" font-size="35" fill="#526577" dominant-baseline="text-before-edge">起点：MovieLens 1M原始记录　→　终点：固定划分、电影文本与数据分布</text>
+<text x="125" y="337" font-size="30" fill="#526577" dominant-baseline="text-before-edge">沿主干向下读；每行展开输入、程序与产物。路径相对实验根目录，processed/相对数据目录。</text>
+<polyline points="132,405 132,3650" fill="none" stroke="#c3cfd9" stroke-width="10"/>
+<rect x="96" y="435" width="72" height="72" rx="36" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="113" y="449" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">01</text>
+<polyline points="168,472 235,472" fill="none" stroke="#b77d27" stroke-width="5"/>
+<text x="260" y="440" font-size="46" fill="#b77d27" dominant-baseline="text-before-edge">01  读懂一条交互</text>
+<rect x="260" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="534" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 原始数据</text>
+<rect x="292" y="653" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">ml-1m/raw/ratings.dat</text>
+<rect x="292" y="720" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">用户、电影、评分、时间戳</text>
+<rect x="292" y="787" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">ml-1m/raw/movies.dat</text>
+<rect x="292" y="854" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">电影标题与类型；按原始电影ID连接</text>
+<polyline points="1320,724 1348,724" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="1336,714 1348,724 1336,734" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="1358" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="534" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 预处理入口</text>
+<rect x="1390" y="653" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week1_preprocess.py</text>
+<rect x="1390" y="720" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">读取原始记录并检查必要字段</text>
+<rect x="1390" y="787" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">本项目把观看记录作为隐式反馈</text>
+<rect x="1390" y="854" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">评分值不作为推荐目标</text>
+<polyline points="2418,724 2446,724" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="2434,714 2446,724 2434,734" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="2456" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="534" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 可排序的事件</text>
+<rect x="2488" y="653" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">用户—电影—时间的交互序列</text>
+<rect x="2488" y="720" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">文本与交互使用相同电影映射</text>
+<rect x="2488" y="787" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">原始文件在数据工作区</text>
+<rect x="2488" y="854" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">不纳入Git</text>
+<text x="268" y="942" font-size="32" fill="#526577" dominant-baseline="text-before-edge">数据根目录由 --data-root 指定；原始数据与公开结果分开存放。</text>
+<rect x="96" y="1070" width="72" height="72" rx="36" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="113" y="1084" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">02</text>
+<polyline points="168,1107 235,1107" fill="none" stroke="#b77d27" stroke-width="5"/>
+<text x="260" y="1075" font-size="46" fill="#b77d27" dominant-baseline="text-before-edge">02  清洗与连续编号</text>
+<rect x="260" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="1169" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 交互与电影信息</text>
+<rect x="292" y="1288" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">上一阶段的原始事件</text>
+<rect x="292" y="1355" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">电影必须有对应文本信息</text>
+<rect x="292" y="1422" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">迭代5-core过滤</text>
+<rect x="292" y="1489" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">用户与物品都满足最少交互要求</text>
+<polyline points="1320,1359 1348,1359" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="1336,1349 1348,1359 1336,1369" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="1358" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="1169" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 映射与序列</text>
+<rect x="1390" y="1288" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week1_preprocess.py</text>
+<rect x="1390" y="1355" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">过滤后建立连续内部ID</text>
+<rect x="1390" y="1422" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">用户内部ID与电影内部ID各自独立</text>
+<rect x="1390" y="1489" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">按时间排列每人的观看记录</text>
+<polyline points="2418,1359 2446,1359" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="2434,1349 2446,1359 2434,1369" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="2456" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="1169" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 电影字典</text>
+<rect x="2488" y="1288" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/user_id_map.json</text>
+<rect x="2488" y="1355" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/item_id_map.json</text>
+<rect x="2488" y="1422" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/item_text.json</text>
+<rect x="2488" y="1489" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">电影内部ID → 标题与类型文本</text>
+<text x="268" y="1577" font-size="32" fill="#526577" dominant-baseline="text-before-edge">清洗后：6,040名用户、3,416部电影。后续数组第i行始终对应电影内部ID i。</text>
+<rect x="96" y="1705" width="72" height="72" rx="36" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="113" y="1719" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">03</text>
+<polyline points="168,1742 235,1742" fill="none" stroke="#b77d27" stroke-width="5"/>
+<text x="260" y="1710" font-size="46" fill="#b77d27" dominant-baseline="text-before-edge">03  划分训练、验证、测试</text>
+<rect x="260" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="1804" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 按时间排序的用户序列</text>
+<rect x="292" y="1923" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">每人保留自己的观看顺序</text>
+<rect x="292" y="1990" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">倒数第二次交互作为valid目标</text>
+<rect x="292" y="2057" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">最后一次交互作为test目标</text>
+<rect x="292" y="2124" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">更早的交互只用于train</text>
+<polyline points="1320,1994 1348,1994" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="1336,1984 1348,1994 1336,2004" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="1358" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="1804" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 划分与检查</text>
+<rect x="1390" y="1923" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week1_preprocess.py</text>
+<rect x="1390" y="1990" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week1_verify_split.py</text>
+<rect x="1390" y="2057" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">校验人数、顺序与目标连接关系</text>
+<rect x="1390" y="2124" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">train / valid / test各6,040行</text>
+<polyline points="2418,1994 2446,1994" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="2434,1984 2446,1994 2434,2004" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="2456" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="1804" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 两类数据接口</text>
+<rect x="2488" y="1923" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/{train,valid,test}.jsonl</text>
+<rect x="2488" y="1990" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">train为完整训练序列</text>
+<rect x="2488" y="2057" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">valid/test为历史＋下一部电影</text>
+<rect x="2488" y="2124" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/ml-1m.inter供RecBole读取</text>
+<text x="268" y="2212" font-size="32" fill="#526577" dominant-baseline="text-before-edge">train共987,531次交互。后续生成训练在线展开为981,491个前缀—目标样本。</text>
+<rect x="96" y="2340" width="72" height="72" rx="36" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="113" y="2354" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">04</text>
+<polyline points="168,2377 235,2377" fill="none" stroke="#b77d27" stroke-width="5"/>
+<text x="260" y="2345" font-size="46" fill="#b77d27" dominant-baseline="text-before-edge">04  看清数据分布</text>
+<rect x="260" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="2439" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 清洗后的数据</text>
+<rect x="292" y="2558" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/下的划分与电影文本</text>
+<rect x="292" y="2625" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">序列长度、电影出现次数</text>
+<rect x="292" y="2692" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">全体清洗交互用于描述性统计</text>
+<rect x="292" y="2759" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">这不是Week 7的train-only频次</text>
+<polyline points="1320,2629 1348,2629" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="1336,2619 1348,2629 1336,2639" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="1358" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="2439" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 数据分析</text>
+<rect x="1390" y="2558" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week1_stats.py</text>
+<rect x="1390" y="2625" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week1_export_item_frequency.py</text>
+<rect x="1390" y="2692" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">计算规模与分布</text>
+<rect x="1390" y="2759" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">生成统计JSON、Markdown和直方图</text>
+<polyline points="2418,2629 2446,2629" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="2434,2619 2446,2629 2434,2639" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="2456" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="2439" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 可阅读证据</text>
+<rect x="2488" y="2558" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/stats/stats.{json,md}</text>
+<rect x="2488" y="2625" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/stats/figs/*.png</text>
+<rect x="2488" y="2692" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">results/week1-data-stats/item_freq.json</text>
+<rect x="2488" y="2759" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">预处理数量记录：preprocess_log.json</text>
+<text x="268" y="2847" font-size="32" fill="#526577" dominant-baseline="text-before-edge">统计报告与图从数据工作区归档到 results/week1-data-stats/，内容保持一致。</text>
+<rect x="96" y="2975" width="72" height="72" rx="36" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="113" y="2989" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">05</text>
+<polyline points="168,3012 235,3012" fill="none" stroke="#b77d27" stroke-width="5"/>
+<text x="260" y="2980" font-size="46" fill="#b77d27" dominant-baseline="text-before-edge">05  交给后续两条路线</text>
+<rect x="260" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="3074" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">分支A · 序列推荐</text>
+<rect x="292" y="3193" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">ml-1m.inter → Week 2</text>
+<rect x="292" y="3260" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">用已有方法建立效果参照</text>
+<rect x="292" y="3327" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">train/valid/test决定学习与评测</text>
+<rect x="292" y="3394" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="317" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">ID映射确保能查回同一部电影</text>
+<polyline points="1320,3264 1348,3264" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="1336,3254 1348,3264 1336,3274" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="1358" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="3074" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">分支B · 电影内容</text>
+<rect x="1390" y="3193" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">item_text.json → Week 3–4</text>
+<rect x="1390" y="3260" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">用文本编码器得到电影向量</text>
+<rect x="1390" y="3327" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">同一电影顺序贯穿量化和生成训练</text>
+<rect x="1390" y="3394" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="1415" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">避免文本行与交互ID错位</text>
+<polyline points="2418,3264 2446,3264" fill="none" stroke="#b77d27" stroke-width="4"/>
+<polyline points="2434,3254 2446,3264 2434,3274" fill="none" stroke="#b77d27" stroke-width="4"/>
+<rect x="2456" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="3074" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">仓库 · 本周归档</text>
+<rect x="2488" y="3193" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">results/week1-data-stats/</text>
+<rect x="2488" y="3260" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">stats.md / stats.json</text>
+<rect x="2488" y="3327" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">preprocess_log.json / item_freq.json</text>
+<rect x="2488" y="3394" width="10" height="10" rx="4" fill="#b77d27" stroke="#b77d27" stroke-width="2"/>
+<text x="2513" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">figs/：序列长度、频次、长尾图</text>
+<text x="268" y="3482" font-size="32" fill="#526577" dominant-baseline="text-before-edge">终点检查：数据身份固定、划分可复验、电影文本与内部ID对齐；原始数据留在数据工作区。</text>
+<text x="120" y="3700" font-size="30" fill="#526577" dominant-baseline="text-before-edge">生成式推荐学习仓库  ·  图中数字来自已完成实验；原始日志与冻结记录保留运行时命名。</text>
+</svg>

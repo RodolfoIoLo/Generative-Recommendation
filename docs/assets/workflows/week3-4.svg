@@ -1,0 +1,263 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3600" height="4440" viewBox="0 0 3600 4440">
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}</style>
+<rect width="100%" height="100%" fill="#f5f7fa"/>
+<rect x="0" y="0" width="3600" height="28" rx="0" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="120" y="88" font-size="36" fill="#8754ac" dominant-baseline="text-before-edge">WEEK 3–4   /   FILE-LEVEL WORKFLOW</text>
+<text x="120" y="151" font-size="72" fill="#213447" dominant-baseline="text-before-edge">从电影简介长出一棵编号树</text>
+<text x="125" y="270" font-size="35" fill="#526577" dominant-baseline="text-before-edge">起点：电影文本　→　384维向量　→　三层残差量化　→　唯一四段ID与六文件接口</text>
+<text x="125" y="337" font-size="30" fill="#526577" dominant-baseline="text-before-edge">沿主干向下读；每行展开输入、程序与产物。路径相对实验根目录，processed/相对数据目录。</text>
+<polyline points="132,405 132,4285" fill="none" stroke="#c3cfd9" stroke-width="10"/>
+<rect x="96" y="435" width="72" height="72" rx="36" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="113" y="449" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">01</text>
+<polyline points="168,472 235,472" fill="none" stroke="#8754ac" stroke-width="5"/>
+<text x="260" y="440" font-size="46" fill="#8754ac" dominant-baseline="text-before-edge">01  把文本变成数字</text>
+<rect x="260" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="534" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 标题与类型</text>
+<rect x="292" y="653" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/item_text.json</text>
+<rect x="292" y="720" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">电影内部ID连续为0…3415</text>
+<rect x="292" y="787" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">共享编码器：all-MiniLM-L6-v2</text>
+<rect x="292" y="854" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">本项目使用现成文本模型权重</text>
+<polyline points="1320,724 1348,724" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="1336,714 1348,724 1336,734" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="1358" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="534" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 文本编码</text>
+<rect x="1390" y="653" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week3_4_encode_items.py</text>
+<rect x="1390" y="720" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">编码标题和类型文本</text>
+<rect x="1390" y="787" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">按内部ID顺序保存数组</text>
+<rect x="1390" y="854" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">对每行做L2归一化</text>
+<polyline points="2418,724 2446,724" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="2434,714 2446,724 2434,734" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="2456" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="534" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 电影文本向量</text>
+<rect x="2488" y="653" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">item_emb.npy：3416×384</text>
+<rect x="2488" y="720" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">第i行对应电影i</text>
+<rect x="2488" y="787" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">行范数约1，全部数值有限</text>
+<rect x="2488" y="854" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">向量缓存留在实验工作区</text>
+<text x="268" y="942" font-size="32" fill="#526577" dominant-baseline="text-before-edge">文本向量描述语义相似性，不是推荐模型的词表，也不是生成模型的训练权重。</text>
+<rect x="96" y="1070" width="72" height="72" rx="36" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="113" y="1084" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">02</text>
+<polyline points="168,1107 235,1107" fill="none" stroke="#8754ac" stroke-width="5"/>
+<text x="260" y="1075" font-size="46" fill="#8754ac" dominant-baseline="text-before-edge">02  两种残差量化路线</text>
+<rect x="260" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="1169" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 单位电影向量</text>
+<rect x="292" y="1288" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">item_emb.npy</text>
+<rect x="292" y="1355" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">RQ-KMeans：直接量化384维输入</text>
+<rect x="292" y="1422" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">RQ-VAE：先压缩到32维潜空间</text>
+<rect x="292" y="1489" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">三层，每层256个代表向量</text>
+<polyline points="1320,1359 1348,1359" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="1336,1349 1348,1359 1336,1369" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="1358" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="1169" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 量化与坍缩修复</text>
+<rect x="1390" y="1288" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week3_4_build_semantic_ids.py</text>
+<rect x="1390" y="1355" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">连续AE预训练200轮</text>
+<rect x="1390" y="1422" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">逐层K-Means初始化残差码本</text>
+<rect x="1390" y="1489" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">重建＋码本＋承诺损失联合训练</text>
+<polyline points="2418,1359 2446,1359" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="2434,1349 2446,1359 2434,1369" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="2456" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="1169" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 三位码与权重</text>
+<rect x="2488" y="1288" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">01-quantization/identifiers/</text>
+<rect x="2488" y="1355" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">semantic_ids_{kmeans,rqvae}.json</text>
+<rect x="2488" y="1422" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">saved/rq_kmeans_ml1m.npz</text>
+<rect x="2488" y="1489" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">saved/rqvae_ml1m.pt</text>
+<text x="268" y="1577" font-size="32" fill="#526577" dominant-baseline="text-before-edge">首次随机初始化坍缩为1个ID；修复后正式RQ-VAE重建R²=0.623914，三层使用256/253/253个码字。</text>
+<rect x="96" y="1705" width="72" height="72" rx="36" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="113" y="1719" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">03</text>
+<polyline points="168,1742 235,1742" fill="none" stroke="#8754ac" stroke-width="5"/>
+<text x="260" y="1710" font-size="46" fill="#8754ac" dominant-baseline="text-before-edge">03  给相同编号追加消歧位</text>
+<rect x="260" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="1804" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 三层码的选择编号</text>
+<rect x="292" y="1923" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">第0层选中心 → c0</text>
+<rect x="292" y="1990" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">扣除该中心后第1层选中心 → c1</text>
+<rect x="292" y="2057" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">再对剩余误差选第2层 → c2</text>
+<rect x="292" y="2124" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">相同(c0,c1,c2)可能对应多部电影</text>
+<polyline points="1320,1994 1348,1994" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="1336,1984 1348,1994 1336,2004" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="1358" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="1804" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 确定性去重</text>
+<rect x="1390" y="1923" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week3_4_build_semantic_ids.py</text>
+<rect x="1390" y="1990" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">按共享三位码分组</text>
+<rect x="1390" y="2057" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">组内按物品顺序追加序号</text>
+<rect x="1390" y="2124" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">形成(c0,c1,c2,消歧序号)</text>
+<polyline points="2418,1994 2446,1994" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="2434,1984 2446,1994 2434,2004" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="2456" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="1804" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 唯一语义ID</text>
+<rect x="2488" y="1923" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">每部电影一个四段编号</text>
+<rect x="2488" y="1990" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">正式RQ-VAE原三位有5个重复ID</text>
+<rect x="2488" y="2057" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">最大冲突组2部电影</text>
+<rect x="2488" y="2124" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">追加后3416个ID全部唯一</text>
+<text x="268" y="2212" font-size="32" fill="#526577" dominant-baseline="text-before-edge">第四段是消歧序号，不是语义码本；唯一性保证完整ID可以无歧义地查回电影。</text>
+<rect x="96" y="2340" width="72" height="72" rx="36" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="113" y="2354" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">04</text>
+<polyline points="168,2377 235,2377" fill="none" stroke="#8754ac" stroke-width="5"/>
+<text x="260" y="2345" font-size="46" fill="#8754ac" dominant-baseline="text-before-edge">04  看码本是否真的在工作</text>
+<rect x="260" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="2439" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · ID与电影向量</text>
+<rect x="292" y="2558" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">两种方法的完整语义ID</text>
+<rect x="292" y="2625" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">不把消歧位计为语义码本</text>
+<rect x="292" y="2692" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">统计码字使用量与分配分布</text>
+<rect x="292" y="2759" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">比较共享前缀的电影相似度</text>
+<polyline points="1320,2629 1348,2629" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="1336,2619 1348,2629 1336,2639" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="1358" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="2439" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 两类质量检查</text>
+<rect x="1390" y="2558" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week3_4_analyze_codebook.py</text>
+<rect x="1390" y="2625" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week3_4_check_prefix.py</text>
+<rect x="1390" y="2692" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">利用率／困惑度／冲突率</text>
+<rect x="1390" y="2759" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">共享前缀余弦相似度与人工样例</text>
+<polyline points="2418,2629 2446,2629" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="2434,2619 2446,2629 2434,2639" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="2456" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="2439" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 可检查的解释</text>
+<rect x="2488" y="2558" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">02-codebook-analysis/codebook_stats.json</text>
+<rect x="2488" y="2625" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">02-codebook-analysis/figures/方法/</text>
+<rect x="2488" y="2692" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">04-prefix-validation/prefix_consistency.md</text>
+<rect x="2488" y="2759" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">04-prefix-validation/prefix_samples.csv</text>
+<text x="268" y="2847" font-size="32" fill="#526577" dominant-baseline="text-before-edge">高利用率说明没有大面积闲置码字；重建质量和前缀语义不能替代最终推荐效果。</text>
+<rect x="96" y="2975" width="72" height="72" rx="36" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="113" y="2989" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">05</text>
+<polyline points="168,3012 235,3012" fill="none" stroke="#8754ac" stroke-width="5"/>
+<text x="260" y="2980" font-size="46" fill="#8754ac" dominant-baseline="text-before-edge">05  做网格并保留正式版本</text>
+<rect x="260" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="3074" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 不同码本容量</text>
+<rect x="292" y="3193" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">主网格：L∈{2,3}，K∈{64,256}</text>
+<rect x="292" y="3260" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">两种方法，共8组</text>
+<rect x="292" y="3327" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">额外：L=4、K=256纯RQ-VAE</text>
+<rect x="292" y="3394" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">额外组关闭人工消歧</text>
+<polyline points="1320,3264 1348,3264" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="1336,3254 1348,3264 1336,3274" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="1358" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="3074" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 受控改变容量</text>
+<rect x="1390" y="3193" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week3_4_build_semantic_ids.py</text>
+<rect x="1390" y="3260" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">分别设置 --n_levels / --codebook_size</text>
+<rect x="1390" y="3327" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">相同输入与seed，分别保存候选</text>
+<rect x="1390" y="3394" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">正式接口沿用已保存可复验主权重</text>
+<polyline points="2418,3264 2446,3264" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="2434,3254 2446,3264 2434,3274" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="2456" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="3074" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 横向对照</text>
+<rect x="2488" y="3193" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">03-grid-search/grid_search.md</text>
+<rect x="2488" y="3260" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">candidates/{kmeans,rqvae}/</text>
+<rect x="2488" y="3327" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">logs/{kmeans,rqvae}/</text>
+<rect x="2488" y="3394" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">四层纯量化本次也达到3416个唯一ID</text>
+<text x="268" y="3482" font-size="32" fill="#526577" dominant-baseline="text-before-edge">网格与正式运行可能存在GPU数值差异；最终ID以正式checkpoint及其冻结哈希为准。</text>
+<rect x="96" y="3610" width="72" height="72" rx="36" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="113" y="3624" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">06</text>
+<polyline points="168,3647 235,3647" fill="none" stroke="#8754ac" stroke-width="5"/>
+<text x="260" y="3615" font-size="46" fill="#8754ac" dominant-baseline="text-before-edge">06  把全部序列换成语义ID</text>
+<rect x="260" y="3709" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="3709" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="3727" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · ID映射＋原始划分</text>
+<rect x="292" y="3828" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="3815" font-size="35" fill="#213447" dominant-baseline="text-before-edge">semantic_ids_rqvae.json</text>
+<rect x="292" y="3895" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="3882" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/{train,valid,test}.jsonl</text>
+<rect x="292" y="3962" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="3949" font-size="35" fill="#213447" dominant-baseline="text-before-edge">同一内部电影ID查到同一四段编号</text>
+<rect x="292" y="4029" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="317" y="4016" font-size="35" fill="#213447" dominant-baseline="text-before-edge">保留用户和目标关系</text>
+<polyline points="1320,3899 1348,3899" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="1336,3889 1348,3899 1336,3909" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="1358" y="3709" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="3709" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="3727" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 冻结模型接口</text>
+<rect x="1390" y="3828" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="3815" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week3_4_export_semantic.py</text>
+<rect x="1390" y="3895" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="3882" font-size="35" fill="#213447" dominant-baseline="text-before-edge">movie ID → 四段语义ID</text>
+<rect x="1390" y="3962" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="3949" font-size="35" fill="#213447" dominant-baseline="text-before-edge">构建分位置Token词表</text>
+<rect x="1390" y="4029" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="1415" y="4016" font-size="35" fill="#213447" dominant-baseline="text-before-edge">记录输入、量化权重与划分SHA-256</text>
+<polyline points="2418,3899 2446,3899" fill="none" stroke="#8754ac" stroke-width="4"/>
+<polyline points="2434,3889 2446,3899 2434,3909" fill="none" stroke="#8754ac" stroke-width="4"/>
+<rect x="2456" y="3709" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="3709" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="3727" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 六份冻结文件</text>
+<rect x="2488" y="3828" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="3815" font-size="35" fill="#213447" dominant-baseline="text-before-edge">semantic_ids.json / token_vocab.json</text>
+<rect x="2488" y="3895" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="3882" font-size="35" fill="#213447" dominant-baseline="text-before-edge">train.semantic.jsonl</text>
+<rect x="2488" y="3962" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="3949" font-size="35" fill="#213447" dominant-baseline="text-before-edge">valid.semantic.jsonl / test.semantic.jsonl</text>
+<rect x="2488" y="4029" width="10" height="10" rx="4" fill="#8754ac" stroke="#8754ac" stroke-width="2"/>
+<text x="2513" y="4016" font-size="35" fill="#213447" dominant-baseline="text-before-edge">meta.json：协议与来源身份</text>
+<text x="268" y="4117" font-size="32" fill="#526577" dominant-baseline="text-before-edge">终点：results/week3-4-semantic-id/05-frozen-interface/公开六文件；工作区exported/供训练读取。</text>
+<text x="120" y="4335" font-size="30" fill="#526577" dominant-baseline="text-before-edge">生成式推荐学习仓库  ·  图中数字来自已完成实验；原始日志与冻结记录保留运行时命名。</text>
+</svg>

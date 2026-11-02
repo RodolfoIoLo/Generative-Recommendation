@@ -404,7 +404,7 @@
 <text x="1045" y="7068.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">= 0.139328。</text>
 <text x="1045" y="7122.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">valid 不更新参数，但决定保存哪个模型和何时停训。test 不参与训练期</text>
 <text x="1045" y="7162.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">的效果选模；训练脚本只对其做接口与统计审计。</text>
-<text x="1045" y="7216.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">最终加载由 valid 选出的 best，用独立 evaluate_generative.py 在 test</text>
+<text x="1045" y="7216.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">最终加载由 valid 选出的 best，用独立 week5_6_evaluate.py 在 test</text>
 <text x="1045" y="7256.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start"> 上报告成绩。</text>
 <rect x="1960" y="6640" width="970" height="774" rx="22" fill="#FFFFFF" stroke="#CFDAE8" stroke-width="2"/>
 <rect x="1960" y="6640" width="9" height="774" rx="4" fill="#297540" stroke="none" stroke-width="2"/>
@@ -445,12 +445,12 @@
 <text x="1575" y="7688.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">是本仓库设置，不套用其他 T5 默认值。</text>
 <text x="1575" y="7742.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">冻结数据中有 867,003 个前缀训练样本达到 20 个历史物品。图中的具体物品码与 labels 直接取自 user=0；</text>
 <text x="1575" y="7782.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">没有杜撰电影名称。</text>
-<text x="1575" y="7836.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">核心证据：config/generative_ml1m.yaml；scripts/generative_common.py；scripts/train_generative.py；</text>
-<text x="1575" y="7876.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">audit.log；冻结 Semantic ID；seed42_history.jsonl。</text>
-<text x="1575" y="7930.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">T5 子层细节同时核对 Hugging Face 官方 modeling_t5.py / configuration_t5.py；源文件路径和 SHA-256 </text>
-<text x="1575" y="7970.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">见同名 evidence.json。</text>
+<text x="1575" y="7836.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">核心证据：config/generative_ml1m.yaml；scripts/week5_6_common.py；</text>
+<text x="1575" y="7876.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">week5_6_train.py；audit.log；冻结语义ID；seed42训练轨迹。</text>
+<text x="1575" y="7930.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">T5 子层实现与依赖版本见配套 Markdown 中的来源链接；</text>
+<text x="1575" y="7970.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">图中代码路径按当前仓库命名，原始日志保留运行时名称。</text>
 <text x="1575" y="8024.2" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">向量分量、注意力热度、每位置概率未被实验记录，本图只写符号与可验证形状。配套 Markdown 提供来源、</text>
-<text x="1575" y="8064.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">阅读顺序及可复现构建命令。</text>
+<text x="1575" y="8064.7" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="27" font-weight="400" fill="#17263D" text-anchor="start">阅读顺序、来源及文件关系。</text>
 <text x="70" y="8255" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#53627A" text-anchor="start">GENREC-demo  /  Week 5–6 historical configuration  /  generated from checked repository evidence</text>
-<text x="2930" y="8255" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#53627A" text-anchor="end">可编辑 SVG · 高清 PNG · 2026-10-29</text>
+<text x="2930" y="8255" font-family="Microsoft YaHei,SimHei,Arial,sans-serif" font-size="24" font-weight="400" fill="#53627A" text-anchor="end">可编辑 SVG · 高清 PNG</text>
 </svg>

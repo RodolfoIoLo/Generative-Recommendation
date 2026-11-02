@@ -1,0 +1,305 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3600" height="5075" viewBox="0 0 3600 5075">
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}</style>
+<rect width="100%" height="100%" fill="#f5f7fa"/>
+<rect x="0" y="0" width="3600" height="28" rx="0" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="120" y="88" font-size="36" fill="#27846b" dominant-baseline="text-before-edge">WEEK 7   /   FILE-LEVEL WORKFLOW</text>
+<text x="120" y="151" font-size="72" fill="#213447" dominant-baseline="text-before-edge">把观看行为融入编号，再做公平比较</text>
+<text x="125" y="270" font-size="35" fill="#526577" dominant-baseline="text-before-edge">起点：文本向量与train行为　→　终点：四组消融、12项正式test与可追溯结论</text>
+<text x="125" y="337" font-size="30" fill="#526577" dominant-baseline="text-before-edge">沿主干向下读；每行展开输入、程序与产物。路径相对实验根目录，processed/相对数据目录。</text>
+<polyline points="132,405 132,4920" fill="none" stroke="#c3cfd9" stroke-width="10"/>
+<rect x="96" y="435" width="72" height="72" rx="36" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="113" y="449" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">01</text>
+<polyline points="168,472 235,472" fill="none" stroke="#27846b" stroke-width="5"/>
+<text x="260" y="440" font-size="46" fill="#27846b" dominant-baseline="text-before-edge">01  先确认瓶颈与输入身份</text>
+<rect x="260" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="534" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 旧实验与冻结接口</text>
+<rect x="292" y="653" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">旧三种子训练轨迹</text>
+<rect x="292" y="720" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">旧seed42的30k best权重</text>
+<rect x="292" y="787" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">同一批512名valid用户</text>
+<rect x="292" y="854" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">exported/、item_emb.npy</text>
+<polyline points="1320,724 1348,724" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="1336,714 1348,724 1336,734" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="1358" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="534" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 诊断与初始化</text>
+<rect x="1390" y="653" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week7_run.py init / curves</text>
+<rect x="1390" y="720" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_evaluate.py：Beam与exact</text>
+<rect x="1390" y="787" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_report.py diagnostics</text>
+<rect x="1390" y="854" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">只比较搜索，不用test调参</text>
+<polyline points="2418,724 2446,724" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="2434,714 2446,724 2434,734" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="2456" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="534" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 搜索与训练证据</text>
+<rect x="2488" y="653" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">01-diagnostics/environment/</text>
+<rect x="2488" y="720" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">01-diagnostics/search/{metrics,samples}/</text>
+<rect x="2488" y="787" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">search/search_diagnosis.md</text>
+<rect x="2488" y="854" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">training-curves/最终含11次运行114点</text>
+<text x="268" y="942" font-size="32" fill="#526577" dominant-baseline="text-before-edge">Beam20与exact Top-10重合率90.61%；exact是概率排序参考，并非NDCG上界。</text>
+<rect x="96" y="1070" width="72" height="72" rx="36" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="113" y="1084" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">02</text>
+<polyline points="168,1107 235,1107" fill="none" stroke="#27846b" stroke-width="5"/>
+<text x="260" y="1075" font-size="46" fill="#27846b" dominant-baseline="text-before-edge">02  仅从train提取协同关系</text>
+<rect x="260" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="1169" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 冻结train序列＋文本</text>
+<rect x="292" y="1288" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">train.semantic.jsonl还原电影ID</text>
+<rect x="292" y="1355" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">用户—电影二值矩阵6040×3416</text>
+<rect x="292" y="1422" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">同一用户重复观看只占一个矩阵项</text>
+<rect x="292" y="1489" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">train交互次数另外统计权重频次</text>
+<polyline points="1320,1359 1348,1359" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="1336,1349 1348,1359 1336,1369" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="1358" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="1169" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · SVD与四种融合</text>
+<rect x="1390" y="1288" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_prepare.py features</text>
+<rect x="1390" y="1355" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">矩阵转置后TruncatedSVD得到64维</text>
+<rect x="1390" y="1422" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">文本384维与协同64维分别归一化</text>
+<rect x="1390" y="1489" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">[文本, 权重×协同]再整体归一化</text>
+<polyline points="2418,1359 2446,1359" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="2434,1349 2446,1359 2434,1369" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="2456" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="1169" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 四组448维输入</text>
+<rect x="2488" y="1288" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">work/week7/collab.npy</text>
+<rect x="2488" y="1355" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">work/week7/{text,fixed,fixed_match,adaptive}.npy</text>
+<rect x="2488" y="1422" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">02-embeddings/{meta,weights,neighbors}.json</text>
+<rect x="2488" y="1489" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">Text末64维为0；Fixed权重1</text>
+<text x="268" y="1577" font-size="32" fill="#526577" dominant-baseline="text-before-edge">Fixed-Match匹配Adaptive平均协同平方范数占比；Adaptive权重由train频次决定。valid/test不进入SVD。</text>
+<rect x="96" y="1705" width="72" height="72" rx="36" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="113" y="1719" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">03</text>
+<polyline points="168,1742 235,1742" fill="none" stroke="#27846b" stroke-width="5"/>
+<text x="260" y="1710" font-size="46" fill="#27846b" dominant-baseline="text-before-edge">03  为四组重新训练量化器</text>
+<rect x="260" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="1804" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 相同维度的四组表示</text>
+<rect x="292" y="1923" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">每组3416×448，归一化</text>
+<rect x="292" y="1990" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">config/week7/rqvae.yaml</text>
+<rect x="292" y="2057" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">相同32维潜空间、3×256码本</text>
+<rect x="292" y="2124" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">量化随机种子均为42</text>
+<polyline points="1320,1994 1348,1994" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="1336,1984 1348,1994 1336,2004" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="1358" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="1804" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 量化与冻结导出</text>
+<rect x="1390" y="1923" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_prepare.py tokenize --variant</text>
+<rect x="1390" y="1990" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">调用week3_4_build_semantic_ids.py</text>
+<rect x="1390" y="2057" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">AE预训练→残差初始化→联合训练</text>
+<rect x="1390" y="2124" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">重新映射同一用户/目标划分</text>
+<polyline points="2418,1994 2446,1994" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="2434,1984 2446,1994 2434,2004" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="2456" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="1804" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 四套ID与证据</text>
+<rect x="2488" y="1923" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">03-semantic-ids/方案/identifiers/</text>
+<rect x="2488" y="1990" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">quality/、training/、figures/</text>
+<rect x="2488" y="2057" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">exported/week7/方案/六份接口</text>
+<rect x="2488" y="2124" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">saved/week7/quantizers/方案.pt</text>
+<text x="268" y="2212" font-size="32" fill="#526577" dominant-baseline="text-before-edge">四组消歧后均3416个唯一ID，三层各至少231个码字；R²目标不同，不用于排名推荐效果。</text>
+<rect x="96" y="2340" width="72" height="72" rx="36" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="113" y="2354" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">04</text>
+<polyline points="168,2377 235,2377" fill="none" stroke="#27846b" stroke-width="5"/>
+<text x="260" y="2345" font-size="46" fill="#27846b" dominant-baseline="text-before-edge">04  先筛选，再冻结候选</text>
+<rect x="260" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="2439" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 四套语义ID</text>
+<rect x="292" y="2558" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">config/week7/generative_方案.yaml</text>
+<rect x="292" y="2625" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">相同T5结构、60k预算、有效batch256</text>
+<rect x="292" y="2692" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">peak lr=3e-4，余弦衰减</text>
+<rect x="292" y="2759" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">最近20部电影，Beam20</text>
+<polyline points="1320,2629 1348,2629" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="1336,2619 1348,2629 1336,2639" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="1358" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="2439" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 四组seed42</text>
+<rect x="1390" y="2558" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_train.py训练并按valid选best</text>
+<rect x="1390" y="2625" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_report.py select</text>
+<rect x="1390" y="2692" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">比较valid NDCG@10</text>
+<rect x="1390" y="2759" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">禁止test参与候选选择</text>
+<polyline points="2418,2629 2446,2629" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="2434,2619 2446,2629 2434,2639" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="2456" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="2439" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 一次冻结选择</text>
+<rect x="2488" y="2558" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">04-screening/training-logs/</text>
+<rect x="2488" y="2625" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">04-screening/ablation.json</text>
+<rect x="2488" y="2692" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">selection.json：选择Fixed</text>
+<rect x="2488" y="2759" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">Text .17761 → Fixed .19352（valid）</text>
+<text x="268" y="2847" font-size="32" fill="#526577" dominant-baseline="text-before-edge">seed42筛选同时计入正式Text/Fixed种子，避免把同一个运行重复算成两次实验。</text>
+<rect x="96" y="2975" width="72" height="72" rx="36" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="113" y="2989" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">05</text>
+<polyline points="168,3012 235,3012" fill="none" stroke="#27846b" stroke-width="5"/>
+<text x="260" y="2980" font-size="46" fill="#27846b" dominant-baseline="text-before-edge">05  补齐训练与同h20基线</text>
+<rect x="260" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="3074" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 已冻结候选</text>
+<rect x="292" y="3193" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">Text和Fixed各补seed43、44</text>
+<rect x="292" y="3260" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">SASRec／GRU4Rec各seed42、43、44</text>
+<rect x="292" y="3327" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">基线历史上限同样20</text>
+<rect x="292" y="3394" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">按完整历史屏蔽后的valid选模</text>
+<polyline points="1320,3264 1348,3264" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="1336,3254 1348,3264 1336,3274" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="1358" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="3074" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 正式训练</text>
+<rect x="1390" y="3193" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_train.py：生成模型</text>
+<rect x="1390" y="3260" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_baseline.py：判别式基线</text>
+<rect x="1390" y="3327" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">checkpoint安全写入与恢复</text>
+<rect x="1390" y="3394" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">模型权重与输入身份一致性检查</text>
+<polyline points="2418,3264 2446,3264" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="2434,3254 2446,3264 2434,3274" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="2456" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="3074" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 模型与训练证据</text>
+<rect x="2488" y="3193" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">05-formal-training/generative/方案/seed/</text>
+<rect x="2488" y="3260" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">05-formal-training/baselines/模型/seed/</text>
+<rect x="2488" y="3327" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">saved/week7/generative/运行名/{best,last}/</text>
+<rect x="2488" y="3394" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">saved/week7/baselines/运行名/</text>
+<text x="268" y="3482" font-size="32" fill="#526577" dominant-baseline="text-before-edge">共8次生成模型训练（四组seed42＋Text/Fixed各补两个种子），6次基线训练；固定预算不等于充分收敛。</text>
+<rect x="96" y="3610" width="72" height="72" rx="36" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="113" y="3624" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">06</text>
+<polyline points="168,3647 235,3647" fill="none" stroke="#27846b" stroke-width="5"/>
+<text x="260" y="3615" font-size="46" fill="#27846b" dominant-baseline="text-before-edge">06  全量test与重新核算</text>
+<rect x="260" y="3709" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="3709" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="3727" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 12个冻结best模型</text>
+<rect x="292" y="3828" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="3815" font-size="35" fill="#213447" dominant-baseline="text-before-edge">Text／Fixed／SASRec／GRU4Rec</text>
+<rect x="292" y="3895" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="3882" font-size="35" fill="#213447" dominant-baseline="text-before-edge">每种3个种子，每项6040用户</text>
+<rect x="292" y="3962" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="3949" font-size="35" fill="#213447" dominant-baseline="text-before-edge">同一真实目标、完整历史屏蔽</text>
+<rect x="292" y="4029" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="4016" font-size="35" fill="#213447" dominant-baseline="text-before-edge">生成模型Beam20；基线全物品打分</text>
+<polyline points="1320,3899 1348,3899" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="1336,3889 1348,3899 1336,3909" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="1358" y="3709" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="3709" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="3727" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 分开评测与汇总</text>
+<rect x="1390" y="3828" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="3815" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_evaluate.py / week7_baseline.py</text>
+<rect x="1390" y="3895" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="3882" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_report.py summarize</text>
+<rect x="1390" y="3962" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="3949" font-size="35" fill="#213447" dominant-baseline="text-before-edge">逐用户验证Top-10与重算指标</text>
+<rect x="1390" y="4029" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="4016" font-size="35" fill="#213447" dominant-baseline="text-before-edge">10000次用户配对bootstrap</text>
+<polyline points="2418,3899 2446,3899" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="2434,3889 2446,3899 2434,3909" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="2456" y="3709" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="3709" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="3727" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 最终比较</text>
+<rect x="2488" y="3828" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="3815" font-size="35" fill="#213447" dominant-baseline="text-before-edge">06-evaluation/{generative,baselines}/模型/seed/</text>
+<rect x="2488" y="3895" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="3882" font-size="35" fill="#213447" dominant-baseline="text-before-edge">summaries/：主表、分组、两组配对区间</text>
+<rect x="2488" y="3962" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="3949" font-size="35" fill="#213447" dominant-baseline="text-before-edge">figures/test_comparison.png</text>
+<rect x="2488" y="4029" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="4016" font-size="35" fill="#213447" dominant-baseline="text-before-edge">main_results.md：结论与证据边界</text>
+<text x="268" y="4117" font-size="32" fill="#526577" dominant-baseline="text-before-edge">Fixed NDCG@10=.1864，Text=.1594，GRU4Rec=.1847；相对Text约+17%，与GRU差值区间包含0。</text>
+<rect x="96" y="4245" width="72" height="72" rx="36" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="113" y="4259" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">07</text>
+<polyline points="168,4282 235,4282" fill="none" stroke="#27846b" stroke-width="5"/>
+<text x="260" y="4250" font-size="46" fill="#27846b" dominant-baseline="text-before-edge">07  归档成一条可阅读的链路</text>
+<rect x="260" y="4344" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="4344" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="4362" font-size="33" fill="#213447" dominant-baseline="text-before-edge">实验工作区 · 大型文件</text>
+<rect x="292" y="4463" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="4450" font-size="35" fill="#213447" dominant-baseline="text-before-edge">work/week7/：向量与全部预测</text>
+<rect x="292" y="4530" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="4517" font-size="35" fill="#213447" dominant-baseline="text-before-edge">exported/week7/：冻结模型接口</text>
+<rect x="292" y="4597" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="4584" font-size="35" fill="#213447" dominant-baseline="text-before-edge">saved/week7/：量化/推荐权重</text>
+<rect x="292" y="4664" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="317" y="4651" font-size="35" fill="#213447" dominant-baseline="text-before-edge">运维与临时排队文件只留工作区</text>
+<polyline points="1320,4534 1348,4534" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="1336,4524 1348,4534 1336,4544" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="1358" y="4344" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="4344" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="4362" font-size="33" fill="#213447" dominant-baseline="text-before-edge">公开仓库 · 学习入口</text>
+<rect x="1390" y="4463" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="4450" font-size="35" fill="#213447" dominant-baseline="text-before-edge">README.md：问题、路线、最终效果</text>
+<rect x="1390" y="4530" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="4517" font-size="35" fill="#213447" dominant-baseline="text-before-edge">docs/：入门、图解、协议、复现</text>
+<rect x="1390" y="4597" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="4584" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/：按周命名的完整实现</text>
+<rect x="1390" y="4664" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="1415" y="4651" font-size="35" fill="#213447" dominant-baseline="text-before-edge">results/：分层原始证据与结论</text>
+<polyline points="2418,4534 2446,4534" fill="none" stroke="#27846b" stroke-width="4"/>
+<polyline points="2434,4524 2446,4534 2434,4544" fill="none" stroke="#27846b" stroke-width="4"/>
+<rect x="2456" y="4344" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="4344" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="4362" font-size="33" fill="#213447" dominant-baseline="text-before-edge">终点 · 能说明什么</text>
+<rect x="2488" y="4463" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="4450" font-size="35" fill="#213447" dominant-baseline="text-before-edge">项目七周实验全部完成</text>
+<rect x="2488" y="4530" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="4517" font-size="35" fill="#213447" dominant-baseline="text-before-edge">协同融合优于受控纯文本</text>
+<rect x="2488" y="4597" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="4584" font-size="35" fill="#213447" dominant-baseline="text-before-edge">尚不能确认总体超越GRU4Rec</text>
+<rect x="2488" y="4664" width="10" height="10" rx="4" fill="#27846b" stroke="#27846b" stroke-width="2"/>
+<text x="2513" y="4651" font-size="35" fill="#213447" dominant-baseline="text-before-edge">长尾较弱，严格冷启动无有效目标</text>
+<text x="268" y="4752" font-size="32" fill="#526577" dominant-baseline="text-before-edge">终点检查：结果来自实际预测，test未用于筛选；公开结果与服务器归档一致，保留历史记录原始字节。</text>
+<text x="120" y="4970" font-size="30" fill="#526577" dominant-baseline="text-before-edge">生成式推荐学习仓库  ·  图中数字来自已完成实验；原始日志与冻结记录保留运行时命名。</text>
+</svg>

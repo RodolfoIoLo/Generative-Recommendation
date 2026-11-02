@@ -1,0 +1,221 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3600" height="3805" viewBox="0 0 3600 3805">
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}</style>
+<rect width="100%" height="100%" fill="#f5f7fa"/>
+<rect x="0" y="0" width="3600" height="28" rx="0" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="120" y="88" font-size="36" fill="#476db3" dominant-baseline="text-before-edge">WEEK 2   /   FILE-LEVEL WORKFLOW</text>
+<text x="120" y="151" font-size="72" fill="#213447" dominant-baseline="text-before-edge">先让已有推荐方法跑通</text>
+<text x="125" y="270" font-size="35" fill="#526577" dominant-baseline="text-before-edge">起点：固定交互划分　→　终点：SASRec与GRU4Rec三种子基线及原始证据</text>
+<text x="125" y="337" font-size="30" fill="#526577" dominant-baseline="text-before-edge">沿主干向下读；每行展开输入、程序与产物。路径相对实验根目录，processed/相对数据目录。</text>
+<polyline points="132,405 132,3650" fill="none" stroke="#c3cfd9" stroke-width="10"/>
+<rect x="96" y="435" width="72" height="72" rx="36" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="113" y="449" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">01</text>
+<polyline points="168,472 235,472" fill="none" stroke="#476db3" stroke-width="5"/>
+<text x="260" y="440" font-size="46" fill="#476db3" dominant-baseline="text-before-edge">01  连接同一份数据</text>
+<rect x="260" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="534" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · Week 1</text>
+<rect x="292" y="653" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">processed/ml-1m.inter</text>
+<rect x="292" y="720" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">6,040名用户、3,416部电影</text>
+<rect x="292" y="787" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">原始时间信息用于顺序划分</text>
+<rect x="292" y="854" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">recbole/ml-1m链接到processed/</text>
+<polyline points="1320,724 1348,724" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="1336,714 1348,724 1336,734" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="1358" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="534" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">配置 · 实验条件</text>
+<rect x="1390" y="653" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">config/sasrec_ml1m.yaml</text>
+<rect x="1390" y="720" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">RecBole读取电影交互</text>
+<rect x="1390" y="787" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">旧基线历史上限200</text>
+<rect x="1390" y="854" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">按验证指标选择checkpoint</text>
+<polyline points="2418,724 2446,724" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="2434,714 2446,724 2434,734" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="2456" y="534" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="534" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="552" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 学习任务</text>
+<rect x="2488" y="653" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="640" font-size="35" fill="#213447" dominant-baseline="text-before-edge">历史电影 → 下一部电影</text>
+<rect x="2488" y="720" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="707" font-size="35" fill="#213447" dominant-baseline="text-before-edge">每部电影是一个普通物品ID</text>
+<rect x="2488" y="787" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="774" font-size="35" fill="#213447" dominant-baseline="text-before-edge">此时不使用文本向量或语义ID</text>
+<rect x="2488" y="854" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="841" font-size="35" fill="#213447" dominant-baseline="text-before-edge">两种方法共享数据处理口径</text>
+<text x="268" y="942" font-size="32" fill="#526577" dominant-baseline="text-before-edge">基线是比较参照，不是生成模型的预训练权重。</text>
+<rect x="96" y="1070" width="72" height="72" rx="36" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="113" y="1084" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">02</text>
+<polyline points="168,1107 235,1107" fill="none" stroke="#476db3" stroke-width="5"/>
+<text x="260" y="1075" font-size="46" fill="#476db3" dominant-baseline="text-before-edge">02  SASRec学习序列</text>
+<rect x="260" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="1169" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 历史物品ID</text>
+<rect x="292" y="1288" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">训练序列的历史前缀</text>
+<rect x="292" y="1355" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">电影ID映射为模型可学习向量</text>
+<rect x="292" y="1422" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">位置告诉模型观看顺序</text>
+<rect x="292" y="1489" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">用户未来的目标不进入训练输入</text>
+<polyline points="1320,1359 1348,1359" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="1336,1349 1348,1359 1336,1369" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="1358" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="1169" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 自注意力模型</text>
+<rect x="1390" y="1288" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week2_train_baseline.py</text>
+<rect x="1390" y="1355" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">--model SASRec</text>
+<rect x="1390" y="1422" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">RecBole管理训练与验证</text>
+<rect x="1390" y="1489" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">seed 42 / 43 / 44分别训练</text>
+<polyline points="2418,1359 2446,1359" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="2434,1349 2446,1359 2434,1369" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="2456" y="1169" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="1169" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="1187" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 分数与权重</text>
+<rect x="2488" y="1288" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="1275" font-size="35" fill="#213447" dominant-baseline="text-before-edge">为目录电影打分并排序</text>
+<rect x="2488" y="1355" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="1342" font-size="35" fill="#213447" dominant-baseline="text-before-edge">saved/SASRec-*.pth</text>
+<rect x="2488" y="1422" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="1409" font-size="35" fill="#213447" dominant-baseline="text-before-edge">log/SASRec/中的原始运行日志</text>
+<rect x="2488" y="1489" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="1476" font-size="35" fill="#213447" dominant-baseline="text-before-edge">log_tensorboard/中的事件文件</text>
+<text x="268" y="1577" font-size="32" fill="#526577" dominant-baseline="text-before-edge">三个随机种子衡量训练波动；checkpoint内配置和日志确认seed，不能只看文件名猜测。</text>
+<rect x="96" y="1705" width="72" height="72" rx="36" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="113" y="1719" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">03</text>
+<polyline points="168,1742 235,1742" fill="none" stroke="#476db3" stroke-width="5"/>
+<text x="260" y="1710" font-size="46" fill="#476db3" dominant-baseline="text-before-edge">03  GRU4Rec学习序列</text>
+<rect x="260" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="1804" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 相同观看序列</text>
+<rect x="292" y="1923" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">与SASRec相同的数据来源</text>
+<rect x="292" y="1990" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">按先后顺序读取历史电影</text>
+<rect x="292" y="2057" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">不读取电影简介</text>
+<rect x="292" y="2124" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">不使用生成式语义ID</text>
+<polyline points="1320,1994 1348,1994" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="1336,1984 1348,1994 1336,2004" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="1358" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="1804" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 循环神经网络</text>
+<rect x="1390" y="1923" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week2_train_baseline.py</text>
+<rect x="1390" y="1990" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">--model GRU4Rec</text>
+<rect x="1390" y="2057" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">GRU把历史累积为隐藏状态</text>
+<rect x="1390" y="2124" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">seed 42 / 43 / 44分别训练</text>
+<polyline points="2418,1994 2446,1994" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="2434,1984 2446,1994 2434,2004" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="2456" y="1804" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="1804" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="1822" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 第二种参照</text>
+<rect x="2488" y="1923" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="1910" font-size="35" fill="#213447" dominant-baseline="text-before-edge">saved/GRU4Rec-*.pth</text>
+<rect x="2488" y="1990" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="1977" font-size="35" fill="#213447" dominant-baseline="text-before-edge">log/GRU4Rec/中的原始日志</text>
+<rect x="2488" y="2057" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="2044" font-size="35" fill="#213447" dominant-baseline="text-before-edge">各自的best valid与test指标</text>
+<rect x="2488" y="2124" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="2111" font-size="35" fill="#213447" dominant-baseline="text-before-edge">目录电影按预测分数排序</text>
+<text x="268" y="2212" font-size="32" fill="#526577" dominant-baseline="text-before-edge">两种结构分别学习，权重不共享；它们提供不同的序列建模参照。</text>
+<rect x="96" y="2340" width="72" height="72" rx="36" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="113" y="2354" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">04</text>
+<polyline points="168,2377 235,2377" fill="none" stroke="#476db3" stroke-width="5"/>
+<text x="260" y="2345" font-size="46" fill="#476db3" dominant-baseline="text-before-edge">04  复评与保留原始记录</text>
+<rect x="260" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="2439" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">输入 · 已训练checkpoint</text>
+<rect x="292" y="2558" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">模型权重及checkpoint配置</text>
+<rect x="292" y="2625" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">对应训练日志中的模型与seed</text>
+<rect x="292" y="2692" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">验证/测试目标保持固定</text>
+<rect x="292" y="2759" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">无需为了补指标重新训练</text>
+<polyline points="1320,2629 1348,2629" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="1336,2619 1348,2629 1336,2639" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="1358" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="2439" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">程序 · 只加载并评测</text>
+<rect x="1390" y="2558" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">scripts/week2_evaluate_checkpoint.py</text>
+<rect x="1390" y="2625" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">加载已选出的模型</text>
+<rect x="1390" y="2692" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">补齐缺失评测输出</text>
+<rect x="1390" y="2759" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">与原始日志核对对应关系</text>
+<polyline points="2418,2629 2446,2629" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="2434,2619 2446,2629 2434,2639" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="2456" y="2439" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="2439" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="2457" font-size="33" fill="#213447" dominant-baseline="text-before-edge">得到 · 仓库证据</text>
+<rect x="2488" y="2558" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="2545" font-size="35" fill="#213447" dominant-baseline="text-before-edge">results/week2-sasrec-baseline/</text>
+<rect x="2488" y="2625" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="2612" font-size="35" fill="#213447" dominant-baseline="text-before-edge">training-logs/{sasrec,gru4rec}/</text>
+<rect x="2488" y="2692" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="2679" font-size="35" fill="#213447" dominant-baseline="text-before-edge">evaluation-logs/sasrec/</text>
+<rect x="2488" y="2759" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="2746" font-size="35" fill="#213447" dominant-baseline="text-before-edge">baseline_table.md汇总三个种子</text>
+<text x="268" y="2847" font-size="32" fill="#526577" dominant-baseline="text-before-edge">原始RecBole评测与后续完整历史屏蔽口径不同，旧表保留为历史结果，不改写成新分数。</text>
+<rect x="96" y="2975" width="72" height="72" rx="36" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="113" y="2989" font-size="31" fill="#ffffff" dominant-baseline="text-before-edge">05</text>
+<polyline points="168,3012 235,3012" fill="none" stroke="#476db3" stroke-width="5"/>
+<text x="260" y="2980" font-size="46" fill="#476db3" dominant-baseline="text-before-edge">05  与后续实验衔接</text>
+<rect x="260" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="260" y="3074" width="1050" height="74" rx="18" fill="#fff1da" stroke="#fff1da" stroke-width="2"/>
+<text x="292" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">Week 5–6 · 对齐历史屏蔽</text>
+<rect x="292" y="3193" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week5_6_evaluate_baselines.py</text>
+<rect x="292" y="3260" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">加载本周checkpoint</text>
+<rect x="292" y="3327" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">同时输出完整历史屏蔽与旧口径</text>
+<rect x="292" y="3394" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="317" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">校验旧日志，避免数据/ID错位</text>
+<polyline points="1320,3264 1348,3264" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="1336,3254 1348,3264 1336,3274" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="1358" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="1358" y="3074" width="1050" height="74" rx="18" fill="#e7efff" stroke="#e7efff" stroke-width="2"/>
+<text x="1390" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">Week 7 · 重训h20参照</text>
+<rect x="1390" y="3193" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">week7_baseline.py</text>
+<rect x="1390" y="3260" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">历史上限改为20，与生成模型一致</text>
+<rect x="1390" y="3327" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">按屏蔽完整历史的valid重新选模</text>
+<rect x="1390" y="3394" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="1415" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">三种子训练后单独做正式test</text>
+<polyline points="2418,3264 2446,3264" fill="none" stroke="#476db3" stroke-width="4"/>
+<polyline points="2434,3254 2446,3264 2434,3274" fill="none" stroke="#476db3" stroke-width="4"/>
+<rect x="2456" y="3074" width="1050" height="380" rx="22" fill="#ffffff" stroke="#dce4ec" stroke-width="2"/>
+<rect x="2456" y="3074" width="1050" height="74" rx="18" fill="#e0f3e9" stroke="#e0f3e9" stroke-width="2"/>
+<text x="2488" y="3092" font-size="33" fill="#213447" dominant-baseline="text-before-edge">终点 · 会读比较表</text>
+<rect x="2488" y="3193" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="3180" font-size="35" fill="#213447" dominant-baseline="text-before-edge">Week 2表：原始口径</text>
+<rect x="2488" y="3260" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="3247" font-size="35" fill="#213447" dominant-baseline="text-before-edge">Week 5–6表：旧h200模型复评</text>
+<rect x="2488" y="3327" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="3314" font-size="35" fill="#213447" dominant-baseline="text-before-edge">Week 7表：最终h20受控比较</text>
+<rect x="2488" y="3394" width="10" height="10" rx="4" fill="#476db3" stroke="#476db3" stroke-width="2"/>
+<text x="2513" y="3381" font-size="35" fill="#213447" dominant-baseline="text-before-edge">不能跨表直接归因模型结构优劣</text>
+<text x="268" y="3482" font-size="32" fill="#526577" dominant-baseline="text-before-edge">终点检查：两种基线×三个种子完成；日志、配置、checkpoint与指标能够对应。</text>
+<text x="120" y="3700" font-size="30" fill="#526577" dominant-baseline="text-before-edge">生成式推荐学习仓库  ·  图中数字来自已完成实验；原始日志与冻结记录保留运行时命名。</text>
+</svg>
