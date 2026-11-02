@@ -9,11 +9,11 @@
     对照编码器 /data/LLMs/bge-m3             → 1024 维
 
 用法:
-    python scripts/encode_items.py \
+    python scripts/week3_4_encode_items.py \
         --model /data/LLMs/all-MiniLM-L6-v2 \
         --out item_emb.npy
 
-    python scripts/encode_items.py \
+    python scripts/week3_4_encode_items.py \
         --model /data/LLMs/bge-m3 \
         --out item_emb_bge1024.npy --batch_size 64
 """

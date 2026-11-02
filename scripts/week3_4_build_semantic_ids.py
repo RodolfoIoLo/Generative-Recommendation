@@ -2,11 +2,12 @@
 """构建语义标识符：RQ-KMeans（baseline）/ RQ-VAE（主方案）+ 冲突消解。
 
 用法:
-    python scripts/build_semantic_id.py --emb item_emb.npy --method kmeans
-    python scripts/build_semantic_id.py --emb item_emb.npy --method rqvae --epochs 2000
+    python scripts/week3_4_build_semantic_ids.py --emb item_emb.npy --method kmeans
+    python scripts/week3_4_build_semantic_ids.py --emb item_emb.npy --method rqvae --epochs 2000
 
 输出  semantic_ids.json   {"0": [37,128,5,0], ...}  长度 4,第 4 位是消歧码(无冲突补 0)
 """
+from week1_paths import result_path, output_path
 import argparse
 import json
 from pathlib import Path
@@ -409,7 +410,7 @@ def main():
             f"③ 仍不行就启用协议 v3.1 的备选方案(第 4 层 RQ 残差量化).\n"
             f"**不要**直接 --no_dedup 硬跑,那样语义 ID 会重复,第 5 周直接崩.")
 
-    with open(args.out, "w", encoding="utf-8") as f:
+    with output_path(args.out).open("w", encoding="utf-8") as f:
         json.dump({str(i): final[i].tolist() for i in range(len(final))}, f)
     print(f"saved {args.out}  形状 {final.shape}")
 

@@ -20,6 +20,8 @@ def main():
                         default="text")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--gpu", type=int)
+    parser.add_argument("--cpu", action="store_true",
+                        help="Use CPU for frozen baseline test evaluation.")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--stop_after", type=int)
     parser.add_argument("--split", choices=("train", "valid", "test"), default="valid")
@@ -34,13 +36,15 @@ def main():
     parser.add_argument("--data_path")
     parser.add_argument("--dry_run", action="store_true")
     args = parser.parse_args()
+    if args.cpu and (args.action != "baseline" or args.split != "test" or args.gpu is not None):
+        parser.error("--cpu requires baseline --split test without --gpu")
     variant = args.variant
     if variant == "selected":
         variant = read_json(ROOT / "selection.json")["selected"]
     cfg = f"config/week7/generative_{variant}.yaml"
     command = [sys.executable]
     gpu_job = args.action in ("train", "evaluate", "exact", "baseline")
-    if gpu_job and args.gpu is None:
+    if gpu_job and not args.cpu and args.gpu is None:
         parser.error(f"{args.action} requires a physical --gpu N")
     if args.action in ("init", "features", "tokenize"):
         command += ["scripts/week7_prepare.py", args.action]
@@ -85,9 +89,10 @@ def main():
             parser.error("baseline needs --model, --data_path, --split train|test")
         command += [
             "scripts/week7_baseline.py", "--model", args.model,
-            "--seed", str(args.seed), "--gpu", str(args.gpu),
+            "--seed", str(args.seed),
             "--data_path", args.data_path, "--split", args.split,
         ]
+        command += ["--cpu"] if args.cpu else ["--gpu", str(args.gpu)]
     print(shlex.join(command), flush=True)
     if args.dry_run:
         return

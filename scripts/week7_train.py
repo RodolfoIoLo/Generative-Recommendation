@@ -1,5 +1,6 @@
 """Week 7 T5 training with deterministic batch-position resume."""
 from __future__ import annotations
+from week1_paths import result_path, output_path
 
 import argparse
 import copy
@@ -81,7 +82,7 @@ def commit_checkpoint(path, populate):
 
 def save_training_checkpoint(path, model, optimizer, scheduler, state):
     import torch
-    from train_generative import rng_state
+    from week5_6_train import rng_state
     saved = dict(state, optimizer=optimizer.state_dict(),
                  scheduler=scheduler.state_dict(), rng=rng_state())
 
@@ -164,11 +165,11 @@ def main():
     import torch
     from torch.utils.data import DataLoader
     from transformers import T5Config, T5ForConditionalGeneration
-    from generative_common import (
+    from week5_6_common import (
         EvalDataset, SemanticArtifacts, SemanticTrie, TrainCollator,
         TrainPrefixDataset, build_groups, evaluate_model, seed_everything,
     )
-    from train_generative import restore_rng
+    from week5_6_train import restore_rng
 
     cfg = copy.deepcopy(load_config(args.config))
     cfg["train"]["seed"] = args.seed
@@ -214,8 +215,8 @@ def main():
     groups, _ = build_groups(train_rows, a)
     trie = SemanticTrie(a)
     destination = Path(cfg["paths"]["checkpoint_root"]) / run
-    history = ROOT / "05-formal-training" / f"{run}_history.jsonl"
-    best_file = ROOT / "05-formal-training" / f"{run}_best.json"
+    history = output_path(ROOT / "05-formal-training" / f"{run}_history.jsonl")
+    best_file = output_path(ROOT / "05-formal-training" / f"{run}_best.json")
     last = destination / "last"
     identity = {
         "protocol": PROTOCOL, "variant": name, "seed": args.seed,

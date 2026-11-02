@@ -1,5 +1,6 @@
 """RecBole h20 baselines: masked valid checkpoint selection, separate test."""
 from __future__ import annotations
+from week1_paths import result_path, output_path
 
 import argparse
 from pathlib import Path
@@ -14,31 +15,37 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", choices=("SASRec", "GRU4Rec"), required=True)
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--gpu", type=int, required=True)
+    device = parser.add_mutually_exclusive_group(required=True)
+    device.add_argument("--gpu", type=int)
+    device.add_argument("--cpu", action="store_true",
+                        help="Evaluate a frozen baseline checkpoint on CPU.")
     parser.add_argument("--data_path", required=True)
     parser.add_argument("--split", choices=("train", "test"), default="train")
     args = parser.parse_args()
-    configure_gpu(args.gpu)
+    if args.cpu and args.split != "test":
+        parser.error("--cpu is only supported for frozen checkpoint test evaluation")
+    configure_gpu(None if args.cpu else args.gpu)
     import torch
     from recbole.config import Config
     from recbole.data import create_dataset, data_preparation
     from recbole.trainer import Trainer
     from recbole.utils import get_model, init_logger, init_seed
-    from generative_common import SemanticArtifacts, aggregate_rows, build_groups
+    from week5_6_common import SemanticArtifacts, aggregate_rows, build_groups
 
-    if not torch.cuda.is_available():
+    if not args.cpu and not torch.cuda.is_available():
         raise RuntimeError("GPU required for this baseline training/evaluation")
     a = SemanticArtifacts("exported")
     train_rows = read_jsonl("exported/train.semantic.jsonl")
     valid_rows = read_jsonl("exported/valid.semantic.jsonl")
     groups, _ = build_groups(train_rows, a)
     name = f"{args.model.lower()}_h20_s{args.seed}"
-    info_path = ROOT / "05-formal-training" / f"{name}.json"
+    info_path = output_path(ROOT / "05-formal-training" / f"{name}.json")
     cfg = Config(
         model=args.model, dataset="ml-1m",
         config_file_list=["config/sasrec_ml1m.yaml"],
         config_dict={
-            "seed": args.seed, "gpu_id": "0", "data_path": args.data_path,
+            "seed": args.seed, "gpu_id": "0", "use_gpu": not args.cpu,
+            "data_path": args.data_path,
             "MAX_ITEM_LIST_LENGTH": 20, "eval_batch_size": 512,
             "checkpoint_dir": f"saved/week7/baselines/{name}",
             "show_progress": False,

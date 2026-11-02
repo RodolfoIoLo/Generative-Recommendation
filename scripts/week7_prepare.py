@@ -1,5 +1,6 @@
 """CPU preparation, configs, quantization, and artifact export."""
 from __future__ import annotations
+from week1_paths import result_path, output_path
 
 import argparse
 import copy
@@ -20,8 +21,7 @@ from week7_common import (
 def initialize():
     import yaml
     for folder in ("01-diagnostics", "02-embeddings", "03-semantic-ids",
-                   "04-screening", "05-formal-training", "06-evaluation",
-                   "07-release"):
+                   "04-screening", "05-formal-training", "06-evaluation"):
         (ROOT / folder).mkdir(parents=True, exist_ok=True)
     WORK.mkdir(parents=True, exist_ok=True)
     Path("config/week7").mkdir(parents=True, exist_ok=True)
@@ -107,7 +107,7 @@ def build_embeddings(frozen="exported", text_path="item_emb.npy"):
 
 
 def export_variant(name):
-    from export_semantic import build_vocab
+    from week3_4_export_semantic import build_vocab
     target = Path(f"exported/week7/{name}")
     target.mkdir(parents=True, exist_ok=True)
     ids = read_json(WORK / f"semantic_ids_{name}.json")
@@ -147,9 +147,13 @@ def export_variant(name):
             for split in ("train", "valid", "test")
         },
     })
-    write_json(ROOT / f"03-semantic-ids/{name}/manifest.json",
+    write_json(WORK / "semantic-id-identities" / f"{name}.json",
                {"artifact_hash": artifact_hash(target),
                 "files": {file: sha256(target / file) for file in ARTIFACT_FILES}})
+
+    # Public result summaries; the full six-file model interface stays in exported/.
+    for file in ("semantic_ids.json", "meta.json"):
+        write_json(ROOT / "03-semantic-ids" / name / file, read_json(target / file))
 
 
 def tokenize(name):
@@ -160,14 +164,14 @@ def tokenize(name):
         raise ValueError("quantizer already exists; do not silently retrain a frozen variant")
     checkpoint.parent.mkdir(parents=True, exist_ok=True)
     command = [
-        sys.executable, "scripts/build_semantic_id.py",
+        sys.executable, "scripts/week3_4_build_semantic_ids.py",
         "--config", "config/week7/rqvae.yaml",
         "--emb", str(WORK / f"{name}.npy"),
         "--method", "rqvae", "--in_dim", "448", "--device", "cpu",
         "--checkpoint", str(checkpoint),
         "--out", str(WORK / f"semantic_ids_{name}.json"),
     ]
-    with (out / "rqvae.log").open("w", encoding="utf-8") as log:
+    with output_path(out / "rqvae.log").open("w", encoding="utf-8") as log:
         process = subprocess.Popen(command, stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT, text=True,
                                    encoding="utf-8", errors="replace")
@@ -182,7 +186,7 @@ def tokenize(name):
         raise ValueError("quantizer failed utilization or reconstruction gate")
     export_variant(name)
     for command in (
-        [sys.executable, "scripts/analyze_codebook.py", "--rqvae",
+        [sys.executable, "scripts/week3_4_analyze_codebook.py", "--rqvae",
          str(WORK / f"semantic_ids_{name}.json"), "--outdir", str(out)],
     ):
         subprocess.run(command, check=True)
@@ -192,7 +196,7 @@ def tokenize(name):
     # Existing prefix utility reads item text; this quantitative audit needs no text path.
     code_dict = read_json(WORK / f"semantic_ids_{name}.json")
     codes = np.array([code_dict[str(i)] for i in range(3416)])
-    from check_prefix_consistency import group_mean_cos
+    from week3_4_check_prefix import group_mean_cos
     prefix = []
     for source, embedding in (("text", unit_rows(np.load("item_emb.npy"))),
                               ("collab", np.load(WORK / "collab.npy"))):

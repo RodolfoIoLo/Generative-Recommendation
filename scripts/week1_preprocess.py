@@ -4,8 +4,8 @@
 ml-1m 预处理：原始评分文件 -> train/valid/test + 映射表 + 物品文本
 
 用法：
-    python scripts/preprocess.py --stage load   # 只验证读取，不写文件
-    python scripts/preprocess.py                # 跑完整流程
+    python scripts/week1_preprocess.py --stage load   # 只验证读取，不写文件
+    python scripts/week1_preprocess.py                # 跑完整流程
 
 产出目录：/data/zby/data/ml-1m/processed/
 """

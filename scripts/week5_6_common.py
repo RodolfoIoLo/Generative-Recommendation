@@ -1,4 +1,5 @@
 from __future__ import annotations
+from week1_paths import result_path, output_path
 
 import bisect
 import json
@@ -19,7 +20,7 @@ def load_yaml(path):
 
 
 def read_jsonl(path):
-    with open(path, encoding="utf-8") as f:
+    with result_path(path).open(encoding="utf-8") as f:
         return [json.loads(line) for line in f if line.strip()]
 
 

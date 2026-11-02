@@ -6,7 +6,7 @@
 只用标准库,不需要 pandas,本地也能跑(方便在 Windows 上先自查).
 
 用法:
-    python scripts/verify_split.py --data-dir .check/ml-1m/processed
+    python scripts/week1_verify_split.py --data-dir .check/ml-1m/processed
 
 检查 5 件事:
   1) .inter 里每个用户的交互是否按时间单调不减(用户行为按时间排序)

@@ -73,7 +73,7 @@ def main():
     configure_gpu(args.gpu)
     import torch
     from transformers import T5ForConditionalGeneration
-    from generative_common import (
+    from week5_6_common import (
         EvalDataset, SemanticArtifacts, SemanticTrie, aggregate_rows,
         build_groups, evaluate_model, seed_everything,
     )

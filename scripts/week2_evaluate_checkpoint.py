@@ -17,7 +17,7 @@ RecBole 1.2.1 的 `trainer/trainer.py:583` 用的是裸 `torch.load(...)`：
 用法
 ----
     cd ~/genrec
-    python scripts/eval_only.py --model_file saved/SASRec-Sep-28-2026_19-18-04.pth
+    python scripts/week2_evaluate_checkpoint.py --model_file saved/SASRec-Sep-28-2026_19-18-04.pth
 """
 import argparse
 import functools

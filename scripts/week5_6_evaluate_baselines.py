@@ -1,4 +1,5 @@
 from __future__ import annotations
+from week1_paths import result_path, output_path
 
 import argparse
 import json
@@ -19,7 +20,7 @@ torch.load = _compat_load
 
 from recbole.quick_start import load_data_and_model
 
-from generative_common import (
+from week5_6_common import (
     SemanticArtifacts,
     aggregate_rows,
     build_groups,
@@ -50,6 +51,8 @@ def parse_args():
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--split", choices=["valid", "test"], default="test")
     parser.add_argument("--frozen_dir", default="exported")
+    parser.add_argument("--check_published_logs", action="store_true",
+                        help="Check the original project's frozen checkpoints against published logs.")
     parser.add_argument(
         "--result_dir",
         default="results/week5-6-generative/05-baseline-evaluation",
@@ -157,7 +160,8 @@ def main():
         "protocol": "metrics masks the complete frozen history; legacy_unmasked_metrics reproduces the original RecBole sequential evaluation",
     }
 
-    expected = KNOWN.get((args.model.lower(), args.seed)) if args.split == "test" else None
+    expected = (KNOWN.get((args.model.lower(), args.seed))
+                if args.check_published_logs and args.split == "test" else None)
     if expected:
         for key, old_value in expected.items():
             new_value = legacy_metrics["all"][key]
@@ -166,11 +170,13 @@ def main():
                     f"old-log mismatch {key}: recomputed={new_value:.6f}, old={old_value:.4f}"
                 )
         output["old_log_alignment"] = "passed (tolerance=1e-4)"
+    else:
+        output["old_log_alignment"] = "not requested (independent evaluation)"
 
     result_dir = Path(args.result_dir)
     result_dir.mkdir(parents=True, exist_ok=True)
     name = f"baseline_{args.model.lower()}_{args.split}_seed{args.seed}_metrics.json"
-    (result_dir / name).write_text(
+    output_path(result_dir / name).write_text(
         json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     print(json.dumps(output, ensure_ascii=False, indent=2))

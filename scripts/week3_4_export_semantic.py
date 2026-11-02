@@ -2,7 +2,7 @@
 """导出阶段二 → 阶段三的接口文件,并自检.
 
 用法:
-    python scripts/export_semantic.py --ids semantic_ids_rqvae.json \
+    python scripts/week3_4_export_semantic.py --ids semantic_ids_rqvae.json \
       --emb item_emb.npy --quantizer_checkpoint saved/rqvae_ml1m.pt \
       --processed /data/zby/data/ml-1m/processed --outdir exported
 
@@ -12,6 +12,7 @@
     token_vocab.json                  语义 token -> 词表下标
     meta.json                         协议,归一化,产物哈希,L / K / 词表大小 / 来源
 """
+from week1_paths import result_path, output_path
 import argparse
 import hashlib
 import json
@@ -21,14 +22,14 @@ import numpy as np
 
 
 def load_json(p):
-    with open(p, encoding="utf-8") as f:
+    with result_path(p).open(encoding="utf-8") as f:
         return json.load(f)
 
 
 def sha256_file(path, chunk_size=1024 * 1024):
     """流式计算文件哈希,避免把较大的 checkpoint 一次性读进内存."""
     h = hashlib.sha256()
-    with open(path, "rb") as f:
+    with result_path(path).open("rb") as f:
         for chunk in iter(lambda: f.read(chunk_size), b""):
             h.update(chunk)
     return h.hexdigest()
@@ -57,7 +58,7 @@ def main():
     ap.add_argument("--rq_levels", type=int, default=3,
                     help="RQ 量化层数 L(不含消歧位)")
     ap.add_argument("--dedup", dest="dedup", action="store_true", default=True,
-                    help="语义 ID 末位是消歧码(TIGER 口径,默认开)")
+                    help="语义 ID 末位是消歧码(默认开启)")
     ap.add_argument("--no_dedup", dest="dedup", action="store_false")
     ap.add_argument("--encoder", default="/data/LLMs/all-MiniLM-L6-v2")
     ap.add_argument("--emb", default="item_emb.npy")
@@ -91,7 +92,8 @@ def main():
     # ---- 关键:区分"RQ 层数 L"和"语义 ID 长度" ----
     # L = 3(三层残差量化);语义 ID 长度 = L + 1 = 4(末位是消歧码).
     # 词表必须按"语义 ID 长度"算:256 × 4 = 1024 个物品 token,
-    # 因为第 4 位消歧码也占一个完整的 256 宽码本位(TIGER §4 原文).
+    # 本项目为每个位置固定保留 256 个 token,消歧位也采用这一约定.
+    # 这是本仓库的词表实现选择,不能据此声称逐项复现论文配置.
     sid_len = len(next(iter(sid.values())))
     expect_len = args.rq_levels + (1 if args.dedup else 0)
     assert all(len(v) == sid_len for v in sid.values()), "语义 ID 长度不一致"

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from week1_paths import result_path, output_path
 
 import argparse
 import json
@@ -17,7 +18,7 @@ from transformers import (
     get_linear_schedule_with_warmup,
 )
 
-from generative_common import (
+from week5_6_common import (
     SemanticArtifacts,
     SemanticTrie,
     TrainCollator,
@@ -178,7 +179,7 @@ def save_checkpoint(path, model, optimizer, scheduler, state):
 
 
 def append_jsonl(path, record):
-    path = Path(path)
+    path = output_path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as file:
         file.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -209,7 +210,7 @@ def main():
         or cfg["paths"].get("training_result_dir", cfg["paths"]["result_root"])
     )
     result_dir.mkdir(parents=True, exist_ok=True)
-    history_path = result_dir / f"{run_name}_history.jsonl"
+    history_path = output_path(result_dir / f"{run_name}_history.jsonl")
 
     train_set = TrainPrefixDataset(
         train_rows, artifacts, int(cfg["data"]["max_history_items"]),
@@ -336,7 +337,7 @@ def main():
             save_checkpoint(checkpoint_dir / "last", model, optimizer, scheduler, state)
             if improved:
                 save_checkpoint(checkpoint_dir / "best", model, optimizer, scheduler, state)
-                summary_path = result_dir / f"{run_name}_best_valid_metrics.json"
+                summary_path = output_path(result_dir / f"{run_name}_best_valid_metrics.json")
                 summary_path.write_text(
                     json.dumps({"step": step, **metrics_only}, ensure_ascii=False, indent=2),
                     encoding="utf-8",

@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import json
+import io
 import errno
 import math
+from contextlib import chdir
 from pathlib import Path
 import sys
 import tempfile
@@ -18,6 +20,43 @@ from week7_common import (
     unit_rows, write_json, write_jsonl,
 )
 from week7_report import paired_bootstrap
+from week1_paths import result_path, output_path
+
+
+class ResultLayoutTests(unittest.TestCase):
+    def test_legacy_locations_resolve_idempotently(self):
+        cases = {
+            "week3-4-semantic-id/03-grid-search/candidates/semantic_ids_rqvae_L3_K256.json":
+                "week3-4-semantic-id/03-grid-search/candidates/rqvae/semantic_ids_rqvae_L3_K256.json",
+            "week5-6-generative/t5_sid_seed42_history.jsonl":
+                "week5-6-generative/03-formal-training/seed42/t5_sid_seed42_history.jsonl",
+            "week7-improvement/05-formal-training/text_s43_best.json":
+                "week7-improvement/05-formal-training/generative/text/seed43/text_s43_best.json",
+            "week7-improvement/06-evaluation/gru4rec_h20_s44_test.json":
+                "week7-improvement/06-evaluation/baselines/gru4rec/seed44/gru4rec_h20_s44_test.json",
+        }
+        for old, new in cases.items():
+            with self.subTest(old=old):
+                expected = Path("results") / new
+                self.assertEqual(result_path(Path("results") / old), expected)
+                self.assertEqual(result_path(expected), expected)
+
+    def test_io_finds_moved_file_without_rewriting_metadata(self):
+        from week7_common import read_json, write_json
+        with tempfile.TemporaryDirectory() as folder:
+            legacy = Path(folder) / "results/week7-improvement/06-evaluation/summary.json"
+            metadata = {"original_script": "scripts/week7_run.py", "frozen_dir": "exported"}
+            write_json(legacy, metadata)
+            canonical = legacy.parent / "summaries/summary.json"
+            self.assertTrue(canonical.is_file())
+            self.assertFalse(legacy.is_file())
+            self.assertEqual(read_json(legacy), metadata)
+            self.assertEqual(read_json(canonical), metadata)
+
+    def test_frozen_interfaces_and_checkpoints_keep_their_locations(self):
+        for path in ("exported/meta.json", "saved/week7/generative/text_s42/best/model.safetensors",
+                     "results/week3-4-semantic-id/05-frozen-interface/train.semantic.jsonl"):
+            self.assertEqual(result_path(path), Path(path))
 
 
 class Week7Tests(unittest.TestCase):
@@ -97,7 +136,7 @@ class Week7Tests(unittest.TestCase):
             import torch
         except ImportError:
             self.skipTest("requires torch")
-        from generative_common import SemanticArtifacts, SemanticTrie
+        from week5_6_common import SemanticArtifacts, SemanticTrie
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             write_json(root / "semantic_ids.json",
@@ -144,6 +183,77 @@ class Week7Tests(unittest.TestCase):
             hand_score = sum(logits[0, t].log_softmax(-1)[int(labels[0, t])]
                              for t in range(5))
         self.assertAlmostEqual(float(vector_score), float(hand_score), places=5)
+
+
+class CommandDispatchTests(unittest.TestCase):
+    def _dispatch(self, arguments):
+        import week7_run
+        with patch.object(sys, "argv", ["week7_run.py", *arguments]), \
+             patch.object(week7_run.subprocess, "run") as run, patch("builtins.print"):
+            week7_run.main()
+            return run.call_args.args[0]
+
+    def test_frozen_baseline_cpu_does_not_request_gpu(self):
+        command = self._dispatch(["baseline", "--model", "GRU4Rec", "--seed", "44",
+                                  "--data_path", "data", "--split", "test", "--cpu"])
+        self.assertEqual(command[1], "scripts/week7_baseline.py")
+        self.assertIn("--cpu", command)
+        self.assertNotIn("--gpu", command)
+
+    def test_baseline_gpu_keeps_physical_index(self):
+        command = self._dispatch(["baseline", "--model", "SASRec", "--data_path", "data",
+                                  "--split", "test", "--gpu", "2"])
+        self.assertEqual(command[command.index("--gpu") + 1], "2")
+        self.assertNotIn("--cpu", command)
+
+    def test_cpu_cannot_silently_start_training(self):
+        import week7_run
+        with patch.object(sys, "argv", ["week7_run.py", "baseline", "--model", "GRU4Rec",
+                          "--data_path", "data", "--split", "train", "--cpu"]), \
+             patch.object(week7_run.subprocess, "run") as run, patch("sys.stderr", io.StringIO()):
+            with self.assertRaises(SystemExit) as error:
+                week7_run.main()
+            self.assertEqual(error.exception.code, 2)
+            run.assert_not_called()
+
+    def test_cpu_rejects_generative_jobs_and_conflicting_devices(self):
+        import week7_run
+        for arguments in (["evaluate", "--gpu", "0", "--cpu"],
+                          ["baseline", "--model", "GRU4Rec", "--data_path", "data",
+                           "--split", "test", "--gpu", "0", "--cpu"]):
+            with self.subTest(arguments=arguments), \
+                 patch.object(sys, "argv", ["week7_run.py", *arguments]), \
+                 patch.object(week7_run.subprocess, "run") as run, patch("sys.stderr", io.StringIO()):
+                with self.assertRaises(SystemExit) as error:
+                    week7_run.main()
+                self.assertEqual(error.exception.code, 2)
+                run.assert_not_called()
+
+
+class ResultCompletenessTests(unittest.TestCase):
+    def test_missing_last_baseline_preserves_previous_summary(self):
+        import week7_report
+        with tempfile.TemporaryDirectory() as folder, chdir(folder), \
+             patch.object(week7_report, "ROOT", Path("results")), \
+             patch.object(week7_report, "require_test_unlock", return_value={"selected": "fixed"}):
+            evaluation = Path("results/06-evaluation")
+            predictions = Path("work/week7/predictions")
+            evaluation.mkdir(parents=True)
+            predictions.mkdir(parents=True)
+            for name in ("sasrec", "gru4rec", "text", "fixed"):
+                for seed in (42, 43, 44):
+                    if name == "gru4rec" and seed == 44:
+                        continue
+                    tag = week7_report._test_tag(name, seed)
+                    (evaluation / f"{tag}.json").write_text("{}")
+                    (evaluation / f"{tag}_samples.json").write_text("[]")
+                    (predictions / f"{tag}.jsonl").write_text("")
+            summary = evaluation / "summary.json"
+            summary.write_text("previous verified summary")
+            with self.assertRaisesRegex(FileNotFoundError, "gru4rec_h20_s44_test"):
+                week7_report.summarize()
+            self.assertEqual(summary.read_text(), "previous verified summary")
+            self.assertFalse((evaluation / "main_results.md").exists())
 
 
 class CheckpointRecoveryTests(unittest.TestCase):

@@ -2,10 +2,11 @@
 """码本质量分析:逐层利用率 / 困惑度 / 冲突率 + 塌缩直方图.
 
 用法:
-    python scripts/analyze_codebook.py \
+    python scripts/week3_4_analyze_codebook.py \
       --kmeans semantic_ids_kmeans.json --rqvae semantic_ids_rqvae.json \
       --outdir results/week3-4-semantic-id/02-codebook-analysis
 """
+from week1_paths import result_path, output_path
 import argparse
 import json
 import os
@@ -17,7 +18,7 @@ import numpy as np
 
 
 def load(path):
-    with open(path, encoding="utf-8") as f:
+    with result_path(path).open(encoding="utf-8") as f:
         d = json.load(f)
     return np.array([d[str(i)] for i in range(len(d))], dtype=np.int64)
 
@@ -61,7 +62,7 @@ def plot_hist(codes, outdir, tag, codebook_size, has_dedup=True):
         ax.set_ylabel("number of codewords (log)")
         ax.set_title(f"{tag} level {l}  (avg {n/codebook_size:.1f} items/codeword)")
         ax.grid(alpha=0.3)
-        path = os.path.join(outdir, "figures", f"util_{tag}_level{l}.png")
+        path = output_path(os.path.join(outdir, "figures", f"util_{tag}_level{l}.png"))
         os.makedirs(os.path.dirname(path), exist_ok=True)
         fig.tight_layout()
         fig.savefig(path, dpi=150)
@@ -99,7 +100,7 @@ def main():
               f"|消解后唯一 ID {result[tag]['n_unique_ids']}")
 
     os.makedirs(args.outdir, exist_ok=True)
-    with open(os.path.join(args.outdir, "codebook_stats.json"),
+    with open(output_path(os.path.join(args.outdir, "codebook_stats.json")),
               "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"\nsaved {args.outdir}/codebook_stats.json")

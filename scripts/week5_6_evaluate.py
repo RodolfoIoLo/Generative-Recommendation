@@ -1,4 +1,5 @@
 from __future__ import annotations
+from week1_paths import result_path, output_path
 
 import argparse
 import json
@@ -7,7 +8,7 @@ from pathlib import Path
 import torch
 from transformers import T5ForConditionalGeneration
 
-from generative_common import (
+from week5_6_common import (
     EvalDataset,
     SemanticArtifacts,
     SemanticTrie,
@@ -36,7 +37,7 @@ def parse_args():
 
 
 def write_jsonl(path, rows):
-    with Path(path).open("w", encoding="utf-8") as file:
+    with output_path(path).open("w", encoding="utf-8") as file:
         for row in rows:
             file.write(json.dumps(row, ensure_ascii=False) + "\n")
 
@@ -80,7 +81,7 @@ def main():
             "checkpoint": str(Path(args.checkpoint).resolve()),
         })
         stem = f"generative_{args.split}_{mode}_seed{args.seed}"
-        metrics_path = result_dir / f"{stem}_metrics.json"
+        metrics_path = output_path(result_dir / f"{stem}_metrics.json")
         metrics_path.write_text(
             json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
         )

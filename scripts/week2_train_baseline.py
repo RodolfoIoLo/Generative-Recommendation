@@ -2,8 +2,8 @@
 """跑判别式基线(SASRec / GRU4Rec).
 
 用法:
-    python scripts/run_baseline.py --model SASRec --seed 43
-    python scripts/run_baseline.py --model GRU4Rec --seed 42
+    python scripts/week2_train_baseline.py --model SASRec --seed 43
+    python scripts/week2_train_baseline.py --model GRU4Rec --seed 42
 """
 import argparse
 import functools
@@ -21,7 +21,7 @@ def _torch_load_weights_only_false(*args, **kwargs):
 
 
 torch.load = _torch_load_weights_only_false
-# ---- 必须在 import recbole 之前改掉,否则 test 评测会崩(见<第二周任务书>§8)----
+# RecBole checkpoints include configuration objects, requiring a full trusted load.
 
 from recbole.quick_start import run_recbole  # noqa: E402
 from recbole.utils import dict2str  # noqa: E402
@@ -34,13 +34,18 @@ def main():
     ap.add_argument("--config", default="config/sasrec_ml1m.yaml")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--gpu_id", default="0")
+    ap.add_argument("--data_path", help="Parent of the ml-1m RecBole dataset directory")
     args = ap.parse_args()
+
+    overrides = {"seed": args.seed, "gpu_id": args.gpu_id}
+    if args.data_path is not None:
+        overrides["data_path"] = args.data_path
 
     result = run_recbole(
         model=args.model,
         dataset=args.dataset,
         config_file_list=[args.config],
-        config_dict={"seed": args.seed, "gpu_id": args.gpu_id},
+        config_dict=overrides,
     )
 
     logger = getLogger()

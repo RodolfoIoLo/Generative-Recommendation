@@ -2,10 +2,11 @@
 """前缀语义一致性:同前缀物品对的平均余弦 vs 随机配对(bootstrap 95% 区间).
 
 用法:
-    python scripts/check_prefix_consistency.py \
+    python scripts/week3_4_check_prefix.py \
       --emb item_emb.npy --ids semantic_ids_rqvae.json \
       --n_boot 1000 --outdir results/week3-4-semantic-id/04-prefix-validation
 """
+from week1_paths import result_path, output_path
 import argparse
 import csv
 import json
@@ -15,7 +16,7 @@ import numpy as np
 
 
 def load_ids(path):
-    with open(path, encoding="utf-8") as f:
+    with result_path(path).open(encoding="utf-8") as f:
         d = json.load(f)
     return np.array([d[str(i)] for i in range(len(d))], dtype=np.int64)
 

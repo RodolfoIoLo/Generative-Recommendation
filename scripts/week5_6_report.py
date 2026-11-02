@@ -1,4 +1,5 @@
 from __future__ import annotations
+from week1_paths import result_path, output_path
 
 import argparse
 import json
@@ -45,11 +46,11 @@ def parse_args():
 
 
 def load_json(path):
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    return json.loads(result_path(path).read_text(encoding="utf-8"))
 
 
 def load_jsonl(path):
-    with Path(path).open(encoding="utf-8") as file:
+    with result_path(path).open(encoding="utf-8") as file:
         return [json.loads(line) for line in file if line.strip()]
 
 
@@ -73,7 +74,7 @@ def seed_from_name(path):
 def run_pilot(result_dir):
     pilot_dir = result_subdir(result_dir, "pilot", create=True)
     records = []
-    for path in sorted(pilot_dir.glob("pilot_lr*_history.jsonl")):
+    for path in sorted(pilot_dir.rglob("pilot_lr*_history.jsonl")):
         lr_text = path.name.split("pilot_lr", 1)[1].split("_history", 1)[0]
         valid = [row for row in load_jsonl(path) if row.get("type") == "valid"]
         if not valid:
@@ -132,7 +133,7 @@ def discover_and_check(result_dir):
     generated = {}
     for split in ("valid", "test"):
         for mode in ("unconstrained", "constrained"):
-            paths = sorted(generative_dir.glob(
+            paths = sorted(generative_dir.rglob(
                 f"generative_{split}_{mode}_seed*_metrics.json"
             ))
             assert {seed_from_name(path) for path in paths} == SEEDS, (split, mode, paths)
@@ -144,7 +145,7 @@ def discover_and_check(result_dir):
                     assert record["diagnostics"]["seen_repeat_rate"] == 0.0
 
     for mode in ("unconstrained", "constrained"):
-        paths = sorted(generative_dir.glob(
+        paths = sorted(generative_dir.rglob(
             f"generative_test_{mode}_seed*_predictions.jsonl"
         ))
         assert {seed_from_name(path) for path in paths} == SEEDS
@@ -152,10 +153,10 @@ def discover_and_check(result_dir):
             verify_prediction_file(path, constrained=(mode == "constrained"))
 
     baselines = {}
-    any_baseline = any(baseline_dir.glob("baseline_*_test_seed*_metrics.json"))
+    any_baseline = any(baseline_dir.rglob("baseline_*_test_seed*_metrics.json"))
     if any_baseline:
         for model in ("sasrec", "gru4rec"):
-            paths = sorted(baseline_dir.glob(
+            paths = sorted(baseline_dir.rglob(
                 f"baseline_{model}_test_seed*_metrics.json"
             ))
             assert {seed_from_name(path) for path in paths} == SEEDS, (model, paths)
@@ -164,7 +165,8 @@ def discover_and_check(result_dir):
                 verify_metric_file(record)
                 verify_metric_file({"n_users": record["n_users"],
                                     "metrics": record["legacy_unmasked_metrics"]})
-                assert record.get("old_log_alignment", "").startswith("passed")
+                alignment = record.get("old_log_alignment", "")
+                assert alignment.startswith(("passed", "not requested")), alignment
     return generated, baselines
 
 
@@ -237,13 +239,17 @@ def build_report(result_dir, generated, baselines):
     if set(baselines) != {"sasrec", "gru4rec"}:
         raise AssertionError("final report requires three seeds for both baselines")
     gen = generated[("test", "constrained")]
+    published_alignment = all(record.get("old_log_alignment", "").startswith("passed")
+                              for records in baselines.values() for record in records)
     models = [("SASRec", baselines["sasrec"]),
               ("GRU4Rec", baselines["gru4rec"]),
               ("Generative-T5", gen)]
     lines = [
         "# 第 5–6 周：生成式推荐主实验", "",
         "> MovieLens 1M · 三随机种子 · 全量排序 · 总体标准差（ddof=0）", "",
-        "主表统一屏蔽每名用户的完整历史物品。基线文件另存原始 RecBole 未屏蔽历史的复算结果，并与既有日志在 `1e-4` 内对齐。", "",
+        "主表统一屏蔽每名用户的完整历史物品。基线文件另存原始RecBole未屏蔽历史的复算结果。"
+        + ("原项目checkpoint与既有日志在`1e-4`内对齐。" if published_alignment else
+           "本表为独立运行结果，未要求与原项目训练日志逐项对齐。"), "",
     ]
     lines += series_table("主实验（test，均值±总体标准差）", models)
 
@@ -277,7 +283,7 @@ def build_report(result_dir, generated, baselines):
 
     lines += [
         "## 旧日志复现", "",
-        "下表采用 RecBole 原始序列评测口径，不屏蔽历史物品，仅用于证明 checkpoint 与既有日志一致；最终模型比较采用主表口径。", "",
+        "下表采用RecBole原始序列评测口径，不屏蔽历史物品；模型比较采用上方完整历史屏蔽的主表。", "",
         "| 模型 | Recall@5 | Recall@10 | NDCG@5 | NDCG@10 | 对齐 |",
         "|---|---:|---:|---:|---:|---|",
     ]
@@ -285,7 +291,9 @@ def build_report(result_dir, generated, baselines):
                            ("GRU4Rec", baselines["gru4rec"])):
         cells = [format_cell([row["legacy_unmasked_metrics"]["all"][metric]
                               for row in records]) for metric in METRICS]
-        lines.append(f"| {model} | " + " | ".join(cells) + " | PASS（≤1e-4） |")
+        checked = all(row.get("old_log_alignment", "").startswith("passed") for row in records)
+        lines.append(f"| {model} | " + " | ".join(cells)
+                     + (" | PASS（≤1e-4） |" if checked else " | 独立运行，未对齐原日志 |"))
     lines += [""]
 
     gen_ndcg = mean_std([row["metrics"]["all"]["ndcg@10"] for row in gen])[0]
@@ -301,7 +309,8 @@ def build_report(result_dir, generated, baselines):
         "无约束生成没有产生目录外 ID，但会大量生成用户已见物品，导致多数用户无法得到完整的十条新推荐。"
         "动态 Trie 将已见物品率和短列表率都降为零，同时提高最终排序指标。", "",
         "可能原因包括 MovieLens 物品目录较小且协同信号充分、电影文本字段有限、生成模型从随机参数训练，"
-        "以及多 token 自回归解码中的误差传播。后续改进应以这些可观测差距为依据，并通过消融或配对检验验证。", "",
+        "以及多 token 自回归解码中的误差传播。这些是待解释的现象，不作为已验证的因果结论。"
+        "[Week 7最终比较](../../week7-improvement/06-evaluation/main_results.md)记录了已完成的协同融合消融与配对检验。", "",
     ]
     make_decode_samples(result_dir)
     return "\n".join(lines)

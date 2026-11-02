@@ -1,5 +1,6 @@
 """Week 7 shared utilities. Importing this module needs only NumPy."""
 from __future__ import annotations
+from week1_paths import result_path, output_path
 
 import hashlib
 import json
@@ -21,16 +22,16 @@ ARTIFACT_FILES = (
 
 
 def read_json(path):
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    return json.loads(result_path(path).read_text(encoding="utf-8"))
 
 
 def read_jsonl(path):
-    with Path(path).open(encoding="utf-8") as handle:
+    with result_path(path).open(encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]
 
 
 def write_json(path, obj):
-    path = Path(path)
+    path = output_path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(obj, ensure_ascii=False, indent=2,
                          sort_keys=True, allow_nan=False) + "\n"
@@ -46,7 +47,7 @@ def write_json(path, obj):
 
 
 def write_jsonl(path, rows):
-    path = Path(path)
+    path = output_path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         for row in rows:
@@ -55,7 +56,7 @@ def write_jsonl(path, rows):
 
 
 def append_jsonl(path, obj):
-    path = Path(path)
+    path = output_path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(obj, ensure_ascii=False,
@@ -64,7 +65,7 @@ def append_jsonl(path, obj):
 
 def sha256(path):
     digest = hashlib.sha256()
-    with Path(path).open("rb") as handle:
+    with result_path(path).open("rb") as handle:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
@@ -82,7 +83,7 @@ def artifact_hash(folder):
 
 def load_config(path):
     import yaml
-    return yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    return yaml.safe_load(result_path(path).read_text(encoding="utf-8"))
 
 
 def unit_rows(array):

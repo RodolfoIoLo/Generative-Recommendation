@@ -4,7 +4,7 @@
 任务 3:数据统计。产出统计表、长尾图和抽样序列。
 
 用法：
-    python scripts/stats.py
+    python scripts/week1_stats.py
 
 产出:/data/zby/data/ml-1m/processed/stats/
     stats.md / stats.json / figs/*.png
@@ -149,7 +149,7 @@ def write_markdown(s, seq_text, path):
     """生成可读的统计表（可直接贴周报）。"""
     lines = []
     lines.append(f"# 数据统计 · {s['dataset']}\n")
-    lines.append('> 由 `scripts/stats.py` 自动生成。\n')
+    lines.append('> 由 `scripts/week1_stats.py` 自动生成。\n')
 
     lines.append('## 1. 规模\n')
     lines.append('| 指标 | 值 |')
