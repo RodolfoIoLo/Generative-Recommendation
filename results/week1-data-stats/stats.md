@@ -1,6 +1,6 @@
 # 数据统计 · ml-1m
 
-> 由 `scripts/stats.py` 自动生成。
+> 由 `scripts/week1_stats.py` 自动生成。
 
 ## 1. 规模
 

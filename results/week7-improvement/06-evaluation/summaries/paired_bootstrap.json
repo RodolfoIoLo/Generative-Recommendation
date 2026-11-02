@@ -1,0 +1,176 @@
+{
+  "all": {
+    "ndcg@10": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.022843809898330267,
+        0.03133499015198325
+      ],
+      "delta": 0.027079521357731673,
+      "n_users": 6040
+    },
+    "ndcg@5": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.01896153144954063,
+        0.027910865827615008
+      ],
+      "delta": 0.02342256542542054,
+      "n_users": 6040
+    },
+    "recall@10": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.033774834437086086,
+        0.04740756070640176
+      ],
+      "delta": 0.040507726269315675,
+      "n_users": 6040
+    },
+    "recall@5": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.023178807947019868,
+        0.03559740618101544
+      ],
+      "delta": 0.02947019867549669,
+      "n_users": 6040
+    }
+  },
+  "few_shot_le20": {
+    "ndcg@10": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.0037610344271720867,
+        0.03569833304697573
+      ],
+      "delta": 0.017672698785901157,
+      "n_users": 72
+    },
+    "ndcg@5": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.00292097108134934,
+        0.0291522993855715
+      ],
+      "delta": 0.014374484090456505,
+      "n_users": 72
+    },
+    "recall@10": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.004629629629629629,
+        0.06944444444444445
+      ],
+      "delta": 0.032407407407407406,
+      "n_users": 72
+    },
+    "recall@5": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.004629629629629629,
+        0.050925925925925916
+      ],
+      "delta": 0.023148148148148147,
+      "n_users": 72
+    }
+  },
+  "head_top20": {
+    "ndcg@10": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.018313252737258524,
+        0.03049013565184847
+      ],
+      "delta": 0.024461491405202325,
+      "n_users": 3411
+    },
+    "ndcg@5": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.014752271655704736,
+        0.027850108318507826
+      ],
+      "delta": 0.021321758572380476,
+      "n_users": 3411
+    },
+    "recall@10": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.0244307632170429,
+        0.04329131242060002
+      ],
+      "delta": 0.03390989934525554,
+      "n_users": 3411
+    },
+    "recall@5": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.015633245382585752,
+        0.03342128408091468
+      ],
+      "delta": 0.024528486269911068,
+      "n_users": 3411
+    }
+  },
+  "strict_cold": {
+    "ndcg@10": {
+      "ci95": null,
+      "delta": null,
+      "n_users": 0
+    },
+    "ndcg@5": {
+      "ci95": null,
+      "delta": null,
+      "n_users": 0
+    },
+    "recall@10": {
+      "ci95": null,
+      "delta": null,
+      "n_users": 0
+    },
+    "recall@5": {
+      "ci95": null,
+      "delta": null,
+      "n_users": 0
+    }
+  },
+  "tail_bottom80": {
+    "ndcg@10": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.024840398134520134,
+        0.036195631403706865
+      ],
+      "delta": 0.030476288253158682,
+      "n_users": 2629
+    },
+    "ndcg@5": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.020404439306816458,
+        0.032042021273559665
+      ],
+      "delta": 0.026148260433301734,
+      "n_users": 2629
+    },
+    "recall@10": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.0399391403575504,
+        0.058450614935970584
+      ],
+      "delta": 0.04906808672499049,
+      "n_users": 2629
+    },
+    "recall@5": {
+      "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+      "ci95": [
+        0.027640420945860274,
+        0.04412324077596044
+      ],
+      "delta": 0.03588183086091036,
+      "n_users": 2629
+    }
+  }
+}

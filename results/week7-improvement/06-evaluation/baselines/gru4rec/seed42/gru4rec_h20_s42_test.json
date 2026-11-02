@@ -1,0 +1,57 @@
+{
+  "best_valid_metrics": {
+    "ndcg@10": 0.20071320688169475,
+    "ndcg@5": 0.16761898581298992,
+    "recall@10": 0.3438741721854305,
+    "recall@5": 0.2413907284768212
+  },
+  "best_valid_score": 0.20071320688169475,
+  "checkpoint": "saved/week7/baselines/gru4rec_h20_s42/GRU4Rec-Oct-29-2026_13-13-48.pth",
+  "checkpoint_sha256": "fd44a9410d2b14326e4f33988910e03b9b1dd7a6fbdcfe6b80493dccd7edee53",
+  "data_path": "/data/zby/data/recbole",
+  "full_sort": true,
+  "mask_full_history": true,
+  "max_history": 20,
+  "metrics": {
+    "all": {
+      "n": 6040,
+      "ndcg@10": 0.18561154301078006,
+      "ndcg@5": 0.15804201791874015,
+      "recall@10": 0.3117549668874172,
+      "recall@5": 0.2259933774834437
+    },
+    "few_shot_le20": {
+      "n": 72,
+      "ndcg@10": 0.06018518518518518,
+      "ndcg@5": 0.05555555555555555,
+      "recall@10": 0.06944444444444445,
+      "recall@5": 0.05555555555555555
+    },
+    "head_top20": {
+      "n": 3411,
+      "ndcg@10": 0.22805355926741971,
+      "ndcg@5": 0.19695781477331498,
+      "recall@10": 0.37144532395192026,
+      "recall@5": 0.2746995016124304
+    },
+    "strict_cold": {
+      "n": 0,
+      "ndcg@10": null,
+      "ndcg@5": null,
+      "recall@10": null,
+      "recall@5": null
+    },
+    "tail_bottom80": {
+      "n": 2629,
+      "ndcg@10": 0.13054508525064296,
+      "ndcg@5": 0.10755065881986185,
+      "recall@10": 0.23430962343096234,
+      "recall@5": 0.16279954355268164
+    }
+  },
+  "model": "GRU4Rec",
+  "n_users": 6040,
+  "seed": 42,
+  "selected_on": "valid full-sort with complete frozen history masked",
+  "split": "test"
+}

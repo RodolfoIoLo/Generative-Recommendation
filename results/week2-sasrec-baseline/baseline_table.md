@@ -25,10 +25,10 @@
 
 | 文件 | 内容 |
 |---|---|
-| `sasrec_s42.log` | seed 42 训练；best epoch 31 |
-| `sasrec_s42_patch_test.log` | seed 42 checkpoint 的独立 valid / test 复评 |
-| `sasrec_s43.log` | seed 43 训练与测试；best epoch 97 |
-| `sasrec_s44.log` | seed 44 训练与测试；best epoch 47 |
-| `gru4rec_s42.log` | GRU4Rec seed 42 训练与测试；best epoch 55 |
-| `gru4rec_s43.log` | GRU4Rec seed 43 训练与测试；best epoch 59 |
-| `gru4rec_s44.log` | GRU4Rec seed 44 训练与测试；best epoch 68 |
+| `training-logs/sasrec/sasrec_s42.log` | seed 42 训练；best epoch 31 |
+| `evaluation-logs/sasrec/sasrec_s42_patch_test.log` | seed 42 checkpoint 的独立 valid / test 复评 |
+| `training-logs/sasrec/sasrec_s43.log` | seed 43 训练与测试；best epoch 97 |
+| `training-logs/sasrec/sasrec_s44.log` | seed 44 训练与测试；best epoch 47 |
+| `training-logs/gru4rec/gru4rec_s42.log` | GRU4Rec seed 42 训练与测试；best epoch 55 |
+| `training-logs/gru4rec/gru4rec_s43.log` | GRU4Rec seed 43 训练与测试；best epoch 59 |
+| `training-logs/gru4rec/gru4rec_s44.log` | GRU4Rec seed 44 训练与测试；best epoch 68 |

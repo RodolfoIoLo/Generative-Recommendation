@@ -1,0 +1,57 @@
+{
+  "best_valid_metrics": {
+    "ndcg@10": 0.17583402326509665,
+    "ndcg@5": 0.14380721708911112,
+    "recall@10": 0.31390728476821195,
+    "recall@5": 0.21490066225165563
+  },
+  "best_valid_score": 0.17583402326509665,
+  "checkpoint": "saved/week7/baselines/sasrec_h20_s43/SASRec-Oct-28-2026_22-39-21.pth",
+  "checkpoint_sha256": "e585701a7b4c7924e998b15ed0c714b755710a4c0ba92272543514ba9b587d0a",
+  "data_path": "/data/zby/data/recbole",
+  "full_sort": true,
+  "mask_full_history": true,
+  "max_history": 20,
+  "metrics": {
+    "all": {
+      "n": 6040,
+      "ndcg@10": 0.16253098910243313,
+      "ndcg@5": 0.1326573843056271,
+      "recall@10": 0.28857615894039734,
+      "recall@5": 0.19602649006622516
+    },
+    "few_shot_le20": {
+      "n": 72,
+      "ndcg@10": 0.0472866023338964,
+      "ndcg@5": 0.0472866023338964,
+      "recall@10": 0.06944444444444445,
+      "recall@5": 0.06944444444444445
+    },
+    "head_top20": {
+      "n": 3411,
+      "ndcg@10": 0.19646761399886123,
+      "ndcg@5": 0.16333431644747992,
+      "recall@10": 0.3383172090296101,
+      "recall@5": 0.2357080035180299
+    },
+    "strict_cold": {
+      "n": 0,
+      "ndcg@10": null,
+      "ndcg@5": null,
+      "recall@10": null,
+      "recall@5": null
+    },
+    "tail_bottom80": {
+      "n": 2629,
+      "ndcg@10": 0.1184998641417202,
+      "ndcg@5": 0.09285555260693656,
+      "recall@10": 0.22403955876759224,
+      "recall@5": 0.14454165081780146
+    }
+  },
+  "model": "SASRec",
+  "n_users": 6040,
+  "seed": 43,
+  "selected_on": "valid full-sort with complete frozen history masked",
+  "split": "test"
+}

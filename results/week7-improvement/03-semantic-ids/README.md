@@ -6,14 +6,14 @@
 
 | 组别 | 最佳重建 R² | 三层码字使用量 | 消歧前重复 ID 数 | 消歧后唯一 ID 数 |
 |---|---:|---|---:|---:|
-| [Text](text/) | 0.6211 | 256 / 256 / 252 | 2 | 3,416 |
-| [Fixed](fixed/) | 0.6710 | 256 / 255 / 252 | 1 | 3,416 |
-| [Fixed-Match](fixed_match/) | 0.6385 | 256 / 256 / 253 | 7 | 3,416 |
-| [Adaptive](adaptive/) | 0.6535 | 256 / 255 / 253 | 4 | 3,416 |
+| [Text](text) | 0.6211 | 256 / 256 / 252 | 2 | 3,416 |
+| [Fixed](fixed) | 0.6710 | 256 / 255 / 252 | 1 | 3,416 |
+| [Fixed-Match](fixed_match) | 0.6385 | 256 / 256 / 253 | 7 | 3,416 |
+| [Adaptive](adaptive) | 0.6535 | 256 / 255 / 253 | 4 | 3,416 |
 
 四组都通过使用量阈值（每层至少 231 个码字）与唯一性检查；最大冲突组均为 2。R² 反映各自输入的重建效果，四组重建目标不同，不能据此判断推荐效果优劣。
 
-四组最佳 checkpoint 均位于既定训练预算的最后一轮，后期重建 R² 仍有提升。因此结果满足当前验收条件，但不能断言量化器已完全收敛；是否需要更长训练，应在保持对照公平的条件下另行验证。
+四组最佳 checkpoint 均位于既定训练预算的最后一轮，后期重建 R² 仍有提升。因此结果满足当前验收条件，但不能断言量化器已完全收敛；本页按已执行的固定预算报告。
 
 ## 前缀观察
 
@@ -30,15 +30,13 @@
 
 ## 文件说明
 
-每组目录包含：
+每个方案都按同一结构保存：
 
-| 文件 | 内容 |
+| 目录 | 文件与用途 |
 |---|---|
-| `semantic_ids.json` | 电影 ID 到四位语义 ID 的完整映射 |
-| `meta.json` | 输入、量化器和原始划分的来源信息 |
-| `quantizer_quality.json` | 最佳 epoch、重建 R²、码字使用量与困惑度 |
-| `codebook_stats.json` | 使用率、冲突率和唯一 ID 数 |
-| `prefix_quality.json` | 三层前缀的文本与协同相似度 |
-| `rqvae.log` 和 `figures/` | 训练记录与码字分配图 |
+| `identifiers/` | `semantic_ids.json`电影到四位ID的完整映射，`meta.json`记录输入与量化器来源 |
+| `quality/` | `quantizer_quality.json`重建与最佳epoch，`codebook_stats.json`利用率与冲突，`prefix_quality.json`文本／协同前缀相似度 |
+| `training/` | `rqvae.log`量化原始训练输出 |
+| `figures/` | 三层码字分配图 |
 
-服务器保留四套 checkpoint、每套完整 train/valid/test 序列和 Token 词表；仓库保留语义 ID 映射、配置、轻量质量证据与重建代码。对四组 checkpoint、接口和划分的验收均已通过。
+完整的六份训练接口在实验工作区`exported/week7/方案/`，量化权重在`saved/week7/quantizers/`。四组的唯一性、码值范围、来源身份与划分检查均已通过。

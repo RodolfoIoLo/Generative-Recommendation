@@ -1,0 +1,19 @@
+{
+  "bootstrap_unit": "user; fixed fitted models; seed-average paired difference",
+  "candidate": "fixed",
+  "ci95": [
+    -0.002661903993279875,
+    0.005912699756530204
+  ],
+  "delta": 0.00170614877434943,
+  "group": "all",
+  "metric": "ndcg@10",
+  "n_users": 6040,
+  "reference": "gru4rec",
+  "resamples": 10000,
+  "seeds": [
+    42,
+    43,
+    44
+  ]
+}
