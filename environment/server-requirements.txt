@@ -8,6 +8,8 @@
 #     pip install -r environment/server-requirements.txt
 absl-py==2.5.0
 aiosignal==1.4.0
+annotated-doc==0.0.5
+anyio==4.15.1
 attrs==26.1.0
 certifi==2026.7.22
 charset-normalizer==3.5.1
@@ -25,6 +27,10 @@ fonttools==4.65.0
 frozenlist==1.8.0
 fsspec==2026.7.0
 grpcio==1.84.0
+h11==0.16.0
+hf-xet==1.7.0
+httpcore==1.0.9
+httpx==0.28.1
 huggingface_hub==1.33.0
 idna==3.20
 Jinja2==3.1.6
@@ -33,8 +39,10 @@ jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
 kiwisolver==1.5.1
 Markdown==3.10.3
+markdown-it-py==4.2.0
 MarkupSafe==3.0.3
 matplotlib==3.11.2
+mdurl==0.1.2
 mpmath==1.3.0
 msgpack==1.2.2
 narwhals==2.26.0
@@ -61,19 +69,23 @@ pillow==12.3.0
 plotly==7.1.0
 protobuf==7.36.2
 psutil==7.2.2
+Pygments==2.21.0
 pyparsing==3.3.3
 python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 ray==2.6.3
 recbole==1.2.1
 referencing==0.37.0
+regex==2026.9.29
 requests==2.34.2
+rich==15.0.0
 rpds-py==2026.6.3
 safetensors==0.8.0
 scikit-learn==1.9.1
 scipy==1.17.1
 sentence-transformers==6.1.0
 setuptools==81.0.0
+shellingham==1.5.4
 six==1.17.0
 spicy==0.16.0
 sympy==1.14.0
@@ -88,6 +100,7 @@ torch==2.14.0+cu126
 tqdm==4.70.1
 triton==3.8.0
 transformers==5.19.0
+typer==0.27.3
 typing_extensions==4.16.0
 urllib3==2.8.0
 Werkzeug==3.1.8
